@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`in buffered mode errors if the icon PNG is an empty file 1`] = `
+PluginError {
+  "fileName": "resources/icon.png",
+  "message": "Unexpected end of input",
+  "name": "Error",
+  "plugin": "validateIcon",
+}
+`;
+
+exports[`in buffered mode errors if the icon PNG is an invalid width and height 1`] = `
+PluginError {
+  "fileName": "resources/icon.png",
+  "message": "Icon was of invalid size, expected 80x80, got 2x2",
+  "name": "Error",
+  "plugin": "validateIcon",
+}
+`;
+
+exports[`in buffered mode errors if the icon PNG is corrupt 1`] = `
+PluginError {
+  "fileName": "resources/icon.png",
+  "message": "Invalid file signature",
+  "name": "Error",
+  "plugin": "validateIcon",
+}
+`;
+
+exports[`in buffered mode errors if the icon PNG is truncated 1`] = `
+PluginError {
+  "fileName": "resources/icon.png",
+  "message": "Unexpected end of input",
+  "name": "Error",
+  "plugin": "validateIcon",
+}
+`;
+
+exports[`in buffered mode logs a warning if the AppType is APP and no icon file exists 1`] = `
+Array [
+  Object {
+    "category": 0,
+    "messageText": "There is no app icon present in this project. To set an app icon, add a 80x80 PNG file named resources/icon.png to your project.",
+  },
+]
+`;
+
+exports[`in streaming mode throws an error as icon validation is not supported in streaming mode 1`] = `
+PluginError {
+  "fileName": "resources/icon.png",
+  "message": "Icon file is not a buffer",
+  "name": "Error",
+  "plugin": "validateIcon",
+}
+`;

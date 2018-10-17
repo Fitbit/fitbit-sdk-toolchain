@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`tries to push a diagnostic to the list without category 1`] = `"Diagnostic is missing \`messageText\` or \`category\` keys"`;
+
+exports[`tries to push a diagnostic to the list without messageText 1`] = `"Diagnostic is missing \`messageText\` or \`category\` keys"`;

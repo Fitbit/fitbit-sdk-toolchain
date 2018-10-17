@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`convertPluginErrorToDiagnostic deals with PluginErrors constructed from another Error 1`] = `
+Object {
+  "category": 1,
+  "messageText": "TypeError: ouch",
+}
+`;
+
+exports[`convertPluginErrorToDiagnostic when there are custom properties constructs a diagnostic 1`] = `
+Object {
+  "category": 1,
+  "file": Object {
+    "path": "path/to/some/file.js",
+    "position": Object {
+      "start": Object {
+        "character": 2,
+        "line": 11,
+      },
+    },
+  },
+  "messageText": Array [
+    Object {
+      "category": 1,
+      "messageText": "Error: message",
+    },
+    Object {
+      "category": 3,
+      "messageText": "Details:
+    customProp: custom property
+    another: one here
+    haiku:
+      This one has newlines
+      embedded in the value
+      refridgerator
+",
+    },
+  ],
+}
+`;

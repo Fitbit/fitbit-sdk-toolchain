@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`emits an error if one required file is missing 1`] = `
+PluginError {
+  "message": "One or more required files do not exist in the project: baz",
+  "name": "Error",
+  "plugin": "vinyl-assert-files",
+}
+`;
+
+exports[`emits an error if three required files are missing 1`] = `
+PluginError {
+  "message": "One or more required files do not exist in the project: baz, zab and oof",
+  "name": "Error",
+  "plugin": "vinyl-assert-files",
+}
+`;
+
+exports[`emits an error if two required files are missing 1`] = `
+PluginError {
+  "message": "One or more required files do not exist in the project: baz and zab",
+  "name": "Error",
+  "plugin": "vinyl-assert-files",
+}
+`;

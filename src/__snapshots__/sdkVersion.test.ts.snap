@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`throws if package version has no known mapping 1`] = `"No known API versions for SDK package version 1000.0"`;

@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`in buffered mode gracefully errors if the PNG file is empty 1`] = `
+PluginError {
+  "fileName": "image.png",
+  "message": "Unexpected end of input",
+  "name": "Error",
+  "plugin": "convertImageToTXI",
+}
+`;
+
+exports[`in buffered mode gracefully errors if the PNG file is truncated 1`] = `
+PluginError {
+  "fileName": "image.png",
+  "message": "Unexpected end of input",
+  "name": "Error",
+  "plugin": "convertImageToTXI",
+}
+`;
+
+exports[`in buffered mode handles a corrupt PNG 1`] = `
+PluginError {
+  "fileName": "xs1n0g01.png",
+  "message": "Invalid file signature",
+  "name": "Error",
+  "plugin": "convertImageToTXI",
+}
+`;
+
+exports[`in streaming mode gracefully errors if the PNG file is empty 1`] = `
+PluginError {
+  "fileName": "image.png",
+  "message": "Unexpected end of input",
+  "name": "Error",
+  "plugin": "convertImageToTXI",
+}
+`;
+
+exports[`in streaming mode gracefully errors if the PNG file is empty 2`] = `[Error: Unexpected end of input]`;
+
+exports[`in streaming mode gracefully errors if the PNG file is truncated 1`] = `
+PluginError {
+  "fileName": "image.png",
+  "message": "Unexpected end of input",
+  "name": "Error",
+  "plugin": "convertImageToTXI",
+}
+`;
+
+exports[`in streaming mode gracefully errors if the PNG file is truncated 2`] = `[Error: Unexpected end of input]`;
+
+exports[`in streaming mode handles a corrupt PNG 1`] = `
+PluginError {
+  "fileName": "xs1n0g01.png",
+  "message": "Invalid file signature",
+  "name": "Error",
+  "plugin": "convertImageToTXI",
+}
+`;
+
+exports[`in streaming mode handles a corrupt PNG 2`] = `[Error: Invalid file signature]`;
+
+exports[`in streaming mode handles a stream read error 1`] = `
+PluginError {
+  "fileName": "dead.png",
+  "message": "blarg im ded",
+  "name": "Error",
+  "plugin": "convertImageToTXI",
+}
+`;
+
+exports[`in streaming mode handles a stream read error 2`] = `[Error: blarg im ded]`;

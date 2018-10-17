@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`throws an error if package.json fitbit section is not an object 1`] = `"Project configuration 'fitbit' property must be an object"`;
+
+exports[`throws an error if package.json is not an object 1`] = `"Project configuration root must be an object"`;

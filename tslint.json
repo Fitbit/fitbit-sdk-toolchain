@@ -1,0 +1,19 @@
+{
+  "extends": "tslint-config-airbnb",
+  "rules": {
+    "no-inferrable-types": true,
+    "prefer-template": [true, "allow-single-concat"],
+    "import-name": [true, {
+      "magicString": "MagicString",
+      "pluginError": "PluginError",
+      "typescript": "ts",
+      "vinyl": "Vinyl",
+      "vinylFs": "vinylFS"
+    }]
+  },
+  "linterOptions": {
+    "exclude": [
+      "src/__test__"
+    ]
+  }
+}

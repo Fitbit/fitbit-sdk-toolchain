@@ -1,0 +1,103 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`builds a package manifest 1`] = `
+Object {
+  "appId": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+  "buildId": "0x0f75775f470c1585",
+  "components": Object {
+    "watch": Object {
+      "higgs": Object {
+        "filename": "device-higgs.zip",
+        "platform": Array [
+          "30.1.2+",
+        ],
+      },
+    },
+  },
+  "manifestVersion": 6,
+  "requestedPermissions": Array [],
+  "sdkVersion": Object {
+    "deviceApi": "1.0.0",
+  },
+  "sourceMaps": Object {
+    "device": Object {
+      "higgs": "sourceMaps/device/higgs/index.js.json",
+    },
+  },
+}
+`;
+
+exports[`builds a package manifest with a companion 1`] = `
+Object {
+  "appId": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+  "buildId": "0x0f75775f470c1585",
+  "components": Object {
+    "companion": Object {
+      "filename": "companion.zip",
+    },
+    "watch": Object {
+      "higgs": Object {
+        "filename": "device-higgs.zip",
+        "platform": Array [
+          "30.1.2+",
+        ],
+      },
+    },
+  },
+  "manifestVersion": 6,
+  "requestedPermissions": Array [],
+  "sdkVersion": Object {
+    "companionApi": "1.0.0",
+    "deviceApi": "1.0.0",
+  },
+  "sourceMaps": Object {
+    "companion": "sourceMaps/companion/companion.js.json",
+    "device": Object {
+      "higgs": "sourceMaps/device/higgs/index.js.json",
+    },
+    "settings": "sourceMaps/settings/settings.js.json",
+  },
+}
+`;
+
+exports[`builds a package manifest with multiple device components 1`] = `
+Object {
+  "appId": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+  "buildId": "0x0f75775f470c1585",
+  "components": Object {
+    "watch": Object {
+      "higgs": Object {
+        "filename": "device-higgs.zip",
+        "platform": Array [
+          "30.1.2+",
+        ],
+      },
+      "meson": Object {
+        "filename": "device-meson.zip",
+        "platform": Array [
+          "32.4.18+",
+        ],
+      },
+    },
+  },
+  "manifestVersion": 6,
+  "requestedPermissions": Array [],
+  "sdkVersion": Object {
+    "deviceApi": "1.0.0",
+  },
+  "sourceMaps": Object {
+    "device": Object {
+      "higgs": "sourceMaps/device/higgs/index.js.json",
+      "meson": "sourceMaps/device/meson/index.js.json",
+    },
+  },
+}
+`;
+
+exports[`emits an error if a component bundle tag has a device type but invalid platform 1`] = `"Unknown bundle component tag: Invalid value \\"1.1.1+\\" supplied to : ({ type: \\"device\\", family: string, platform: Array<string> } | { type: \\"companion\\" })/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
+
+exports[`emits an error if a component bundle tag has a device type but missing family 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : ({ type: \\"device\\", family: string, platform: Array<string> } | { type: \\"companion\\" })/0: { type: \\"device\\", family: string, platform: Array<string> }/family: string"`;
+
+exports[`emits an error if a component bundle tag has a device type but missing platform 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : ({ type: \\"device\\", family: string, platform: Array<string> } | { type: \\"companion\\" })/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
+
+exports[`emits an error if a component bundle tag has an invalid type field 1`] = `"Unknown bundle component tag: Invalid value \\"__invalid__\\" supplied to : ({ type: \\"device\\", family: string, platform: Array<string> } | { type: \\"companion\\" })/type: \\"device\\" | \\"companion\\""`;

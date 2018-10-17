@@ -1,0 +1,13 @@
+.npmrc
+/coverage/
+/lib-cov/
+/node_modules/
+/.rpt2_cache/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Ignore built ts files
+/lib/
+yarn-error.log

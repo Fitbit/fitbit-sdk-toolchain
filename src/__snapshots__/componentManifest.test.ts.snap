@@ -1,0 +1,112 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`builds a companion manifest 1`] = `
+Object {
+  "apiVersion": "1.0.0",
+  "buildId": "0x0f75775f470c1585",
+  "bundleDate": "2018-06-27T00:00:00.000Z",
+  "companion": Object {
+    "main": "companion.js",
+  },
+  "manifestVersion": 2,
+  "name": "My App",
+  "requestedPermissions": Array [],
+  "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+}
+`;
+
+exports[`builds a companion manifest with settings 1`] = `
+Object {
+  "apiVersion": "1.0.0",
+  "buildId": "0x0f75775f470c1585",
+  "bundleDate": "2018-06-27T00:00:00.000Z",
+  "companion": Object {
+    "main": "companion.js",
+  },
+  "manifestVersion": 2,
+  "name": "My App",
+  "requestedPermissions": Array [],
+  "settings": Object {
+    "main": "settings.js",
+  },
+  "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+}
+`;
+
+exports[`builds a device manifest for a clock 1`] = `
+Object {
+  "apiVersion": "1.0.0",
+  "appManifestVersion": 1,
+  "appType": "clockface",
+  "buildId": "0x0f75775f470c1585",
+  "bundleDate": "2018-06-27T00:00:00.000Z",
+  "i18n": Object {
+    "en": Object {
+      "name": "My App",
+    },
+    "fr": Object {
+      "name": "Mon application",
+    },
+  },
+  "main": "app/index.js",
+  "name": "My App",
+  "requestedPermissions": Array [],
+  "svgMain": "resources/index.gui",
+  "svgWidgets": "resources/widgets.gui",
+  "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+}
+`;
+
+exports[`builds a device manifest for an app 1`] = `
+Object {
+  "apiVersion": "1.0.0",
+  "appManifestVersion": 1,
+  "appType": "app",
+  "buildId": "0x0f75775f470c1585",
+  "bundleDate": "2018-06-27T00:00:00.000Z",
+  "i18n": Object {
+    "en": Object {
+      "name": "My App",
+    },
+    "fr": Object {
+      "name": "Mon application",
+    },
+  },
+  "iconFile": "resources/icon.png",
+  "main": "app/index.js",
+  "name": "My App",
+  "requestedPermissions": Array [],
+  "svgMain": "resources/index.gui",
+  "svgWidgets": "resources/widgets.gui",
+  "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+  "wipeColor": "#ffaabb",
+}
+`;
+
+exports[`when there are compiled language files sets the i18n[lang].resources key for language files that pass through 1`] = `
+Object {
+  "apiVersion": "1.0.0",
+  "appManifestVersion": 1,
+  "appType": "clockface",
+  "buildId": "0x0f75775f470c1585",
+  "bundleDate": "2018-06-27T00:00:00.000Z",
+  "i18n": Object {
+    "en": Object {
+      "name": "My App",
+      "resources": "lang/english",
+    },
+    "es": Object {
+      "resources": "spanish/language",
+    },
+    "fr": Object {
+      "name": "Mon application",
+    },
+  },
+  "main": "app/index.js",
+  "name": "My App",
+  "requestedPermissions": Array [],
+  "svgMain": "resources/index.gui",
+  "svgWidgets": "resources/widgets.gui",
+  "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+}
+`;
