@@ -11,10 +11,10 @@
   "homepage": "https://github.com/Fitbit/fitbit-sdk-toolchain#readme",
   "scripts": {
     "build": "rm -rf lib && tsc -p tsconfig.build.json",
-    "test": "yarn run lint && jest",
+    "test": "jest",
     "lint": "tsc --noEmit --noUnusedLocals && tslint --project .",
     "depcheck": "depcheck --ignores='@types/*,tslint-config-airbnb' --ignore-dirs='toolchain,__test__'",
-    "prepare": "npm run test && npm run build"
+    "prepublishOnly": "npm run test && npm run build"
   },
   "devDependencies": {
     "@types/babel-core": "^6.25.5",
