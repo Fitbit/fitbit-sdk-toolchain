@@ -9,3 +9,10 @@ os:
 
 dist: trusty
 sudo: false
+
+cache: yarn
+
+# --runInBand needed so tests don't timeout https://github.com/facebook/jest/issues/3855
+script:
+  - yarn lint
+  - yarn test --runInBand
