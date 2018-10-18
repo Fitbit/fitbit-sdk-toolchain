@@ -9,7 +9,7 @@ import Vinyl from 'vinyl';
 
 import { normalizeToPOSIX } from './pathUtils';
 import ProjectConfiguration from './ProjectConfiguration';
-import { apiVersions } from './sdkVersion';
+// import { apiVersions } from './sdkVersion';
 
 const manifestPath = 'manifest.json';
 const PLUGIN_NAME = 'appPackageManifest';
@@ -82,17 +82,18 @@ export default function appPackageManifest({ projectConfig, buildId } : {
       next(undefined, file);
     },
     flush(callback) {
-      const { deviceApi, companionApi } = apiVersions(projectConfig);
+      // const { deviceApi, companionApi } = apiVersions(projectConfig);
       const manifestJSON = JSON.stringify(
         {
           buildId,
           components,
           sourceMaps,
           manifestVersion: 6,
-          sdkVersion: {
-            ...(components.watch && { deviceApi }),
-            ...(components.companion && { companionApi }),
-          },
+          // TODO: figure out what to do about this for native binaries
+          // sdkVersion: {
+          //   ...(components.watch && { deviceApi }),
+          //   ...(components.companion && { companionApi }),
+          // },
           requestedPermissions: projectConfig.requestedPermissions,
           appId: projectConfig.appUUID,
         },

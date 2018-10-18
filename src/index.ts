@@ -26,6 +26,7 @@ import {
   DiagnosticHandler,
   DiagnosticTarget,
 } from './diagnostics';
+import * as ELF from './ELF';
 import externals from './externals';
 import filterResourceTag from './filterResourceTag';
 import findEntryPoint from './findEntryPoint';
@@ -263,17 +264,44 @@ export function buildCompanion({
 export function buildAppPackage({
   projectConfig,
   buildId,
+  nativeApp,
   onDiagnostic = logDiagnosticToConsole,
 }: {
   projectConfig: ProjectConfiguration,
   buildId: string,
+  nativeApp?: string,
   onDiagnostic?: DiagnosticHandler,
 }) {
-  const components = buildDeviceComponents({
-    projectConfig,
-    buildId,
-    onDiagnostic: addDiagnosticTarget(DiagnosticTarget.App, onDiagnostic),
-  });
+  const components = [];
+
+  if (nativeApp) {
+    const { family, platform, appID } = ELF.readMetadata(nativeApp);
+
+    // TODO: properly format appID instead
+    if (appID !== projectConfig.appUUID) {
+      throw new Error(
+        'Native bundle and package.json have different app IDs.'
+        + ` Native: ${appID} package.json:${projectConfig.appUUID}`,
+      );
+    }
+
+    components.push(new pumpify.obj(
+      vinylFS.src(nativeApp),
+      gulpSetProperty({
+        componentBundle: {
+          family,
+          type: 'device',
+          platform: [platform],
+        },
+      }),
+    ));
+  } else {
+    components.push(...buildDeviceComponents({
+      projectConfig,
+      buildId,
+      onDiagnostic: addDiagnosticTarget(DiagnosticTarget.App, onDiagnostic),
+    }));
+  }
 
   const companion = buildCompanion({
     projectConfig,
@@ -293,11 +321,17 @@ export function buildAppPackage({
   );
 }
 
-export function buildProject({ onDiagnostic = logDiagnosticToConsole } = {}) {
-  const buildId = generateBuildId();
+export function buildProject({
+  nativeApp,
+  onDiagnostic = logDiagnosticToConsole,
+}: {
+  nativeApp?: string,
+  onDiagnostic?: DiagnosticHandler,
+} = {}) {
+  const buildId = nativeApp ? ELF.readMetadata(nativeApp).buildID : generateBuildId();
   const projectConfig = loadProjectConfig({ onDiagnostic });
 
-  return buildAppPackage({ projectConfig, buildId, onDiagnostic })
+  return buildAppPackage({ projectConfig, buildId, onDiagnostic, nativeApp })
     .on('finish', () => {
       onDiagnostic({
         messageText: `App UUID: ${projectConfig.appUUID}, BuildID: ${buildId}`,
@@ -315,10 +349,15 @@ export function buildProject({ onDiagnostic = logDiagnosticToConsole } = {}) {
 export function build({
   dest = vinylFS.dest('./build') as Stream,
   onDiagnostic = logDiagnosticToConsole,
+  nativeApp,
+}: {
+  dest?: Stream,
+  nativeApp?: string,
+  onDiagnostic?: DiagnosticHandler,
 } = {}) {
   return new Promise<void>((resolve, reject) => {
     new pumpify.obj(
-      buildProject({ onDiagnostic }),
+      buildProject({ nativeApp, onDiagnostic }),
       dest,
     )
       .on('error', reject)
