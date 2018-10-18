@@ -62,7 +62,7 @@
     "fs-extra": "^7.0.0",
     "gulp-file": "^0.4.0",
     "gulp-uglify": "^3.0.1",
-    "gulp-zip": "^4.2.0",
+    "gulp-zip": "2.x",
     "humanize-list": "^1.0.1",
     "indent-string": "^3.2.0",
     "inquirer": "^6.0.0",
@@ -101,5 +101,10 @@
     "lib",
     "scaffold",
     "sdk-tsconfig.json"
-  ]
+  ],
+  "greenkeeper": {
+    "ignore": [
+      "gulp-zip"
+    ]
+  }
 }
