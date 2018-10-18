@@ -48,20 +48,27 @@ function __extends(d, b) {
 }
 
 var Foo = function () {
-    function Foo() {}
-    Foo.prototype.doFoo = function () {};
-    return Foo;
+  function Foo() {}
+
+  Foo.prototype.doFoo = function () {};
+
+  return Foo;
 }();
+
 var Bar = function (_super) {
-    __extends(Bar, _super);
-    function Bar() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Bar.prototype.doBar = function () {
-        console.log('foo');
-    };
-    return Bar;
+  __extends(Bar, _super);
+
+  function Bar() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  Bar.prototype.doBar = function () {
+    console.log('foo');
+  };
+
+  return Bar;
 }(Foo);
+
 var bar = new Bar();
 bar.doBar();
 "
@@ -71,39 +78,53 @@ exports[`build passes when compiles a JS file with tslib helpers inline 1`] = `
 "'use strict';
 
 var __extends = undefined && undefined.__extends || function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function (d, b) {
-            d.__proto__ = b;
-        } || function (d, b) {
-            for (var p in b) {
-                if (b.hasOwnProperty(p)) d[p] = b[p];
-            }
-        };
-        return extendStatics(d, b);
+  var extendStatics = function (d, b) {
+    extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+      }
     };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() {
-            this.constructor = d;
-        }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-}();
-var Foo = function () {
-    function Foo() {}
-    Foo.prototype.doFoo = function () {};
-    return Foo;
-}();
-var Bar = function (_super) {
-    __extends(Bar, _super);
-    function Bar() {
-        return _super !== null && _super.apply(this, arguments) || this;
+
+    return extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
     }
-    Bar.prototype.doBar = function () {
-        console.log('foo');
-    };
-    return Bar;
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+var Foo = function () {
+  function Foo() {}
+
+  Foo.prototype.doFoo = function () {};
+
+  return Foo;
+}();
+
+var Bar = function (_super) {
+  __extends(Bar, _super);
+
+  function Bar() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  Bar.prototype.doBar = function () {
+    console.log('foo');
+  };
+
+  return Bar;
 }(Foo);
+
 var bar = new Bar();
 bar.doBar();
 "
@@ -133,8 +154,11 @@ exports[`build passes when require calls are unmodified 1`] = `
 "'use strict';
 
 var knownExternal = require('_mock_external_import_');
+
 knownExternal();
+
 var unknownRelative = require('./foo.js');
+
 unknownRelative();
 "
 `;
@@ -254,7 +278,7 @@ exports[`when targeting SDK 1.0 allows unintentionally non-relative imports 1`] 
 "'use strict';
 
 function importee() {
-    return 1;
+  return 1;
 }
 
 console.log(importee());
@@ -270,4 +294,4 @@ Array [
 ]
 `;
 
-exports[`when targeting SDK 2.0 does not allow JSON imports 1`] = `<cwd>/src/__test__/compile/data.json: Unexpected token, expected ; (2:7)`;
+exports[`when targeting SDK 2.0 does not allow JSON imports 1`] = `"Unexpected token (Note that you need rollup-plugin-json to import JSON files)"`;
