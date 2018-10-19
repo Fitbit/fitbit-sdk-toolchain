@@ -124,6 +124,8 @@ export default function compile(
           ],
           compact: false,
           babelrc: false,
+          // We include JSON here to get a more sane error that includes the path
+          extensions: ['.js', '.json'],
         }),
       ],
       onwarn: (w: rollup.RollupWarning | string) => {

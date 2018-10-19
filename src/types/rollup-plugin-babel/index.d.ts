@@ -6,6 +6,7 @@ interface Options extends TransformOptions {
   exclude?: string[];
   externalHelpers?: boolean;
   externalHelpersWhitelist?: string[];
+  extensions?: string[];
 }
 declare function rollupPluginBabel(options?: Options): Plugin;
 declare namespace rollupPluginBabel { }
