@@ -1,6 +1,8 @@
 Fitbit SDK Toolchain
 =====================
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Fitbit/fitbit-sdk-toolchain.svg)](https://greenkeeper.io/)
+
 The Fitbit SDK Toolchain is used to build Fitbit OS apps and clock faces.
 
 ### Usage

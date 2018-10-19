@@ -1,3 +1,5 @@
+import { relative } from 'path';
+
 import * as rollup from 'rollup';
 import rollupPluginBabel from 'rollup-plugin-babel';
 import rollupPluginCommonjs from 'rollup-plugin-commonjs';
@@ -38,9 +40,14 @@ const messageFormatter: { [code: string]: (w: rollup.RollupWarning) => string } 
   UNRESOLVED_IMPORT: w => `${w.source} is imported by ${w.importer}, but could not be resolved`,
 };
 
+function relativeId(id: string) {
+  if (typeof process === 'undefined' || !/^(?:\/|(?:[A-Za-z]:)?[\\|/])/.test(id)) return id;
+  return relative(process.cwd(), id);
+}
+
 function defaultFormatter(w: rollup.RollupWarning) {
-  if (Object.prototype.hasOwnProperty.call(w, 'toString')) return w.toString();
-  return w.message!;
+  return w.loc ?
+    `${relativeId(w.loc.file)} (${w.loc.line}:${w.loc.column}) ${w.message!}` : w.message!;
 }
 
 const rollupWarningToDiagnostic = (codeCategories = defaultCodeCategories) =>
@@ -94,7 +101,6 @@ export default function compile(
     ...defaultCodeCategories,
     ...(allowUnknownExternals && { UNRESOLVED_IMPORT: DiagnosticCategory.Warning }),
   });
-
   return rollupToVinyl(
     output,
     {
@@ -113,11 +119,13 @@ export default function compile(
             // Plugins are specified in this way to avoid this:
             // https://github.com/webpack/webpack/issues/1866
             // Also makes this work correctly in a browser environment
-            require('babel-plugin-transform-es2015-block-scoped-functions'),
-            require('babel-plugin-transform-es2015-block-scoping'),
+            require('@babel/plugin-transform-block-scoped-functions'),
+            require('@babel/plugin-transform-block-scoping'),
           ],
           compact: false,
           babelrc: false,
+          // We include JSON here to get a more sane error that includes the path
+          extensions: ['.js', '.json'],
         }),
       ],
       onwarn: (w: rollup.RollupWarning | string) => {
