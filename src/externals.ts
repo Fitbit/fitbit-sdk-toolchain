@@ -4,12 +4,14 @@
 
 const common = [
   'cbor',
+  'crypto',
   'device',
   'events',
   'geolocation',
   'messaging',
   'permissions',
   'resources',
+  'user-settings',
   'util',
 ];
 
@@ -34,13 +36,11 @@ const device = [
   'system',
   'user-activity',
   'user-profile',
-  'user-settings',
 ].concat(common);
 
 const companion = [
   'blob',
   'companion',
-  'crypto',
   'external-app',
   'fetch',
   'file-transfer',
@@ -54,10 +54,11 @@ const companion = [
   'secure-exchange',
   'settings',
   'storage',
-  'user-settings',
   'wake-interval',
 ].concat(common);
 
-const settings: string[] = [];  // No runtime externals for settings.
+const settings = [
+  'user-settings',
+];
 
 export default { device, companion, settings };
