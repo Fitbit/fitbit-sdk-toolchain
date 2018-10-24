@@ -20,7 +20,6 @@ import brokenImports from './plugins/brokenImports';
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
 import resourceImports from './plugins/resourceImports';
 import typescript from './plugins/typescript';
-import { boolean } from 'io-ts';
 
 const tsconfigOverride = {
   noEmitHelpers: false,
