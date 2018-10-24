@@ -191,7 +191,7 @@ export function buildDeviceComponents({
         ),
       ),
       makeDeviceManifest({ projectConfig, buildId }),
-      zip(`device-${family}.zip`, { compress: false }),
+      zip(`device-${family}.zip`, { compress: sdkVersion().major >= 3 }),
       gulpSetProperty({
         componentBundle: {
           family,
