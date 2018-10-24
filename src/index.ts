@@ -156,14 +156,14 @@ export function buildDeviceComponents({
   onDiagnostic?: DiagnosticHandler,
 }) {
   // TODO: remove is-defined assertion ('!')
-  const baseJS = new pumpify.obj(
-    buildComponent({
-      projectConfig,
-      onDiagnostic,
-      component: ComponentType.DEVICE,
-    })!,
-    gulpMagicString(errataPrimaryExpressionInSwitch),
-  );
+  const deviceJS = buildComponent({
+    projectConfig,
+    onDiagnostic,
+    component: ComponentType.DEVICE,
+  })!;
+
+  const errataPlugin = gulpMagicString(errataPrimaryExpressionInSwitch);
+  const processedJS = sdkVersion().major >= 3 ? deviceJS : new pumpify.obj(deviceJS, errataPlugin);
 
   // Things can start glitching out if multiple vinylFS.src() streams
   // with the same glob pattern are in use concurrently. (IPD-102519)
@@ -178,7 +178,7 @@ export function buildDeviceComponents({
     return new pumpify.obj(
       mergeStream(
         new pumpify.obj(
-          baseJS,
+          processedJS,
           sourceMap.collector(ComponentType.DEVICE, family),
         ),
         new pumpify.obj(
