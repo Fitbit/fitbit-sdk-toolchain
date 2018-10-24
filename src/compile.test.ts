@@ -95,6 +95,14 @@ describe('when targeting SDK 2.0', () => {
     expect(compileFile('incorrectlyNonRelativeImport.js')).rejects.toThrowError());
 });
 
+describe('when targeting SDK 3.0', () => {
+  beforeEach(() => mockSDKVersion.mockReturnValue({ major: 3, minor: 0 }));
+
+  it('emits ES6 code', () =>
+    expect(compileFile('ES6.js')).resolves.toMatchSnapshot());
+
+});
+
 it.each([
   ['an unrecognized binary file is imported', 'importBinary.js'],
   ['a non-existent relative import is specified', 'relativeImportNotFound.js'],
