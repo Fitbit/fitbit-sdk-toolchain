@@ -7,7 +7,12 @@ import rollupPluginJson from 'rollup-plugin-json';
 import rollupPluginNodeResolve from 'rollup-plugin-node-resolve';
 import ts from 'typescript';
 
-import { DiagnosticCategory, DiagnosticMessage, logDiagnosticToConsole } from './diagnostics';
+import {
+  DiagnosticCategory,
+  DiagnosticHandler,
+  DiagnosticMessage,
+  logDiagnosticToConsole,
+} from './diagnostics';
 import rollupToVinyl from './rollupToVinyl';
 import sdkVersion from './sdkVersion';
 
@@ -15,6 +20,7 @@ import brokenImports from './plugins/brokenImports';
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
 import resourceImports from './plugins/resourceImports';
 import typescript from './plugins/typescript';
+import { boolean } from 'io-ts';
 
 const tsconfigOverride = {
   noEmitHelpers: false,
@@ -92,9 +98,13 @@ export default function compile(
   input: string,
   output: string,
   {
-    external = [] as string[],
+    external = [],
     allowUnknownExternals = false,
     onDiagnostic = logDiagnosticToConsole,
+  } : {
+    external?: rollup.ExternalOption,
+    allowUnknownExternals?: boolean,
+    onDiagnostic: DiagnosticHandler,
   },
 ) {
   const convertRollupWarning = rollupWarningToDiagnostic({
