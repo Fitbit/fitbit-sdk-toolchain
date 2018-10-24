@@ -7,6 +7,7 @@ const common = [
   'crypto',
   'device',
   'events',
+  'file-transfer',
   'geolocation',
   'messaging',
   'permissions',
@@ -21,10 +22,9 @@ const device = [
   'barometer',
   'body-presence',
   'clock',
-  'device',
   'display',
   'document',
-  'file-transfer',
+  'exercise',
   'fs',
   'gyroscope',
   'haptics',
@@ -32,6 +32,7 @@ const device = [
   'jpeg',
   'orientation',
   'power',
+  'scientific',
   'sensors',
   'system',
   'user-activity',
@@ -39,22 +40,13 @@ const device = [
 ].concat(common);
 
 const companion = [
-  'blob',
   'companion',
   'external-app',
-  'fetch',
-  'file-transfer',
-  'form-data',
-  'host',
   'image',
-  'life-cycle',
   'local-storage',
-  'location-change',
   'peer',
   'secure-exchange',
   'settings',
-  'storage',
-  'wake-interval',
 ].concat(common);
 
 const settings = [
