@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { Stream } from 'stream';
 
-import gulpUglify from 'gulp-uglify';
+import gulpUglifyEs from 'gulp-uglify-es';
 import mergeStream from 'merge-stream';
 import PluginError from 'plugin-error';
 import pumpify from 'pumpify';
@@ -89,10 +89,12 @@ export function loadProjectConfig({
 export function buildComponent({
   projectConfig,
   component,
+  ecma,
   onDiagnostic = logDiagnosticToConsole,
 }: {
   projectConfig: ProjectConfiguration,
   component: ComponentType,
+  ecma?: 5 | 6,
   onDiagnostic?: DiagnosticHandler,
 }) {
   const { inputs, output, notFoundIsFatal } = componentTargets[component];
@@ -103,11 +105,13 @@ export function buildComponent({
   if (!entryPoint) return;
   return new pumpify.obj(
     compile(entryPoint, output, {
+      ecma,
       onDiagnostic,
       external: externals[component],
       allowUnknownExternals: projectConfig.enableProposedAPI,
     }),
-    gulpUglify({
+    gulpUglifyEs({
+      ecma,
       mangle: {
         toplevel: true,
       },
@@ -160,6 +164,7 @@ export function buildDeviceComponents({
     projectConfig,
     onDiagnostic,
     component: ComponentType.DEVICE,
+    ecma: 5,
   })!;
 
   const errataPlugin = gulpMagicString(errataPrimaryExpressionInSwitch);
