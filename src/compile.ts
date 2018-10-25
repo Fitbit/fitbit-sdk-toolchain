@@ -23,7 +23,7 @@ import typescript from './plugins/typescript';
 
 // TODO: emit a warning when any of these settings are
 // defined in the app's tsconfig
-const tsconfigOverrides = () => ({
+const tsconfigOverrides = {
   noEmitHelpers: false,
   importHelpers: true,
   noResolve: false,
@@ -32,8 +32,7 @@ const tsconfigOverrides = () => ({
   moduleResolution: ts.ModuleResolutionKind.NodeJs,
   module: ts.ModuleKind.ES2015,
   suppressOutputPathCheck: true,
-  target: sdkVersion().major >= 3 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
-});
+};
 
 type CodeCategoryMap = { [code: string]: DiagnosticCategory };
 
@@ -121,7 +120,13 @@ export default function compile(
       external,
       input,
       plugins: [
-        typescript({ onDiagnostic, tsconfigOverride: tsconfigOverrides() }),
+        typescript({
+          onDiagnostic,
+          tsconfigOverride: {
+            ...tsconfigOverrides,
+            target: ecma === 6 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
+          },
+        }),
         resourceImports(),
         ...conditionalPlugin(sdkVersion().major < 2, rollupPluginJson()),
         forbidAbsoluteImport(),
