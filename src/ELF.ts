@@ -2,6 +2,16 @@ import fs from 'fs';
 
 import elfy from 'elfy';
 
+function formatUUID(uuid: string) {
+  return[
+    uuid.substr(0, 8),
+    uuid.substr(8, 4),
+    uuid.substr(12, 4),
+    uuid.substr(16, 4),
+    uuid.substr(20, 12),
+  ].join('-');
+}
+
 export function readMetadata(elfPath: string) {
   const elfData = fs.readFileSync(elfPath);
   const elf = elfy.parse(elfData);
@@ -21,12 +31,8 @@ export function readMetadata(elfPath: string) {
   const familyData = findSection('appfamily').data;
   const platformData = findSection('appplatform').data;
 
-  let appID = appIDData.toString('hex');
-  // tslint:disable-next-line:max-line-length
-  appID = `${appID.substr(0, 8)}-${appID.substr(8, 4)}-${appID.substr(12, 4)}-${appID.substr(16, 4)}-${appID.substr(20, 12)}`;
-
   return {
-    appID,
+    appID: formatUUID(appIDData.toString('hex')),
     buildID: `0x${buildIDData.toString('hex')}`,
     family: familyData.toString(),
     platform: platformData.toString(),
