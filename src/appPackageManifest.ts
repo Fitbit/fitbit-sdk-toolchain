@@ -101,6 +101,7 @@ export default function appPackageManifest({ projectConfig, buildId } : {
         );
       }
 
+      const setSDKVersion = (components.watch && hasJS) || components.companion;
       const { deviceApi, companionApi } = apiVersions(projectConfig);
       const manifestJSON = JSON.stringify(
         {
@@ -108,8 +109,8 @@ export default function appPackageManifest({ projectConfig, buildId } : {
           components,
           sourceMaps,
           manifestVersion: 6,
-          ...(hasJS && { sdkVersion: {
-            ...(components.watch && { deviceApi }),
+          ...(setSDKVersion && { sdkVersion: {
+            ...(components.watch && hasJS && { deviceApi }),
             ...(components.companion && { companionApi }),
           }}),
           requestedPermissions: projectConfig.requestedPermissions,

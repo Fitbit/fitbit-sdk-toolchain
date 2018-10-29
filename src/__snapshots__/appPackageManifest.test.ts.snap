@@ -80,6 +80,32 @@ Object {
 }
 `;
 
+exports[`builds a package manifest with a native device component and companion 1`] = `
+Object {
+  "appId": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+  "buildId": "0x0f75775f470c1585",
+  "components": Object {
+    "companion": Object {
+      "filename": "companion.zip",
+    },
+    "watch": Object {
+      "bar": Object {
+        "filename": "bundle.bin",
+        "platform": Array [
+          "1.1.1+",
+        ],
+      },
+    },
+  },
+  "manifestVersion": 6,
+  "requestedPermissions": Array [],
+  "sdkVersion": Object {
+    "companionApi": "1.0.0",
+  },
+  "sourceMaps": Object {},
+}
+`;
+
 exports[`builds a package manifest with multiple device components 1`] = `
 Object {
   "appId": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",

@@ -162,6 +162,35 @@ it('builds a package manifest with a native device component', () => {
   return expectPackageManifest(stream, projectConfig).resolves.toMatchSnapshot();
 });
 
+it('builds a package manifest with a native device component and companion', () => {
+  const projectConfig = makeProjectConfig();
+  const stream = makeReadStream();
+  stream.push(
+    new Vinyl({
+      componentBundle: {
+        type: 'device',
+        family: 'bar',
+        platform: ['1.1.1+'],
+        isNative: true,
+      },
+      path: 'bundle.bin',
+      contents: Buffer.alloc(0),
+    }),
+  );
+  stream.push(
+    new Vinyl({
+      path: `${ComponentType.COMPANION}.zip`,
+      contents: Buffer.alloc(0),
+      componentBundle: {
+        type: 'companion',
+      },
+    }),
+  );
+  stream.push(null);
+
+  return expectPackageManifest(stream, projectConfig).resolves.toMatchSnapshot();
+});
+
 it.each([
   ['has an invalid type field', { type: '__invalid__' }],
   ['has a device type but missing platform', { type: 'device', family: 'foo' }],
