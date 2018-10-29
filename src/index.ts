@@ -30,10 +30,10 @@ import {
   DiagnosticHandler,
   DiagnosticTarget,
 } from './diagnostics';
-import * as ELF from './ELF';
 import externals from './externals';
 import filterResourceTag from './filterResourceTag';
 import findEntryPoint from './findEntryPoint';
+import nativeComponents from './nativeComponents';
 import ProjectConfiguration, { normalizeProjectConfig, validate } from './ProjectConfiguration';
 import * as resources from './resources';
 import sdkVersion from './sdkVersion';
@@ -305,50 +305,21 @@ export function buildCompanion({
   ));
 }
 
-function nativeComponent({
-  projectConfig,
-  nativeApp,
-}: {
-  projectConfig: ProjectConfiguration,
-  nativeApp: string,
-}) {
-  const { family, platform, appID } = ELF.readMetadata(nativeApp);
-
-  if (appID !== projectConfig.appUUID) {
-    throw new Error(
-      'Native bundle and package.json have different app IDs.'
-      + ` Native: ${appID} package.json:${projectConfig.appUUID}`,
-    );
-  }
-
-  return new pumpify.obj(
-    vinylFS.src(nativeApp),
-    gulpSetProperty({
-      componentBundle: {
-        family,
-        type: 'device',
-        platform: [platform],
-        isNative: true,
-      },
-    }),
-  );
-}
-
 export function buildAppPackage({
   projectConfig,
   buildId,
-  nativeApp,
+  nativeAppComponents = [],
   onDiagnostic = logDiagnosticToConsole,
 }: {
   projectConfig: ProjectConfiguration,
   buildId: string,
-  nativeApp?: string,
+  nativeAppComponents?: Readable[],
   onDiagnostic?: DiagnosticHandler,
 }) {
   const components = [];
 
-  if (nativeApp) {
-    components.push(nativeComponent({ projectConfig, nativeApp }));
+  if (nativeAppComponents && nativeAppComponents.length > 0) {
+    components.push(...nativeAppComponents);
   } else {
     components.push(buildDeviceComponents({
       projectConfig,
@@ -376,16 +347,27 @@ export function buildAppPackage({
 }
 
 export function buildProject({
-  nativeApp,
+  nativeAppComponentPaths = [],
   onDiagnostic = logDiagnosticToConsole,
 }: {
-  nativeApp?: string,
+  nativeAppComponentPaths?: string[],
   onDiagnostic?: DiagnosticHandler,
-} = {}) {
-  const buildId = nativeApp ? ELF.readMetadata(nativeApp).buildID : generateBuildId();
+}) {
+  let buildId: string;
+  let nativeAppComponents: Readable[] = [];
+
   const projectConfig = loadProjectConfig({ onDiagnostic });
 
-  return buildAppPackage({ projectConfig, buildId, onDiagnostic, nativeApp })
+  if (nativeAppComponentPaths.length > 0) {
+    ({ buildId, nativeAppComponents } = nativeComponents(
+      projectConfig.appUUID,
+      nativeAppComponentPaths,
+    ));
+  } else {
+    buildId = generateBuildId();
+  }
+
+  return buildAppPackage({ projectConfig, buildId, onDiagnostic, nativeAppComponents })
     .on('finish', () => {
       onDiagnostic({
         messageText: `App UUID: ${projectConfig.appUUID}, BuildID: ${buildId}`,
@@ -403,15 +385,15 @@ export function buildProject({
 export function build({
   dest = vinylFS.dest('./build') as Stream,
   onDiagnostic = logDiagnosticToConsole,
-  nativeApp,
+  nativeAppComponentPaths,
 }: {
   dest?: Stream,
-  nativeApp?: string,
+  nativeAppComponentPaths?: string[],
   onDiagnostic?: DiagnosticHandler,
 } = {}) {
   return new Promise<void>((resolve, reject) => {
     new pumpify.obj(
-      buildProject({ nativeApp, onDiagnostic }),
+      buildProject({ nativeAppComponentPaths, onDiagnostic }),
       dest,
     )
       .on('error', reject)

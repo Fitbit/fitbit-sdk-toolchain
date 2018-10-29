@@ -152,3 +152,5 @@ exports[`emits an error if a component bundle tag has a device type but missing 
 exports[`emits an error if a component bundle tag has an invalid type field 1`] = `"Unknown bundle component tag: Invalid value \\"__invalid__\\" supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & PartialType<{ isNative: true }>) | { type: \\"companion\\" })/type: \\"device\\" | \\"companion\\""`;
 
 exports[`emits an error if both JS and native device components are present 1`] = `"Cannot bundle mixed native/JS device components"`;
+
+exports[`emits an error if multiple bundles are present for the same device family 1`] = `"Duplicate device component bundles: bundle1.zip / bundle0.zip"`;

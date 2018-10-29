@@ -75,16 +75,34 @@ export default function appPackageManifest({ projectConfig, buildId } : {
           return next(new PluginError(PLUGIN_NAME, ex, { fileName: file.relative }));
         }
 
+        function throwDuplicateComponent(existingPath: string) {
+          next(
+            new PluginError(
+              PLUGIN_NAME,
+              `Duplicate ${bundleInfo.type} component bundles: ${file.relative} / ${existingPath}`,
+            ),
+          );
+        }
+
         if (bundleInfo.type === 'device') {
           if (hasNative === undefined && bundleInfo.isNative) hasNative = true;
           if (hasJS === undefined && !bundleInfo.isNative) hasJS = true;
 
           if (!components.watch) components.watch = {};
+
+          if (components.watch[bundleInfo.family]) {
+            return throwDuplicateComponent(components.watch[bundleInfo.family].filename);
+          }
+
           components.watch[bundleInfo.family] = {
             platform: bundleInfo.platform,
             filename: file.relative,
           };
         } else {
+          if (components[bundleInfo.type] !== undefined) {
+            return throwDuplicateComponent(components[bundleInfo.type]!.filename);
+          }
+
           components[bundleInfo.type] = { filename: file.relative };
         }
 

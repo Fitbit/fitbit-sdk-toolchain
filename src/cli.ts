@@ -13,11 +13,16 @@ yargs
       // $0 makes this the default command
       ['build', '$0'],
       'Build application',
-      args => args.option('native-app', {
-        description: 'Build an FBA for a native app',
-      }),
-      ({ nativeApp }) => {
-        return build({ nativeApp }).catch((error) => {
+      args => args
+        .option('native-app-component', {
+          description: 'Bundle native app component (specify multiple times, once per path)',
+        }),
+      ({ nativeAppComponent }) => {
+        const nativeAppComponentPaths = (
+          Array.isArray(nativeAppComponent) || nativeAppComponent === undefined
+        ) ? nativeAppComponent : [nativeAppComponent];
+
+        return build({ nativeAppComponentPaths }).catch((error) => {
           process.exitCode = 1;
           if (error) console.error(error);
         });
