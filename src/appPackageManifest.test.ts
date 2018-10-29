@@ -10,7 +10,6 @@ import ProjectConfiguration, {
 } from './ProjectConfiguration';
 
 import getJSONFileFromStream from './testUtils/getJSONFileFromStream';
-import { boolean } from 'io-ts';
 
 jest.mock('./packageVersion.const');
 
