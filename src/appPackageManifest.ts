@@ -9,7 +9,7 @@ import Vinyl from 'vinyl';
 
 import { normalizeToPOSIX } from './pathUtils';
 import ProjectConfiguration from './ProjectConfiguration';
-// import { apiVersions } from './sdkVersion';
+import { apiVersions } from './sdkVersion';
 
 const manifestPath = 'manifest.json';
 const PLUGIN_NAME = 'appPackageManifest';
@@ -28,11 +28,16 @@ interface Components {
 
 // tslint:disable-next-line:variable-name
 const ComponentBundleTag = t.taggedUnion('type', [
-  t.type({
-    type: t.literal('device'),
-    family: t.string,
-    platform: t.array(t.string),
-  }),
+  t.intersection([
+    t.interface({
+      type: t.literal('device'),
+      family: t.string,
+      platform: t.array(t.string),
+    }),
+    t.partial({
+      isNative: t.literal(true),
+    }),
+  ]),
   t.type({
     type: t.literal('companion'),
   }),
@@ -45,6 +50,8 @@ export default function appPackageManifest({ projectConfig, buildId } : {
 }) {
   const sourceMaps = {};
   const components: Components = {};
+  let hasJS: boolean | undefined = undefined;
+  let hasNative: boolean | undefined = undefined;
 
   const stream = new Transform({
     objectMode: true,
@@ -69,6 +76,9 @@ export default function appPackageManifest({ projectConfig, buildId } : {
         }
 
         if (bundleInfo.type === 'device') {
+          if (hasNative === undefined && bundleInfo.isNative) hasNative = true;
+          if (hasJS === undefined && !bundleInfo.isNative) hasJS = true;
+
           if (!components.watch) components.watch = {};
           components.watch[bundleInfo.family] = {
             platform: bundleInfo.platform,
@@ -82,18 +92,26 @@ export default function appPackageManifest({ projectConfig, buildId } : {
       next(undefined, file);
     },
     flush(callback) {
-      // const { deviceApi, companionApi } = apiVersions(projectConfig);
+      if (hasJS && hasNative) {
+        return callback(
+          new PluginError(
+            PLUGIN_NAME,
+            new Error('Cannot bundle mixed native/JS device components'),
+          ),
+        );
+      }
+
+      const { deviceApi, companionApi } = apiVersions(projectConfig);
       const manifestJSON = JSON.stringify(
         {
           buildId,
           components,
           sourceMaps,
           manifestVersion: 6,
-          // TODO: figure out what to do about this for native binaries
-          // sdkVersion: {
-          //   ...(components.watch && { deviceApi }),
-          //   ...(components.companion && { companionApi }),
-          // },
+          ...(hasJS && { sdkVersion: {
+            ...(components.watch && { deviceApi }),
+            ...(components.companion && { companionApi }),
+          }}),
           requestedPermissions: projectConfig.requestedPermissions,
           appId: projectConfig.appUUID,
         },

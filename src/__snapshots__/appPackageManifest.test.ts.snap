@@ -60,6 +60,26 @@ Object {
 }
 `;
 
+exports[`builds a package manifest with a native device component 1`] = `
+Object {
+  "appId": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+  "buildId": "0x0f75775f470c1585",
+  "components": Object {
+    "watch": Object {
+      "bar": Object {
+        "filename": "bundle.bin",
+        "platform": Array [
+          "1.1.1+",
+        ],
+      },
+    },
+  },
+  "manifestVersion": 6,
+  "requestedPermissions": Array [],
+  "sourceMaps": Object {},
+}
+`;
+
 exports[`builds a package manifest with multiple device components 1`] = `
 Object {
   "appId": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
@@ -94,10 +114,12 @@ Object {
 }
 `;
 
-exports[`emits an error if a component bundle tag has a device type but invalid platform 1`] = `"Unknown bundle component tag: Invalid value \\"1.1.1+\\" supplied to : ({ type: \\"device\\", family: string, platform: Array<string> } | { type: \\"companion\\" })/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
+exports[`emits an error if a component bundle tag has a device type but invalid platform 1`] = `"Unknown bundle component tag: Invalid value \\"1.1.1+\\" supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & PartialType<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & PartialType<{ isNative: true }>)/platform: Array<string>"`;
 
-exports[`emits an error if a component bundle tag has a device type but missing family 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : ({ type: \\"device\\", family: string, platform: Array<string> } | { type: \\"companion\\" })/0: { type: \\"device\\", family: string, platform: Array<string> }/family: string"`;
+exports[`emits an error if a component bundle tag has a device type but missing family 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & PartialType<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & PartialType<{ isNative: true }>)/family: string"`;
 
-exports[`emits an error if a component bundle tag has a device type but missing platform 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : ({ type: \\"device\\", family: string, platform: Array<string> } | { type: \\"companion\\" })/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
+exports[`emits an error if a component bundle tag has a device type but missing platform 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & PartialType<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & PartialType<{ isNative: true }>)/platform: Array<string>"`;
 
-exports[`emits an error if a component bundle tag has an invalid type field 1`] = `"Unknown bundle component tag: Invalid value \\"__invalid__\\" supplied to : ({ type: \\"device\\", family: string, platform: Array<string> } | { type: \\"companion\\" })/type: \\"device\\" | \\"companion\\""`;
+exports[`emits an error if a component bundle tag has an invalid type field 1`] = `"Unknown bundle component tag: Invalid value \\"__invalid__\\" supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & PartialType<{ isNative: true }>) | { type: \\"companion\\" })/type: \\"device\\" | \\"companion\\""`;
+
+exports[`emits an error if both JS and native device components are present 1`] = `"Cannot bundle mixed native/JS device components"`;

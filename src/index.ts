@@ -314,7 +314,6 @@ function nativeComponent({
 }) {
   const { family, platform, appID } = ELF.readMetadata(nativeApp);
 
-  // TODO: properly format appID instead
   if (appID !== projectConfig.appUUID) {
     throw new Error(
       'Native bundle and package.json have different app IDs.'
@@ -329,6 +328,7 @@ function nativeComponent({
         family,
         type: 'device',
         platform: [platform],
+        isNative: true,
       },
     }),
   );

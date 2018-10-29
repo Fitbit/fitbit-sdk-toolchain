@@ -110,6 +110,58 @@ it('builds a package manifest with multiple device components', () =>
     },
   }).toMatchSnapshot());
 
+it('emits an error if both JS and native device components are present', () => {
+  const projectConfig = makeProjectConfig();
+  const stream = makeReadStream();
+  stream.push(
+    new Vinyl({
+      componentBundle: {
+        type: 'device',
+        family: 'foo',
+        platform: ['1.1.1+'],
+      },
+      path: 'bundle.zip',
+      contents: Buffer.alloc(0),
+    }),
+  );
+  stream.push(
+    new Vinyl({
+      componentBundle: {
+        type: 'device',
+        family: 'bar',
+        platform: ['1.1.1+'],
+        isNative: true,
+      },
+      path: 'bundle.bin',
+      contents: Buffer.alloc(0),
+    }),
+  );
+  stream.push(null);
+
+  return expectPackageManifest(stream, projectConfig)
+    .rejects.toThrowErrorMatchingSnapshot();
+});
+
+it('builds a package manifest with a native device component', () => {
+  const projectConfig = makeProjectConfig();
+  const stream = makeReadStream();
+  stream.push(
+    new Vinyl({
+      componentBundle: {
+        type: 'device',
+        family: 'bar',
+        platform: ['1.1.1+'],
+        isNative: true,
+      },
+      path: 'bundle.bin',
+      contents: Buffer.alloc(0),
+    }),
+  );
+  stream.push(null);
+
+  return expectPackageManifest(stream, projectConfig).resolves.toMatchSnapshot();
+});
+
 it.each([
   ['has an invalid type field', { type: '__invalid__' }],
   ['has a device type but missing platform', { type: 'device', family: 'foo' }],
