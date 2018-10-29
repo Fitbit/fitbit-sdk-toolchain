@@ -1,8 +1,12 @@
 import fs from 'fs';
-import { Stream } from 'stream';
+import { Readable, Stream } from 'stream';
 
-import gulpUglify from 'gulp-uglify';
+import dropStream from 'drop-stream';
+import gulpUglifyEs from 'gulp-uglify-es';
+import lazystream from 'lazystream';
 import mergeStream from 'merge-stream';
+import multistream from 'multistream';
+import playbackStream from 'playback-stream';
 import PluginError from 'plugin-error';
 import pumpify from 'pumpify';
 import simpleRandom from 'simple-random';
@@ -58,6 +62,10 @@ function addDiagnosticTarget(target: DiagnosticTarget, onDiagnostic: DiagnosticH
   return (diagnostic: Diagnostic) => onDiagnostic({ target, ...diagnostic });
 }
 
+function lazyObjectReadable(fn: () => Readable) {
+  return new lazystream.Readable(fn, { objectMode: true });
+}
+
 export function loadProjectConfig({
   onDiagnostic = logDiagnosticToConsole,
   fileName = 'package.json',
@@ -90,10 +98,12 @@ export function loadProjectConfig({
 export function buildComponent({
   projectConfig,
   component,
+  ecma,
   onDiagnostic = logDiagnosticToConsole,
 }: {
   projectConfig: ProjectConfiguration,
   component: ComponentType,
+  ecma?: 5 | 6,
   onDiagnostic?: DiagnosticHandler,
 }) {
   const { inputs, output, notFoundIsFatal } = componentTargets[component];
@@ -102,13 +112,15 @@ export function buildComponent({
     { onDiagnostic, component, notFoundIsFatal },
   );
   if (!entryPoint) return;
-  return new pumpify.obj(
+  return lazyObjectReadable(() => new pumpify.obj(
     compile(entryPoint, output, {
+      ecma,
       onDiagnostic,
       external: externals[component],
       allowUnknownExternals: projectConfig.enableProposedAPI,
     }),
-    gulpUglify({
+    gulpUglifyEs({
+      ecma,
       mangle: {
         toplevel: true,
       },
@@ -123,19 +135,14 @@ export function buildComponent({
       // https://github.com/mishoo/UglifyJS2#source-maps-and-debugging
       compress: false,
     }),
-  );
+  ));
 }
 
 export function buildDeviceResources(
   projectConfig: ProjectConfiguration,
-  { displayName, resourceFilterTag }: BuildTargetDescriptor,
+  { resourceFilterTag }: BuildTargetDescriptor,
   onDiagnostic = logDiagnosticToConsole,
 ) {
-  onDiagnostic({
-    messageText: `Building app for ${displayName}`,
-    category: DiagnosticCategory.Message,
-  });
-
   const convertImageToTXIOptions: ConvertImageToTXIOptions = {};
   if (sdkVersion().major >= 2) convertImageToTXIOptions.rgbaOutputFormat = TXIOutputFormat.RGBA6666;
 
@@ -156,53 +163,83 @@ export function buildDeviceComponents({
   buildId: string,
   onDiagnostic?: DiagnosticHandler,
 }) {
-  // TODO: remove is-defined assertion ('!')
-  const baseJS = new pumpify.obj(
+  const deviceJSPipeline: Stream[] = [
+    // TODO: remove is-defined assertion ('!')
     buildComponent({
       projectConfig,
       onDiagnostic,
       component: ComponentType.DEVICE,
+      ecma: 5,
     })!,
-    gulpMagicString(errataPrimaryExpressionInSwitch),
-  );
+  ];
 
-  // Things can start glitching out if multiple vinylFS.src() streams
-  // with the same glob pattern are in use concurrently. (IPD-102519)
-  // Work around this by only using one copy of each source stream.
-  const resources = vinylFS.src('./resources/**', { base: '.' });
-  const pofiles = vinylFS.src('./i18n/**/*.po', { base: '.' });
-
-  return projectConfig.buildTargets.map((family) => {
-    const { platform } = buildTargets[family];
-    const sourceMap = collectComponentSourceMaps();
-    // Split so that JS doesn't pass through resource filtering
-    return new pumpify.obj(
-      mergeStream(
-        new pumpify.obj(
-          baseJS,
-          sourceMap.collector(ComponentType.DEVICE, family),
-        ),
-        new pumpify.obj(
-          resources,
-          buildDeviceResources(projectConfig, buildTargets[family], onDiagnostic),
-        ),
-        new pumpify.obj(
-          pofiles,
-          compileTranslations(),
-        ),
-      ),
-      makeDeviceManifest({ projectConfig, buildId }),
-      zip(`device-${family}.zip`, { compress: false }),
-      gulpSetProperty({
-        componentBundle: {
-          family,
-          platform,
-          type: 'device',
-        },
-      }),
-      sourceMap.emitter,
+  if (sdkVersion().major >= 3) {
+    deviceJSPipeline.push(
+      gulpMagicString(errataPrimaryExpressionInSwitch),
     );
-  });
+  }
+
+  const processedJS = new playbackStream({ objectMode: true });
+  deviceJSPipeline.push(processedJS);
+
+  return multistream.obj([
+    // Sequence the build process: wait until compilation finishes
+    // before building the resources for each component.
+    new pumpify.obj(
+      ...deviceJSPipeline,
+      // We don't want to send the JS file downstream directly. It will
+      // be played back into the individual device component pipelines.
+      dropStream.obj(),
+    ),
+
+    ...projectConfig.buildTargets.map(family => lazyObjectReadable(() => {
+      const { platform, displayName } = buildTargets[family];
+      onDiagnostic({
+        messageText: `Building app for ${displayName}`,
+        category: DiagnosticCategory.Message,
+      });
+
+      const sourceMap = collectComponentSourceMaps();
+        // Split so that JS doesn't pass through resource filtering
+      return new pumpify.obj(
+        mergeStream(
+          new pumpify.obj(
+            processedJS.newReadableSide({ objectMode: true }),
+            sourceMap.collector(ComponentType.DEVICE, family),
+          ),
+          new pumpify.obj(
+            // Things can start glitching out if multiple vinylFS.src()
+            // streams with the same glob pattern are in use
+            // concurrently. (IPD-102519)
+            // We're serializing the execution of the pipelines, so
+            // there should not be any opportunity for glitches as only
+            // one vinylFS stream is active at a time. Wrapping the
+            // vinylFS stream in a playbackStream would be safer, but
+            // would buffer all the resources into memory at once with
+            // no backpressure. We like our users and don't want to eat
+            // all their RAM, so we just have to be careful not to
+            // introduce a regression when modifying this code.
+            vinylFS.src('./resources/**', { base: '.' }),
+            buildDeviceResources(projectConfig, buildTargets[family], onDiagnostic),
+          ),
+          new pumpify.obj(
+            vinylFS.src('./i18n/**/*.po', { base: '.' }),
+            compileTranslations(),
+          ),
+        ),
+        makeDeviceManifest({ projectConfig, buildId }),
+        zip(`device-${family}.zip`, { compress: sdkVersion().major >= 3 }),
+        gulpSetProperty({
+          componentBundle: {
+            family,
+            platform,
+            type: 'device',
+          },
+        }),
+        sourceMap.emitter,
+      );
+    })),
+  ]);
 }
 
 export function buildCompanion({
@@ -224,16 +261,23 @@ export function buildCompanion({
 
   const [companion, settings] = [ComponentType.COMPANION, ComponentType.SETTINGS]
     .map((componentType) => {
-      let component = buildComponent({
+      const targetedDiagnostic = addDiagnosticTarget(
+        diagnosticTargets[componentType],
+        onDiagnostic,
+      );
+      const component = buildComponent({
         projectConfig,
         component: componentType,
-        onDiagnostic: addDiagnosticTarget(diagnosticTargets[componentType], onDiagnostic),
+        onDiagnostic: targetedDiagnostic,
       });
       if (component) {
-        component = new pumpify.obj(
-          component,
-          sourceMaps.collector(componentType),
-        );
+        return lazyObjectReadable(() => {
+          targetedDiagnostic({
+            category: DiagnosticCategory.Message,
+            messageText: `Building ${diagnosticTargets[componentType]}`,
+          });
+          return new pumpify.obj(component, sourceMaps.collector(componentType));
+        });
       }
       return component;
     });
@@ -246,8 +290,8 @@ export function buildCompanion({
     .filter((component): component is pumpify => component !== undefined);
   if (components.length === 0) return;
 
-  return new pumpify.obj(
-    mergeStream(components),
+  return lazyObjectReadable(() => new pumpify.obj(
+    multistream.obj(components),
     makeCompanionManifest({
       projectConfig,
       buildId,
@@ -258,6 +302,35 @@ export function buildCompanion({
       componentBundle: { type: 'companion' },
     }),
     sourceMaps.emitter,
+  ));
+}
+
+function nativeComponent({
+  projectConfig,
+  nativeApp,
+}: {
+  projectConfig: ProjectConfiguration,
+  nativeApp: string,
+}) {
+  const { family, platform, appID } = ELF.readMetadata(nativeApp);
+
+  // TODO: properly format appID instead
+  if (appID !== projectConfig.appUUID) {
+    throw new Error(
+      'Native bundle and package.json have different app IDs.'
+      + ` Native: ${appID} package.json:${projectConfig.appUUID}`,
+    );
+  }
+
+  return new pumpify.obj(
+    vinylFS.src(nativeApp),
+    gulpSetProperty({
+      componentBundle: {
+        family,
+        type: 'device',
+        platform: [platform],
+      },
+    }),
   );
 }
 
@@ -275,28 +348,9 @@ export function buildAppPackage({
   const components = [];
 
   if (nativeApp) {
-    const { family, platform, appID } = ELF.readMetadata(nativeApp);
-
-    // TODO: properly format appID instead
-    if (appID !== projectConfig.appUUID) {
-      throw new Error(
-        'Native bundle and package.json have different app IDs.'
-        + ` Native: ${appID} package.json:${projectConfig.appUUID}`,
-      );
-    }
-
-    components.push(new pumpify.obj(
-      vinylFS.src(nativeApp),
-      gulpSetProperty({
-        componentBundle: {
-          family,
-          type: 'device',
-          platform: [platform],
-        },
-      }),
-    ));
+    components.push(nativeComponent({ projectConfig, nativeApp }));
   } else {
-    components.push(...buildDeviceComponents({
+    components.push(buildDeviceComponents({
       projectConfig,
       buildId,
       onDiagnostic: addDiagnosticTarget(DiagnosticTarget.App, onDiagnostic),
@@ -312,7 +366,7 @@ export function buildAppPackage({
   if (companion) components.push(companion);
 
   return new pumpify.obj(
-    mergeStream(components),
+    multistream.obj(components),
     appPackageManifest({
       projectConfig,
       buildId,

@@ -2,27 +2,36 @@
  * External modules available for each app component.
  */
 
+function internalsFilter(externals: string[]) {
+  return (id: string) => {
+    if (id.startsWith('internal/')) return true;
+    if (externals.includes(id)) return true;
+  };
+}
+
 const common = [
   'cbor',
+  'crypto',
   'device',
   'events',
+  'file-transfer',
   'geolocation',
   'messaging',
   'permissions',
   'resources',
+  'user-settings',
   'util',
 ];
 
-const device = [
+const device = internalsFilter([
   'accelerometer',
   'appbit',
   'barometer',
   'body-presence',
   'clock',
-  'device',
   'display',
   'document',
-  'file-transfer',
+  'exercise',
   'fs',
   'gyroscope',
   'haptics',
@@ -30,34 +39,26 @@ const device = [
   'jpeg',
   'orientation',
   'power',
+  'scientific',
+  'scientific/signal',
   'sensors',
   'system',
   'user-activity',
   'user-profile',
-  'user-settings',
-].concat(common);
+].concat(common));
 
-const companion = [
-  'blob',
+const companion = internalsFilter([
   'companion',
-  'crypto',
   'external-app',
-  'fetch',
-  'file-transfer',
-  'form-data',
-  'host',
   'image',
-  'life-cycle',
   'local-storage',
-  'location-change',
   'peer',
   'secure-exchange',
   'settings',
-  'storage',
-  'user-settings',
-  'wake-interval',
-].concat(common);
+].concat(common));
 
-const settings: string[] = [];  // No runtime externals for settings.
+const settings = internalsFilter([
+  'user-settings',
+]);
 
 export default { device, companion, settings };
