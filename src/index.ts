@@ -172,7 +172,7 @@ export function buildDeviceComponents({
     })!,
   ];
 
-  if (sdkVersion().major >= 3) {
+  if (sdkVersion().major < 3) {
     deviceJSPipeline.push(
       gulpMagicString(errataPrimaryExpressionInSwitch),
     );
