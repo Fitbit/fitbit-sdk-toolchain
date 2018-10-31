@@ -16,13 +16,11 @@ yargs
       args => args
         .option('native-app-component', {
           description: 'Bundle native app component (specify multiple times, once per path)',
+          array: true,
+          hidden: true,
         }),
       ({ nativeAppComponent }) => {
-        const nativeAppComponentPaths = (
-          Array.isArray(nativeAppComponent) || nativeAppComponent === undefined
-        ) ? nativeAppComponent : [nativeAppComponent];
-
-        return build({ nativeAppComponentPaths }).catch((error) => {
+        return build({ nativeAppComponentPaths: nativeAppComponent }).catch((error) => {
           process.exitCode = 1;
           if (error) console.error(error);
         });

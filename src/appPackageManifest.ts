@@ -50,8 +50,8 @@ export default function appPackageManifest({ projectConfig, buildId } : {
 }) {
   const sourceMaps = {};
   const components: Components = {};
-  let hasJS: boolean | undefined = undefined;
-  let hasNative: boolean | undefined = undefined;
+  let hasJS = false;
+  let hasNative = false;
 
   const stream = new Transform({
     objectMode: true,
@@ -76,17 +76,19 @@ export default function appPackageManifest({ projectConfig, buildId } : {
         }
 
         function throwDuplicateComponent(existingPath: string) {
+          const componentType = bundleInfo.type === 'device' ?
+            `${bundleInfo.type}/${bundleInfo.family}` : bundleInfo.type;
           next(
             new PluginError(
               PLUGIN_NAME,
-              `Duplicate ${bundleInfo.type} component bundles: ${file.relative} / ${existingPath}`,
+              `Duplicate ${componentType} component bundles: ${file.relative} / ${existingPath}`,
             ),
           );
         }
 
         if (bundleInfo.type === 'device') {
-          if (hasNative === undefined && bundleInfo.isNative) hasNative = true;
-          if (hasJS === undefined && !bundleInfo.isNative) hasJS = true;
+          if (bundleInfo.isNative) hasNative = true;
+          else hasJS = true;
 
           if (!components.watch) components.watch = {};
 

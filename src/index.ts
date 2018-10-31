@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Readable, Stream } from 'stream';
+import { Readable, Stream, PassThrough } from 'stream';
 
 import dropStream from 'drop-stream';
 import gulpUglifyEs from 'gulp-uglify-es';
@@ -308,18 +308,18 @@ export function buildCompanion({
 export function buildAppPackage({
   projectConfig,
   buildId,
-  nativeAppComponents = [],
+  nativeAppComponents,
   onDiagnostic = logDiagnosticToConsole,
 }: {
   projectConfig: ProjectConfiguration,
   buildId: string,
-  nativeAppComponents?: Readable[],
+  nativeAppComponents?: PassThrough,
   onDiagnostic?: DiagnosticHandler,
 }) {
   const components = [];
 
-  if (nativeAppComponents && nativeAppComponents.length > 0) {
-    components.push(...nativeAppComponents);
+  if (nativeAppComponents) {
+    components.push(nativeAppComponents);
   } else {
     components.push(buildDeviceComponents({
       projectConfig,
@@ -354,7 +354,7 @@ export function buildProject({
   onDiagnostic?: DiagnosticHandler,
 }) {
   let buildId: string;
-  let nativeAppComponents: Readable[] = [];
+  let nativeAppComponents: PassThrough | undefined;
 
   const projectConfig = loadProjectConfig({ onDiagnostic });
 
@@ -383,7 +383,7 @@ export function buildProject({
  * reason, the returned Promise rejects with the error.
  */
 export function build({
-  dest = vinylFS.dest('./build') as Stream,
+  dest = vinylFS.dest('./build'),
   onDiagnostic = logDiagnosticToConsole,
   nativeAppComponentPaths,
 }: {

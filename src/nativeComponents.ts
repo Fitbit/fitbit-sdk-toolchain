@@ -1,12 +1,10 @@
 import fs from 'fs';
+import stream from 'stream';
 
 import elfy from 'elfy';
 import lodash from 'lodash';
 import PluginError from 'plugin-error';
-import pumpify from 'pumpify';
-import vinylFS from 'vinyl-fs';
-
-import gulpSetProperty from './gulpSetProperty';
+import Vinyl from 'vinyl';
 
 const PLUGIN_NAME = 'nativeComponents';
 
@@ -41,6 +39,7 @@ function readMetadata(elfPath: string) {
 
   return {
     path: elfPath,
+    data: elfData,
     appID: formatUUID(appIDData.toString('hex')),
     buildID: `0x${buildIDData.toString('hex')}`,
     family: familyData.toString(),
@@ -52,21 +51,20 @@ export default function nativeComponents(
   appID: string,
   componentPaths: string[],
 ) {
-  const components = componentPaths.map((componentPath) => {
-    return {
-      ...readMetadata(componentPath),
-      path: componentPath,
-    };
-  });
-
+  const components = componentPaths.map(readMetadata);
   const buildId = components[0].buildID;
 
   // Assert that all app IDs of native components match
-  if (lodash.uniqBy([...components, { appID }], c => c.appID).length > 1) {
-    const appIDPairs = components.map(c => `${c.family} = ${c.appID}`).join('\n');
+  const divergentAppIDComponents = components.filter(
+    c => c.appID.toLowerCase() !== appID.toLowerCase(),
+  );
+  if (divergentAppIDComponents.length > 0) {
     throw new PluginError(
       PLUGIN_NAME,
-      `App IDs of native components do not match package.json:\n${appIDPairs}`,
+      `App IDs of native components do not match package.json.
+    Expected appID ${appID}.
+    ${divergentAppIDComponents.map(
+        ({ path, family, appID }) => `${path} (${family}) has appID ${appID}`).join('\n  ')}`,
     );
   }
 
@@ -79,20 +77,18 @@ export default function nativeComponents(
     );
   }
 
+  const componentStream = new stream.PassThrough({ objectMode: true });
+  components.forEach(({ path, family, platform, data }) => componentStream.push(
+    new Vinyl({
+      data,
+      path,
+      componentBundle: { family, type: 'device', platform: [platform], isNative: true },
+    }),
+  ));
+  componentStream.push(null);
+
   return {
     buildId,
-    nativeAppComponents: components.map(
-      ({ path, family, platform }) => new pumpify.obj(
-        vinylFS.src(path),
-        gulpSetProperty({
-          componentBundle: {
-            family,
-            type: 'device',
-            platform: [platform],
-            isNative: true,
-          },
-        }),
-      ),
-    ),
+    nativeAppComponents: componentStream,
   };
 }
