@@ -136,6 +136,15 @@ Array [
 ]
 `;
 
+exports[`when building a device component which uses gettext polyfills gettext on device 1`] = `
+"\\"use strict\\"
+var e=require(\\"resources\\")
+function r(r){var t=e.getResource(\\"text\\",\\"_\\"+r)
+if(t===null)return r
+return t}console.log(r(\\"hello\\"))
+"
+`;
+
 exports[`when compiling a module with statements above an import declaration builds 1`] = `
 "\\"use strict\\"
 require(\\"util\\")

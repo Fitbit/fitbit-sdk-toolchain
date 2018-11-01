@@ -15,6 +15,7 @@ import sdkVersion from './sdkVersion';
 
 import brokenImports from './plugins/brokenImports';
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
+import polyfillDevice from './plugins/polyfillDevice';
 import resourceImports from './plugins/resourceImports';
 import typescript from './plugins/typescript';
 import rollupWarningHandler from './rollupWarningHandler';
@@ -60,6 +61,7 @@ export default function compile(
               target: ecma === 6 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
             },
           }),
+          ...pluginIf(component === ComponentType.DEVICE, polyfillDevice),
           ...pluginIf(
             sdkVersion().major < 3 || component === ComponentType.SETTINGS,
             resourceImports,

@@ -201,3 +201,15 @@ describe('when allowUnknownExternals is enabled', () => {
     expect(mockDiagnosticHandler.mock.calls).toMatchSnapshot();
   });
 });
+
+describe('when building a device component which uses gettext', () => {
+  let file: string;
+
+  beforeEach(async () => {
+    file = await compileFile('i18n.js', { component: ComponentType.DEVICE }).then(getVinylContents);
+  });
+
+  it('polyfills gettext on device', () => expect(file).toMatchSnapshot());
+
+  it('builds without diagnostic messages', () => expect(mockDiagnosticHandler).not.toBeCalled());
+});
