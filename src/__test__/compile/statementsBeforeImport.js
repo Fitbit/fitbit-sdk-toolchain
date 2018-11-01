@@ -1,3 +1,3 @@
-const document = require('document');
-import '_mock_external_import_';
+const cbor = require('cbor');
+import 'util';
 console.log('Hello!');

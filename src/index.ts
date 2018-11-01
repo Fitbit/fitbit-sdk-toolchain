@@ -2,7 +2,6 @@ import fs from 'fs';
 import { Readable, Stream } from 'stream';
 
 import dropStream from 'drop-stream';
-import gulpUglifyEs from 'gulp-uglify-es';
 import lazystream from 'lazystream';
 import mergeStream from 'merge-stream';
 import multistream from 'multistream';
@@ -30,7 +29,6 @@ import {
   DiagnosticHandler,
   DiagnosticTarget,
 } from './diagnostics';
-import externals from './externals';
 import filterResourceTag from './filterResourceTag';
 import findEntryPoint from './findEntryPoint';
 import ProjectConfiguration, { normalizeProjectConfig, validate } from './ProjectConfiguration';
@@ -97,12 +95,10 @@ export function loadProjectConfig({
 export function buildComponent({
   projectConfig,
   component,
-  ecma,
   onDiagnostic = logDiagnosticToConsole,
 }: {
   projectConfig: ProjectConfiguration,
   component: ComponentType,
-  ecma?: 5 | 6,
   onDiagnostic?: DiagnosticHandler,
 }) {
   const { inputs, output, notFoundIsFatal } = componentTargets[component];
@@ -111,30 +107,10 @@ export function buildComponent({
     { onDiagnostic, component, notFoundIsFatal },
   );
   if (!entryPoint) return;
-  return lazyObjectReadable(() => new pumpify.obj(
-    compile(entryPoint, output, {
-      ecma,
-      onDiagnostic,
-      external: externals[component],
-      allowUnknownExternals: projectConfig.enableProposedAPI,
-    }),
-    gulpUglifyEs({
-      ecma,
-      mangle: {
-        toplevel: true,
-      },
-      output: {
-        // Fitbit OS versions before 2.2 couldn't handle multiple statements per line and still
-        // give correct position info
-        // Mobile doesn't give correct column info, so also one statement per line
-        // Happily this causes a negligible difference in code size
-        semicolons: false,
-      },
-      // Compression produces bad source maps
-      // https://github.com/mishoo/UglifyJS2#source-maps-and-debugging
-      compress: false,
-    }),
-  ));
+  return lazyObjectReadable(() => compile(component, entryPoint, output, {
+    onDiagnostic,
+    allowUnknownExternals: projectConfig.enableProposedAPI,
+  }));
 }
 
 export function buildDeviceResources(
@@ -168,7 +144,6 @@ export function buildDeviceComponents({
       projectConfig,
       onDiagnostic,
       component: ComponentType.DEVICE,
-      ecma: 5,
     })!,
   ];
 

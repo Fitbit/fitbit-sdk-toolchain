@@ -1,4 +1,4 @@
-import jszip from 'jszip';
+import vinyl from 'vinyl';
 
-const zip = new jszip();
-console.log(zip);
+const vinyl = new vinyl();
+console.log(vinyl);

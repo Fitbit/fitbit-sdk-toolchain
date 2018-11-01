@@ -1,3 +1,5 @@
+import gulpUglifyEs from 'gulp-uglify-es';
+import pumpify from 'pumpify';
 import * as rollup from 'rollup';
 import rollupPluginBabel from 'rollup-plugin-babel';
 import rollupPluginCommonjs from 'rollup-plugin-commonjs';
@@ -5,11 +7,9 @@ import rollupPluginJson from 'rollup-plugin-json';
 import rollupPluginNodeResolve from 'rollup-plugin-node-resolve';
 import ts from 'typescript';
 
-import {
-  DiagnosticCategory,
-  DiagnosticHandler,
-  logDiagnosticToConsole,
-} from './diagnostics';
+import { ComponentType } from './componentTargets';
+import { DiagnosticCategory, logDiagnosticToConsole } from './diagnostics';
+import externals from './externals';
 import rollupToVinyl from './rollupToVinyl';
 import sdkVersion from './sdkVersion';
 
@@ -32,67 +32,83 @@ const tsconfigOverrides = {
   suppressOutputPathCheck: true,
 };
 
-function conditionalPlugin(include: boolean, plugin: rollup.Plugin) {
-  return include ? [plugin] : [];
+function pluginIf(condition: boolean, plugin: () => rollup.Plugin) {
+  return condition ? [plugin()] : [];
 }
 
 export default function compile(
+  component: ComponentType,
   input: string,
   output: string,
   {
-    external = [],
     allowUnknownExternals = false,
-    ecma = sdkVersion().major >= 3 ? 6 : 5,
     onDiagnostic = logDiagnosticToConsole,
-  } : {
-    external?: rollup.ExternalOption,
-    allowUnknownExternals?: boolean,
-    ecma?: 5 | 6,
-    onDiagnostic?: DiagnosticHandler,
   },
 ) {
-  return rollupToVinyl(
-    output,
-    {
-      external,
-      input,
-      plugins: [
-        typescript({
+  const ecma = sdkVersion().major >= 3 && component !== ComponentType.DEVICE ? 6 : 5;
+  return new pumpify.obj([
+    rollupToVinyl(
+      output,
+      {
+        input,
+        external: externals[component],
+        plugins: [
+          typescript({
+            onDiagnostic,
+            tsconfigOverride: {
+              ...tsconfigOverrides,
+              target: ecma === 6 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
+            },
+          }),
+          ...pluginIf(
+            sdkVersion().major < 3 || component === ComponentType.SETTINGS,
+            resourceImports,
+          ),
+          ...pluginIf(sdkVersion().major < 2, rollupPluginJson),
+          forbidAbsoluteImport(),
+          ...pluginIf(sdkVersion().major < 2, brokenImports),
+          rollupPluginNodeResolve({ preferBuiltins: false }),
+          rollupPluginCommonjs({ include: ['node_modules/**'] }),
+          ...pluginIf(ecma === 5, () => rollupPluginBabel({
+            plugins: [
+              // Plugins are specified in this way to avoid this:
+              // https://github.com/webpack/webpack/issues/1866
+              // Also makes this work correctly in a browser environment
+              require('@babel/plugin-transform-block-scoped-functions'),
+              require('@babel/plugin-transform-block-scoping'),
+            ],
+            compact: false,
+            babelrc: false,
+            // We include JSON here to get a more sane error that includes the path
+            extensions: ['.js', '.json'],
+          })),
+        ],
+        onwarn: rollupWarningHandler({
           onDiagnostic,
-          tsconfigOverride: {
-            ...tsconfigOverrides,
-            target: ecma === 6 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
-          },
+          codeCategories: allowUnknownExternals ?
+            { UNRESOLVED_IMPORT: DiagnosticCategory.Warning } : undefined,
         }),
-        resourceImports(),
-        ...conditionalPlugin(sdkVersion().major < 2, rollupPluginJson()),
-        forbidAbsoluteImport(),
-        ...conditionalPlugin(sdkVersion().major < 2, brokenImports()),
-        rollupPluginNodeResolve({ preferBuiltins: false }),
-        rollupPluginCommonjs({ include: ['node_modules/**'] }),
-        ...conditionalPlugin(ecma === 5, rollupPluginBabel({
-          plugins: [
-            // Plugins are specified in this way to avoid this:
-            // https://github.com/webpack/webpack/issues/1866
-            // Also makes this work correctly in a browser environment
-            require('@babel/plugin-transform-block-scoped-functions'),
-            require('@babel/plugin-transform-block-scoping'),
-          ],
-          compact: false,
-          babelrc: false,
-          // We include JSON here to get a more sane error that includes the path
-          extensions: ['.js', '.json'],
-        })),
-      ],
-      onwarn: rollupWarningHandler({
-        onDiagnostic,
-        codeCategories: allowUnknownExternals ?
-          { UNRESOLVED_IMPORT: DiagnosticCategory.Warning } : undefined,
-      }),
-    },
-    {
-      format: 'cjs',
-      sourcemap: true,
-    },
-  );
+      },
+      {
+        format: 'cjs',
+        sourcemap: true,
+      },
+    ),
+    gulpUglifyEs({
+      ecma,
+      mangle: {
+        toplevel: true,
+      },
+      output: {
+        // Fitbit OS versions before 2.2 couldn't handle multiple statements per line and still
+        // give correct position info
+        // Mobile doesn't give correct column info, so also one statement per line
+        // Happily this causes a negligible difference in code size
+        semicolons: false,
+      },
+      // Compression produces bad source maps
+      // https://github.com/mishoo/UglifyJS2#source-maps-and-debugging
+      compress: false,
+    }),
+  ]);
 }
