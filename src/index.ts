@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Readable, Stream, PassThrough } from 'stream';
+import { Readable, Stream } from 'stream';
 
 import dropStream from 'drop-stream';
 import gulpUglifyEs from 'gulp-uglify-es';
@@ -313,7 +313,7 @@ export function buildAppPackage({
 }: {
   projectConfig: ProjectConfiguration,
   buildId: string,
-  nativeAppComponents?: PassThrough,
+  nativeAppComponents?: Readable,
   onDiagnostic?: DiagnosticHandler,
 }) {
   const components = [];
@@ -354,7 +354,7 @@ export function buildProject({
   onDiagnostic?: DiagnosticHandler,
 }) {
   let buildId: string;
-  let nativeAppComponents: PassThrough | undefined;
+  let nativeAppComponents: Readable | undefined;
 
   const projectConfig = loadProjectConfig({ onDiagnostic });
 
