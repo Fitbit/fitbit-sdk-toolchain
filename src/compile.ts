@@ -1,5 +1,3 @@
-import { relative } from 'path';
-
 import * as rollup from 'rollup';
 import rollupPluginBabel from 'rollup-plugin-babel';
 import rollupPluginCommonjs from 'rollup-plugin-commonjs';
@@ -10,7 +8,6 @@ import ts from 'typescript';
 import {
   DiagnosticCategory,
   DiagnosticHandler,
-  DiagnosticMessage,
   logDiagnosticToConsole,
 } from './diagnostics';
 import rollupToVinyl from './rollupToVinyl';
@@ -20,6 +17,7 @@ import brokenImports from './plugins/brokenImports';
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
 import resourceImports from './plugins/resourceImports';
 import typescript from './plugins/typescript';
+import rollupWarningHandler from './rollupWarningHandler';
 
 // TODO: emit a warning when any of these settings are
 // defined in the app's tsconfig
@@ -33,63 +31,6 @@ const tsconfigOverrides = {
   module: ts.ModuleKind.ES2015,
   suppressOutputPathCheck: true,
 };
-
-type CodeCategoryMap = { [code: string]: DiagnosticCategory };
-
-const defaultCodeCategories: CodeCategoryMap = {
-  EMPTY_BUNDLE: DiagnosticCategory.Error,
-  MISSING_EXPORT: DiagnosticCategory.Error,
-  NAMESPACE_CONFLICT: DiagnosticCategory.Error,
-  UNRESOLVED_IMPORT: DiagnosticCategory.Error,
-};
-
-const messageFormatter: { [code: string]: (w: rollup.RollupWarning) => string } = {
-  UNRESOLVED_IMPORT: w => `${w.source} is imported by ${w.importer}, but could not be resolved`,
-};
-
-function relativeId(id: string) {
-  if (typeof process === 'undefined' || !/^(?:\/|(?:[A-Za-z]:)?[\\|/])/.test(id)) return id;
-  return relative(process.cwd(), id);
-}
-
-function defaultFormatter(w: rollup.RollupWarning) {
-  return w.loc ?
-    `${relativeId(w.loc.file)} (${w.loc.line}:${w.loc.column}) ${w.message!}` : w.message!;
-}
-
-const rollupWarningToDiagnostic = (codeCategories = defaultCodeCategories) =>
-  (warning: rollup.RollupWarning | string) => {
-    if (typeof warning === 'string') {
-      return {
-        category: DiagnosticCategory.Warning,
-        messageText: warning,
-      };
-    }
-
-    const { code } = warning;
-
-    // TypeScript emits `var _this = this;` at the top level for
-    // transpiled fat-arrow functions. Filter out the noise so as not to
-    // confuse users with a warning that they can't do anything about.
-    if (code === 'THIS_IS_UNDEFINED') return;
-
-    let category = DiagnosticCategory.Warning;
-    if (code && codeCategories[code]) category = codeCategories[code];
-
-    let formatter = defaultFormatter;
-    if (code && messageFormatter[code]) formatter = messageFormatter[code];
-
-    let messageText: string | DiagnosticMessage[] = formatter(warning);
-    if (warning.frame) {
-      const context = {
-        messageText: warning.frame,
-        category: DiagnosticCategory.Message,
-      };
-      messageText = [{ messageText, category }, context];
-    }
-
-    return { messageText, category };
-  };
 
 function conditionalPlugin(include: boolean, plugin: rollup.Plugin) {
   return include ? [plugin] : [];
@@ -110,10 +51,6 @@ export default function compile(
     onDiagnostic?: DiagnosticHandler,
   },
 ) {
-  const convertRollupWarning = rollupWarningToDiagnostic({
-    ...defaultCodeCategories,
-    ...(allowUnknownExternals && { UNRESOLVED_IMPORT: DiagnosticCategory.Warning }),
-  });
   return rollupToVinyl(
     output,
     {
@@ -147,13 +84,11 @@ export default function compile(
           extensions: ['.js', '.json'],
         })),
       ],
-      onwarn: (w: rollup.RollupWarning | string) => {
-        const diagnostic = convertRollupWarning(w);
-        if (!diagnostic) return;
-        onDiagnostic(diagnostic);
-        if (diagnostic.category !== DiagnosticCategory.Error) return;
-        throw new Error('Compile failed.');
-      },
+      onwarn: rollupWarningHandler({
+        onDiagnostic,
+        codeCategories: allowUnknownExternals ?
+          { UNRESOLVED_IMPORT: DiagnosticCategory.Warning } : undefined,
+      }),
     },
     {
       format: 'cjs',
