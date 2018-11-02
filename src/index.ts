@@ -308,18 +308,18 @@ export function buildCompanion({
 export function buildAppPackage({
   projectConfig,
   buildId,
-  nativeAppComponents,
+  existingDeviceComponents,
   onDiagnostic = logDiagnosticToConsole,
 }: {
   projectConfig: ProjectConfiguration,
   buildId: string,
-  nativeAppComponents?: Readable,
+  existingDeviceComponents?: Readable,
   onDiagnostic?: DiagnosticHandler,
 }) {
   const components = [];
 
-  if (nativeAppComponents) {
-    components.push(nativeAppComponents);
+  if (existingDeviceComponents) {
+    components.push(existingDeviceComponents);
   } else {
     components.push(buildDeviceComponents({
       projectConfig,
@@ -347,27 +347,27 @@ export function buildAppPackage({
 }
 
 export function buildProject({
-  nativeAppComponentPaths = [],
+  nativeDeviceComponentPaths = [],
   onDiagnostic = logDiagnosticToConsole,
 }: {
-  nativeAppComponentPaths?: string[],
+  nativeDeviceComponentPaths?: string[],
   onDiagnostic?: DiagnosticHandler,
 }) {
   let buildId: string;
-  let nativeAppComponents: Readable | undefined;
+  let existingDeviceComponents: Readable | undefined;
 
   const projectConfig = loadProjectConfig({ onDiagnostic });
 
-  if (nativeAppComponentPaths.length > 0) {
-    ({ buildId, nativeAppComponents } = nativeComponents(
+  if (nativeDeviceComponentPaths.length > 0) {
+    ({ buildId, existingDeviceComponents } = nativeComponents(
       projectConfig.appUUID,
-      nativeAppComponentPaths,
+      nativeDeviceComponentPaths,
     ));
   } else {
     buildId = generateBuildId();
   }
 
-  return buildAppPackage({ projectConfig, buildId, onDiagnostic, nativeAppComponents })
+  return buildAppPackage({ projectConfig, buildId, onDiagnostic, existingDeviceComponents })
     .on('finish', () => {
       onDiagnostic({
         messageText: `App UUID: ${projectConfig.appUUID}, BuildID: ${buildId}`,
@@ -385,15 +385,15 @@ export function buildProject({
 export function build({
   dest = vinylFS.dest('./build'),
   onDiagnostic = logDiagnosticToConsole,
-  nativeAppComponentPaths,
+  nativeDeviceComponentPaths,
 }: {
   dest?: Stream,
-  nativeAppComponentPaths?: string[],
+  nativeDeviceComponentPaths?: string[],
   onDiagnostic?: DiagnosticHandler,
 } = {}) {
   return new Promise<void>((resolve, reject) => {
     new pumpify.obj(
-      buildProject({ nativeAppComponentPaths, onDiagnostic }),
+      buildProject({ nativeDeviceComponentPaths, onDiagnostic }),
       dest,
     )
       .on('error', reject)

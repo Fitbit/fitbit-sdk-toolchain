@@ -22,20 +22,43 @@ function readMetadata(elfPath: string) {
   const elfData = fs.readFileSync(elfPath);
   const elf = elfy.parse(elfData);
 
+  const elfSections = lodash.groupBy(elf.body.sections, s => s.name);
+  const elfSectionCounts = lodash.countBy(elf.body.sections, s => s.name);
+
   function findSection(name: string) {
-    const sections = elf.body.sections.filter(section => section.name === `.${name}`);
-    if (sections.length === 0) {
-      throw new PluginError(PLUGIN_NAME, `ELF section '${name}' is missing`, { fileName: elfPath });
+    const sectionName = `.${name}`;
+
+    const sections = elfSections[sectionName];
+    if (!sections) {
+      throw new PluginError(
+        PLUGIN_NAME,
+        `ELF section '${name}' is missing`,
+        { fileName: elfPath },
+      );
     }
-    return sections[0];
+
+    if (elfSectionCounts[sectionName] > 1) {
+      throw new PluginError(
+        PLUGIN_NAME,
+        `ELF section '${name}' is present more than once`,
+        { fileName: elfPath },
+      );
+    }
+
+    return sections[0].data;
   }
 
-  const buildIDData = findSection('buildid').data;
+  const buildIDData = findSection('buildid');
+
+  if (buildIDData.length !== 8) {
+    throw new Error(`Build ID must be 8 bytes, found ${buildIDData.length} in ${elfPath}`);
+  }
+
   buildIDData.swap64();
 
-  const appIDData = findSection('appuuid').data;
-  const familyData = findSection('appfamily').data;
-  const platformData = findSection('appplatform').data;
+  const appIDData = findSection('appuuid');
+  const familyData = findSection('appfamily');
+  const platformData = findSection('appplatform');
 
   return {
     path: elfPath,
@@ -54,7 +77,7 @@ export default function nativeComponents(
   const components = componentPaths.map(readMetadata);
   const buildId = components[0].buildID;
 
-  // Assert that all app IDs of native components match
+  // Check that all app IDs of native components match
   const divergentAppIDComponents = components.filter(
     c => c.appID.toLowerCase() !== appID.toLowerCase(),
   );
@@ -68,12 +91,13 @@ export default function nativeComponents(
     );
   }
 
-  // Assert that all build IDs of native components match
+  // Check that all build IDs of native components match
   if (lodash.uniqBy(components, c => c.buildID).length > 1) {
-    const buildIDPairs = components.map(c => `${c.family}=${c.buildID}`);
     throw new PluginError(
       PLUGIN_NAME,
-      `Build IDs of native components do not match: ${buildIDPairs}`,
+      `Build IDs of native components do not match.
+    ${components.map(
+        ({ path, family, buildID }) => `${path} (${family}) has buildID ${buildID}`).join('\n  ')}`,
     );
   }
 
@@ -89,6 +113,6 @@ export default function nativeComponents(
 
   return {
     buildId,
-    nativeAppComponents: componentStream,
+    existingDeviceComponents: componentStream,
   };
 }

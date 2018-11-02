@@ -90,6 +90,16 @@ export default function appPackageManifest({ projectConfig, buildId } : {
           if (bundleInfo.isNative) hasNative = true;
           else hasJS = true;
 
+          if (hasJS && hasNative) {
+            return next(
+              new PluginError(
+                PLUGIN_NAME,
+                'Cannot bundle mixed native/JS device components',
+                { fileName: file.relative },
+              ),
+            );
+          }
+
           if (!components.watch) components.watch = {};
 
           if (components.watch[bundleInfo.family]) {
@@ -112,15 +122,6 @@ export default function appPackageManifest({ projectConfig, buildId } : {
       next(undefined, file);
     },
     flush(callback) {
-      if (hasJS && hasNative) {
-        return callback(
-          new PluginError(
-            PLUGIN_NAME,
-            new Error('Cannot bundle mixed native/JS device components'),
-          ),
-        );
-      }
-
       const setSDKVersion = (components.watch && hasJS) || components.companion;
       const { deviceApi, companionApi } = apiVersions(projectConfig);
       const manifestJSON = JSON.stringify(

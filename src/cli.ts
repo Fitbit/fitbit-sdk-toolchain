@@ -14,13 +14,13 @@ yargs
       ['build', '$0'],
       'Build application',
       args => args
-        .option('native-app-component', {
-          description: 'Bundle native app component (specify multiple times, once per path)',
+        .option('native-device-component', {
+          description: 'Bundle native device component (specify multiple times, once per path)',
           array: true,
           hidden: true,
         }),
-      ({ nativeAppComponent }) => {
-        return build({ nativeAppComponentPaths: nativeAppComponent }).catch((error) => {
+      ({ nativeDeviceComponent }) => {
+        return build({ nativeDeviceComponentPaths: nativeDeviceComponent }).catch((error) => {
           process.exitCode = 1;
           if (error) console.error(error);
         });
