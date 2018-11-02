@@ -102,10 +102,10 @@ export default function nativeComponents(
   }
 
   const componentStream = new stream.PassThrough({ objectMode: true });
-  components.forEach(({ path, family, platform, data }) => componentStream.push(
+  components.forEach(({ family, platform, data }) => componentStream.push(
     new Vinyl({
-      data,
-      path,
+      contents: data,
+      path: `${family}.bundle`,
       componentBundle: { family, type: 'device', platform: [platform], isNative: true },
     }),
   ));
