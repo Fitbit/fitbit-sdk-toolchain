@@ -1,4 +1,4 @@
-const knownExternal = require('_mock_external_import_');
+const knownExternal = require('cbor');
 knownExternal();
 const unknownRelative = require('./foo.js');
 unknownRelative();
