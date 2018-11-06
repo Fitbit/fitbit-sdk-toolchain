@@ -8,8 +8,18 @@ import Vinyl from 'vinyl';
 
 const PLUGIN_NAME = 'nativeComponents';
 
-function formatUUID(uuid: string) {
-  return[
+function checkBufferLength(buffer: Buffer, expectedLength: number, name: string) {
+  if (buffer.length !== expectedLength) {
+    throw new PluginError(
+      PLUGIN_NAME,
+      `${name} must be ${expectedLength} bytes, found ${buffer.length} in ${buffer}`,
+    );
+  }
+}
+
+function formatUUID(buffer: Buffer) {
+  const uuid = buffer.toString('hex');
+  return [
     uuid.substr(0, 8),
     uuid.substr(8, 4),
     uuid.substr(12, 4),
@@ -23,7 +33,6 @@ function readMetadata(elfPath: string) {
   const elf = elfy.parse(elfData);
 
   const elfSections = lodash.groupBy(elf.body.sections, s => s.name);
-  const elfSectionCounts = lodash.countBy(elf.body.sections, s => s.name);
 
   function findSection(name: string) {
     const sectionName = `.${name}`;
@@ -37,7 +46,7 @@ function readMetadata(elfPath: string) {
       );
     }
 
-    if (elfSectionCounts[sectionName] > 1) {
+    if (sections.length > 1) {
       throw new PluginError(
         PLUGIN_NAME,
         `ELF section '${name}' is present more than once`,
@@ -49,24 +58,19 @@ function readMetadata(elfPath: string) {
   }
 
   const buildIDData = findSection('buildid');
-
-  if (buildIDData.length !== 8) {
-    throw new Error(`Build ID must be 8 bytes, found ${buildIDData.length} in ${elfPath}`);
-  }
-
+  checkBufferLength(buildIDData, 8, 'Build ID');
   buildIDData.swap64();
 
   const appIDData = findSection('appuuid');
-  const familyData = findSection('appfamily');
-  const platformData = findSection('appplatform');
+  checkBufferLength(appIDData, 16, 'App UUID');
 
   return {
     path: elfPath,
     data: elfData,
-    appID: formatUUID(appIDData.toString('hex')),
+    appID: formatUUID(appIDData),
     buildID: `0x${buildIDData.toString('hex')}`,
-    family: familyData.toString(),
-    platform: platformData.toString(),
+    family: findSection('appfamily').toString(),
+    platform: findSection('appplatform').toString(),
   };
 }
 
