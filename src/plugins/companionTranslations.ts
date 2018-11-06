@@ -1,6 +1,7 @@
 import { basename } from 'path';
 import { promisify } from 'util';
 
+import { LanguageTable, MessageTable } from '@fitbit-sdk/companion-gettext';
 import { default as _glob } from 'glob';
 import pofile from 'pofile';
 import { dataToEsm } from 'rollup-pluginutils';
@@ -12,7 +13,7 @@ const loadPOFile = promisify(pofile.load);
 
 async function loadTranslations(filePath: string) {
   const po = await loadPOFile(filePath);
-  const messages: { [message: string]: string } = {};
+  const messages: MessageTable = {};
 
   for (const { msgid, msgstr } of po.items) {
     if (msgstr.length > 1) {
@@ -28,7 +29,7 @@ async function loadTranslations(filePath: string) {
 export default function companionTranslations(globPattern: string) {
   return async () => {
     const languagePaths = new Map<string, string>();
-    const translations: { [tag: string]: { [message: string]: string } } = {};
+    const translations: LanguageTable = {};
 
     for (const filePath of await glob(globPattern)) {
       const tag = normalizeLanguageTag(basename(filePath, '.po'));

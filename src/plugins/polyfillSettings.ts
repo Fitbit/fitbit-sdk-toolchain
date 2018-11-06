@@ -1,8 +1,6 @@
-import companionTranslations from './companionTranslations';
+import i18nPolyfill from './i18nPolyfill';
 import polyfill from './polyfill';
 
 export default function polyfillCompanion() {
-  return polyfill({
-    '\0lang:table': companionTranslations('settings/**/*.po'),
-  });
+  return polyfill(i18nPolyfill('settings/**/*.po'));
 }
