@@ -28,11 +28,16 @@ interface Components {
 
 // tslint:disable-next-line:variable-name
 const ComponentBundleTag = t.taggedUnion('type', [
-  t.type({
-    type: t.literal('device'),
-    family: t.string,
-    platform: t.array(t.string),
-  }),
+  t.intersection([
+    t.interface({
+      type: t.literal('device'),
+      family: t.string,
+      platform: t.array(t.string),
+    }),
+    t.partial({
+      isNative: t.literal(true),
+    }),
+  ]),
   t.type({
     type: t.literal('companion'),
   }),
@@ -45,6 +50,8 @@ export default function appPackageManifest({ projectConfig, buildId } : {
 }) {
   const sourceMaps = {};
   const components: Components = {};
+  let hasJS = false;
+  let hasNative = false;
 
   const stream = new Transform({
     objectMode: true,
@@ -68,13 +75,46 @@ export default function appPackageManifest({ projectConfig, buildId } : {
           return next(new PluginError(PLUGIN_NAME, ex, { fileName: file.relative }));
         }
 
+        function throwDuplicateComponent(existingPath: string) {
+          const componentType = bundleInfo.type === 'device' ?
+            `${bundleInfo.type}/${bundleInfo.family}` : bundleInfo.type;
+          next(
+            new PluginError(
+              PLUGIN_NAME,
+              `Duplicate ${componentType} component bundles: ${file.relative} / ${existingPath}`,
+            ),
+          );
+        }
+
         if (bundleInfo.type === 'device') {
+          if (bundleInfo.isNative) hasNative = true;
+          else hasJS = true;
+
+          if (hasJS && hasNative) {
+            return next(
+              new PluginError(
+                PLUGIN_NAME,
+                'Cannot bundle mixed native/JS device components',
+                { fileName: file.relative },
+              ),
+            );
+          }
+
           if (!components.watch) components.watch = {};
+
+          if (components.watch[bundleInfo.family]) {
+            return throwDuplicateComponent(components.watch[bundleInfo.family].filename);
+          }
+
           components.watch[bundleInfo.family] = {
             platform: bundleInfo.platform,
             filename: file.relative,
           };
         } else {
+          if (components[bundleInfo.type] !== undefined) {
+            return throwDuplicateComponent(components[bundleInfo.type]!.filename);
+          }
+
           components[bundleInfo.type] = { filename: file.relative };
         }
 
@@ -82,6 +122,7 @@ export default function appPackageManifest({ projectConfig, buildId } : {
       next(undefined, file);
     },
     flush(callback) {
+      const setSDKVersion = (components.watch && hasJS) || components.companion;
       const { deviceApi, companionApi } = apiVersions(projectConfig);
       const manifestJSON = JSON.stringify(
         {
@@ -89,10 +130,10 @@ export default function appPackageManifest({ projectConfig, buildId } : {
           components,
           sourceMaps,
           manifestVersion: 6,
-          sdkVersion: {
-            ...(components.watch && { deviceApi }),
+          ...(setSDKVersion && { sdkVersion: {
+            ...(components.watch && hasJS && { deviceApi }),
             ...(components.companion && { companionApi }),
-          },
+          }}),
           requestedPermissions: projectConfig.requestedPermissions,
           appId: projectConfig.appUUID,
         },

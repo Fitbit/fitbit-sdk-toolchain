@@ -46,21 +46,25 @@ function expectPackageManifest(stream: Readable, projectConfig: ProjectConfigura
 function expectValidPackageManifest(options?: {
   hasCompanion?: boolean,
   projectConfig?: ProjectConfiguration,
+  nativeApp?: boolean,
 }) {
-  const { hasCompanion, projectConfig } = {
+  const { hasCompanion, projectConfig, nativeApp } = {
     projectConfig: makeProjectConfig(),
     hasCompanion: false,
+    nativeApp: false,
     ...options,
   };
   const stream = makeReadStream();
   for (const platform of projectConfig.buildTargets) {
-    stream.push(
-      new Vinyl({
-        path: `sourceMaps/${ComponentType.DEVICE}/${platform}/index.js.json`,
-        contents: Buffer.alloc(0),
-        componentMapKey: [ComponentType.DEVICE, platform],
-      }),
-    );
+    if (!nativeApp) {
+      stream.push(
+        new Vinyl({
+          path: `sourceMaps/${ComponentType.DEVICE}/${platform}/index.js.json`,
+          contents: Buffer.alloc(0),
+          componentMapKey: [ComponentType.DEVICE, platform],
+        }),
+      );
+    }
     stream.push(
       new Vinyl({
         path: `${ComponentType.DEVICE}-${platform}.zip`,
@@ -69,6 +73,7 @@ function expectValidPackageManifest(options?: {
           type: 'device',
           family: platform,
           platform: buildTargets[platform].platform,
+          ...(nativeApp && { isNative: true }),
         },
       }),
     );
@@ -109,6 +114,66 @@ it('builds a package manifest with multiple device components', () =>
       buildTargets: ['higgs', 'meson'],
     },
   }).toMatchSnapshot());
+
+it('emits an error if both JS and native device components are present', () => {
+  const projectConfig = makeProjectConfig();
+  const stream = makeReadStream();
+  stream.push(
+    new Vinyl({
+      componentBundle: {
+        type: 'device',
+        family: 'foo',
+        platform: ['1.1.1+'],
+      },
+      path: 'bundle.zip',
+      contents: Buffer.alloc(0),
+    }),
+  );
+  stream.push(
+    new Vinyl({
+      componentBundle: {
+        type: 'device',
+        family: 'bar',
+        platform: ['1.1.1+'],
+        isNative: true,
+      },
+      path: 'bundle.bin',
+      contents: Buffer.alloc(0),
+    }),
+  );
+  stream.push(null);
+
+  return expectPackageManifest(stream, projectConfig)
+    .rejects.toThrowErrorMatchingSnapshot();
+});
+
+it('emits an error if multiple bundles are present for the same device family', () => {
+  const projectConfig = makeProjectConfig();
+  const stream = makeReadStream();
+  for (let i = 0; i <= 3; i += 1) {
+    stream.push(
+      new Vinyl({
+        componentBundle: {
+          type: 'device',
+          family: 'foo',
+          platform: ['1.1.1+'],
+        },
+        path: `bundle${i}.zip`,
+        contents: Buffer.alloc(0),
+      }),
+    );
+  }
+  stream.push(null);
+
+  return expectPackageManifest(stream, projectConfig)
+    .rejects.toThrowErrorMatchingSnapshot();
+});
+
+it('builds a package manifest with a native device component', () =>
+  expectValidPackageManifest({ nativeApp: true }).toMatchSnapshot());
+
+it('builds a package manifest with a native device component and companion', () =>
+  expectValidPackageManifest({ nativeApp: true, hasCompanion: true }).toMatchSnapshot());
 
 it.each([
   ['has an invalid type field', { type: '__invalid__' }],

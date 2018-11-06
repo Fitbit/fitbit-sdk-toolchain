@@ -31,6 +31,7 @@ import {
 } from './diagnostics';
 import filterResourceTag from './filterResourceTag';
 import findEntryPoint from './findEntryPoint';
+import nativeComponents from './nativeComponents';
 import ProjectConfiguration, { normalizeProjectConfig, validate } from './ProjectConfiguration';
 import * as resources from './resources';
 import sdkVersion from './sdkVersion';
@@ -282,19 +283,25 @@ export function buildCompanion({
 export function buildAppPackage({
   projectConfig,
   buildId,
+  existingDeviceComponents,
   onDiagnostic = logDiagnosticToConsole,
 }: {
   projectConfig: ProjectConfiguration,
   buildId: string,
+  existingDeviceComponents?: Readable,
   onDiagnostic?: DiagnosticHandler,
 }) {
-  const components = [
-    buildDeviceComponents({
+  const components = [];
+
+  if (existingDeviceComponents) {
+    components.push(existingDeviceComponents);
+  } else {
+    components.push(buildDeviceComponents({
       projectConfig,
       buildId,
       onDiagnostic: addDiagnosticTarget(DiagnosticTarget.App, onDiagnostic),
-    }),
-  ];
+    }));
+  }
 
   const companion = buildCompanion({
     projectConfig,
@@ -314,11 +321,28 @@ export function buildAppPackage({
   );
 }
 
-export function buildProject({ onDiagnostic = logDiagnosticToConsole } = {}) {
-  const buildId = generateBuildId();
+export function buildProject({
+  nativeDeviceComponentPaths = [],
+  onDiagnostic = logDiagnosticToConsole,
+}: {
+  nativeDeviceComponentPaths?: string[],
+  onDiagnostic?: DiagnosticHandler,
+}) {
+  let buildId: string;
+  let existingDeviceComponents: Readable | undefined;
+
   const projectConfig = loadProjectConfig({ onDiagnostic });
 
-  return buildAppPackage({ projectConfig, buildId, onDiagnostic })
+  if (nativeDeviceComponentPaths.length > 0) {
+    ({ buildId, existingDeviceComponents } = nativeComponents(
+      projectConfig.appUUID,
+      nativeDeviceComponentPaths,
+    ));
+  } else {
+    buildId = generateBuildId();
+  }
+
+  return buildAppPackage({ projectConfig, buildId, onDiagnostic, existingDeviceComponents })
     .on('finish', () => {
       onDiagnostic({
         messageText: `App UUID: ${projectConfig.appUUID}, BuildID: ${buildId}`,
@@ -334,12 +358,17 @@ export function buildProject({ onDiagnostic = logDiagnosticToConsole } = {}) {
  * reason, the returned Promise rejects with the error.
  */
 export function build({
-  dest = vinylFS.dest('./build') as Stream,
+  dest = vinylFS.dest('./build'),
   onDiagnostic = logDiagnosticToConsole,
+  nativeDeviceComponentPaths,
+}: {
+  dest?: Stream,
+  nativeDeviceComponentPaths?: string[],
+  onDiagnostic?: DiagnosticHandler,
 } = {}) {
   return new Promise<void>((resolve, reject) => {
     new pumpify.obj(
-      buildProject({ onDiagnostic }),
+      buildProject({ nativeDeviceComponentPaths, onDiagnostic }),
       dest,
     )
       .on('error', reject)
