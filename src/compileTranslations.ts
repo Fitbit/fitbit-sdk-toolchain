@@ -1,8 +1,11 @@
+import { basename } from 'path';
 import { Transform } from 'stream';
 
 import { TranslationLoader } from '@fitbit/bison-i18n';
 import PluginError from 'plugin-error';
 import Vinyl from 'vinyl';
+
+import { normalizeLanguageTag } from './languageTag';
 
 const PLUGIN_NAME = 'compileTranslations';
 
@@ -23,8 +26,8 @@ export default function compileTranslations() {
         return next(undefined, file);
       }
 
-      const match = /^([a-z]{2})(-[a-z]{2})?\.po$/i.exec(file.basename);
-      if (match === null) {
+      const normalizedTag = normalizeLanguageTag(basename(file.basename, '.po'));
+      if (normalizedTag === null) {
         next(new PluginError(
           PLUGIN_NAME,
           // tslint:disable-next-line:max-line-length
@@ -33,9 +36,6 @@ export default function compileTranslations() {
         ));
         return;
       }
-
-      const [, language, region] = match;
-      const normalizedTag = language.toLowerCase() + (region || '').toUpperCase();
 
       if (file.isBuffer()) {
         try {
