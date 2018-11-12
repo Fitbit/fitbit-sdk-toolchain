@@ -1,4 +1,4 @@
-import gulpUglifyEs from 'gulp-uglify-es';
+import gulpTerser from 'gulp-terser';
 import pumpify from 'pumpify';
 import * as rollup from 'rollup';
 import rollupPluginBabel from 'rollup-plugin-babel';
@@ -98,7 +98,7 @@ export default function compile(
         sourcemap: true,
       },
     ),
-    gulpUglifyEs({
+    gulpTerser({
       ecma,
       mangle: {
         toplevel: true,
