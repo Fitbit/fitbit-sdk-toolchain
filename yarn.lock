@@ -1889,15 +1889,14 @@ gulp-file@^0.4.0:
     through2 "^0.4.1"
     vinyl "^2.1.0"
 
-gulp-uglify-es@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/gulp-uglify-es/-/gulp-uglify-es-1.0.4.tgz#59ee0d5ea98c1e09c6eaa58c8b018a6ad33f48d4"
-  integrity sha512-UMRufZsBmQizCYpftutaiVoLswpbzFEfY90EJLU4YlTgculeHnanb794s88TMd5tpCZVC638sAX6JrLVYTP/Wg==
+gulp-terser@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/gulp-terser/-/gulp-terser-1.1.5.tgz#7cf3c890ab6757f6aedf8e6b8923295f6b8676e5"
+  integrity sha512-WNk9DPCQgwnoWOs2FhkLYzE+Z32fi0tCHSLxjgQagdH7mbwM/ZqfygNEDgewRXX0jmGc/9gfyimHZLhZtbOj0g==
   dependencies:
-    o-stream "^0.2.2"
     plugin-error "^1.0.1"
-    terser "^3.7.5"
-    vinyl "^2.1.0"
+    terser "^3.8.2"
+    through2 "^2.0.3"
     vinyl-sourcemaps-apply "^0.2.1"
 
 gulp-util@^3.0.0:
@@ -3412,11 +3411,6 @@ nwsapi@^2.0.7:
   version "2.0.9"
   resolved "https://registry.yarnpkg.com/nwsapi/-/nwsapi-2.0.9.tgz#77ac0cdfdcad52b6a1151a84e73254edc33ed016"
 
-o-stream@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/o-stream/-/o-stream-0.2.2.tgz#7fe03af870b8f9537af33b312b381b3034ab410f"
-  integrity sha512-V3j76KU3g/Gyl8rpdi2z72rn5zguMvTCQgAXfBe3pxEefKqXmOUOD7mvx/mNjykdxGqDVfpSoo8r+WdrkWg/1Q==
-
 oauth-sign@~0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.9.0.tgz#47a7b016baa68b5fa0ecf3dee08a85c679ac6455"
@@ -4472,10 +4466,10 @@ term-size@^1.2.0:
   dependencies:
     execa "^0.7.0"
 
-terser@^3.7.5:
-  version "3.10.2"
-  resolved "https://registry.yarnpkg.com/terser/-/terser-3.10.2.tgz#a61d2c97065f9fdc8c49a18655e2a80ca7298a94"
-  integrity sha512-+QrFoqBImmsQGB4c/HvaqgZynmbNvNBwoBxuu7fYXtq5EEtlLUzph+WimDj+xMkuqawXPMl2lgCIz81CdXvt+w==
+terser@^3.8.2:
+  version "3.10.11"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-3.10.11.tgz#e063da74b194dde9faf0a561f3a438c549d2da3f"
+  integrity sha512-iruZ7j14oBbRYJC5cP0/vTU7YOWjN+J1ZskEGoF78tFzXdkK2hbCL/3TRZN8XB+MuvFhvOHMp7WkOCBO4VEL5g==
   dependencies:
     commander "~2.17.1"
     source-map "~0.6.1"
