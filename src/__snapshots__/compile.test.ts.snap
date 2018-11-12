@@ -140,7 +140,7 @@ exports[`when building a device component which uses gettext polyfills gettext o
 "\\"use strict\\"
 var e=require(\\"resources\\")
 function r(r){var t=e.getResource(\\"text\\",\\"_\\"+r)
-if(t===null)return r
+if(t===null)return String(r)
 return t}console.log(r(\\"hello\\"))
 "
 `;
