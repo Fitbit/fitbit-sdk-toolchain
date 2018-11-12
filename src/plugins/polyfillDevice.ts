@@ -6,7 +6,7 @@ import { getResource } from 'resources';
 
 export function gettext(msgid) {
   var resource = getResource('text', '_' + msgid);
-  if (resource === null) return msgid;
+  if (resource === null) return String(msgid);
   return resource;
 }
 `,
