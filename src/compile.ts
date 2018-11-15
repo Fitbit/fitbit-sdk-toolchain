@@ -83,6 +83,8 @@ export default function compile(
             babelrc: false,
             // We include JSON here to get a more sane error that includes the path
             extensions: ['.js', '.json'],
+            // Types for babel are broken and don't accept anything but an object here
+            inputSourceMap: false as any,
           })),
         ],
         onwarn: rollupWarningHandler({
