@@ -77,6 +77,14 @@ function readMetadata(elfPath: string) {
     );
   }
 
+  if (!Array.isArray(platform)) {
+    throw new PluginError(
+      PLUGIN_NAME,
+      `Platform specification should be an array, but found a ${typeof platform}`,
+      { fileName: elfPath },
+    );
+  }
+
   return {
     platform,
     path: elfPath,
