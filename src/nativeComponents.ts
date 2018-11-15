@@ -64,13 +64,26 @@ function readMetadata(elfPath: string) {
   const appIDData = findSection('appuuid');
   checkBufferLength(appIDData, 16, 'App UUID');
 
+  const platformJSON = findSection('appplatform').toString();
+
+  let platform;
+  try {
+    platform = JSON.parse(platformJSON);
+  } catch (ex) {
+    throw new PluginError(
+      PLUGIN_NAME,
+      'Platform specification JSON is invalid',
+      { fileName: elfPath },
+    );
+  }
+
   return {
+    platform,
     path: elfPath,
     data: elfData,
     appID: formatUUID(appIDData),
     buildID: `0x${buildIDData.toString('hex')}`,
     family: findSection('appfamily').toString(),
-    platform: findSection('appplatform').toString(),
   };
 }
 
@@ -110,7 +123,7 @@ export default function nativeComponents(
     new Vinyl({
       contents: data,
       path: `${family}.bundle`,
-      componentBundle: { family, type: 'device', platform: [platform], isNative: true },
+      componentBundle: { family, platform, type: 'device', isNative: true },
     }),
   ));
   componentStream.push(null);
