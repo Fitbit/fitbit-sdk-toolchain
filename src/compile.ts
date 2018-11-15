@@ -1,4 +1,4 @@
-import gulpUglifyEs from 'gulp-uglify-es';
+import gulpTerser from 'gulp-terser';
 import pumpify from 'pumpify';
 import * as rollup from 'rollup';
 import rollupPluginBabel from 'rollup-plugin-babel';
@@ -83,6 +83,8 @@ export default function compile(
             babelrc: false,
             // We include JSON here to get a more sane error that includes the path
             extensions: ['.js', '.json'],
+            // Types for babel are broken and don't accept anything but an object here
+            inputSourceMap: false as any,
           })),
         ],
         onwarn: rollupWarningHandler({
@@ -96,7 +98,7 @@ export default function compile(
         sourcemap: true,
       },
     ),
-    gulpUglifyEs({
+    gulpTerser({
       ecma,
       mangle: {
         toplevel: true,

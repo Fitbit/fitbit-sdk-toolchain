@@ -64,7 +64,7 @@
     "elfy": "^0.1.0",
     "fs-extra": "^7.0.0",
     "gulp-file": "^0.4.0",
-    "gulp-uglify-es": "^1.0.4",
+    "gulp-terser": "^1.1.5",
     "gulp-zip": "2.x",
     "humanize-list": "^1.0.1",
     "indent-string": "^3.2.0",
