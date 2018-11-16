@@ -147,6 +147,10 @@
     reflect-metadata "^0.1.12"
     tslib "^1.8.1"
 
+"@fitbit-sdk/companion-gettext@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@fitbit-sdk/companion-gettext/-/companion-gettext-1.0.1.tgz#c0ec1bd2391c878dfaf47f01de58bb8a7fc30ad0"
+
 "@fitbit/bison-i18n@^1.0.0":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@fitbit/bison-i18n/-/bison-i18n-1.0.1.tgz#22ded681a52a0304a010c9e5fd1bb63f7bc75e97"
@@ -245,7 +249,7 @@
     "@types/glob" "*"
     "@types/node" "*"
 
-"@types/glob@*":
+"@types/glob@*", "@types/glob@^7.1.1":
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-7.1.1.tgz#aa59a1c6e3fbc421e07ccd31a944c30eba521575"
   dependencies:
@@ -1825,7 +1829,7 @@ glob-stream@^6.1.0:
     to-absolute-glob "^2.0.0"
     unique-stream "^2.0.2"
 
-glob@^7.0.3, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2:
+glob@^7.0.3, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3:
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.3.tgz#3960832d3f1574108342dafd3a67b332c0969df1"
   dependencies:
@@ -1890,7 +1894,6 @@ gulp-file@^0.4.0:
 gulp-terser@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/gulp-terser/-/gulp-terser-1.1.5.tgz#7cf3c890ab6757f6aedf8e6b8923295f6b8676e5"
-  integrity sha512-WNk9DPCQgwnoWOs2FhkLYzE+Z32fi0tCHSLxjgQagdH7mbwM/ZqfygNEDgewRXX0jmGc/9gfyimHZLhZtbOj0g==
   dependencies:
     plugin-error "^1.0.1"
     terser "^3.8.2"
@@ -3716,7 +3719,7 @@ pn@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/pn/-/pn-1.1.0.tgz#e2f4cef0e219f463c179ab37463e4e1ecdccbafb"
 
-pofile@^1.0.10:
+pofile@^1.0.10, pofile@^1.0.11:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/pofile/-/pofile-1.0.11.tgz#35aff58c17491d127a07336d5522ebc9df57c954"
 
@@ -4467,7 +4470,6 @@ term-size@^1.2.0:
 terser@^3.8.2:
   version "3.10.11"
   resolved "https://registry.yarnpkg.com/terser/-/terser-3.10.11.tgz#e063da74b194dde9faf0a561f3a438c549d2da3f"
-  integrity sha512-iruZ7j14oBbRYJC5cP0/vTU7YOWjN+J1ZskEGoF78tFzXdkK2hbCL/3TRZN8XB+MuvFhvOHMp7WkOCBO4VEL5g==
   dependencies:
     commander "~2.17.1"
     source-map "~0.6.1"

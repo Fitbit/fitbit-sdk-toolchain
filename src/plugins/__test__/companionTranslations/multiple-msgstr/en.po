@@ -1,0 +1,3 @@
+msgid "foo"
+msgstr[0] "bar"
+msgstr[1] "baz"

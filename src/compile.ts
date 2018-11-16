@@ -15,7 +15,9 @@ import sdkVersion from './sdkVersion';
 
 import brokenImports from './plugins/brokenImports';
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
+import polyfillCompanion from './plugins/polyfillCompanion';
 import polyfillDevice from './plugins/polyfillDevice';
+import polyfillSettings from './plugins/polyfillSettings';
 import resourceImports from './plugins/resourceImports';
 import typescript from './plugins/typescript';
 import rollupWarningHandler from './rollupWarningHandler';
@@ -62,6 +64,8 @@ export default function compile(
             },
           }),
           ...pluginIf(component === ComponentType.DEVICE, polyfillDevice),
+          ...pluginIf(component === ComponentType.COMPANION, polyfillCompanion),
+          ...pluginIf(component === ComponentType.SETTINGS, polyfillSettings),
           ...pluginIf(
             sdkVersion().major < 3 || component === ComponentType.SETTINGS,
             resourceImports,

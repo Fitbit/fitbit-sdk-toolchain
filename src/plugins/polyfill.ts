@@ -1,9 +1,11 @@
 import { Plugin } from 'rollup';
 
+export type Polyfill = string | (() => string | Promise<string>);
+
 /**
  * Polyfill a module to make it seem like a builtin.
  */
-export default function polyfill(modules: { [name: string]: string }): Plugin {
+export default function polyfill(modules: { [name: string]: Polyfill }): Plugin {
   return {
     name: 'polyfill',
 
@@ -14,7 +16,8 @@ export default function polyfill(modules: { [name: string]: string }): Plugin {
     load(id) {
       if (id[0] !== '\0') return;
       const code = modules[id.slice(1)];
-      return code !== undefined ? code : null;
+      if (code === undefined) return null;
+      return typeof code === 'function' ? code() : code;
     },
   };
 }
