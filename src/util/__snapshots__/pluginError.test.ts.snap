@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`convertPluginErrorToDiagnostic deals with PluginErrors constructed from another Error 1`] = `
+exports[`convertToDiagnostic deals with PluginErrors constructed from another Error 1`] = `
 Object {
   "category": 1,
   "messageText": "TypeError: ouch",
 }
 `;
 
-exports[`convertPluginErrorToDiagnostic when there are custom properties constructs a diagnostic 1`] = `
+exports[`convertToDiagnostic when there are custom properties constructs a diagnostic 1`] = `
 Object {
   "category": 1,
   "file": Object {

@@ -3,6 +3,7 @@ import fs from 'fs';
 
 import humanizeList from 'humanize-list';
 
+import BuildError from './util/BuildError';
 import { DiagnosticCategory, DiagnosticHandler } from './diagnostics';
 
 export default function findEntryPoint(
@@ -27,7 +28,7 @@ export default function findEntryPoint(
   else if (foundEntryPoints.length === 0) {
     const possibilitiesStr = humanizeList(possibilities, { conjunction: 'or' });
     if (notFoundIsFatal) {
-      throw new Error(
+      throw new BuildError(
         // tslint:disable-next-line:max-line-length
         `No ${component} entry point found! None of ${possibilitiesStr} are present in the project.`,
       );
@@ -39,7 +40,7 @@ export default function findEntryPoint(
       });
     }
   } else if (foundEntryPoints.length > 1) {
-    throw new Error(
+    throw new BuildError(
       // tslint:disable-next-line:max-line-length
       `Multiple ${component} entry points found! ${humanizeList(foundEntryPoints)} are all valid entry points; rename all but one and try again.`,
     );

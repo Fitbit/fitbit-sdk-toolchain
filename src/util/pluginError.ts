@@ -1,7 +1,7 @@
 import indentString from 'indent-string';
 import PluginError from 'plugin-error';
 
-import { Diagnostic, DiagnosticCategory } from './diagnostics';
+import { Diagnostic, DiagnosticCategory } from '../diagnostics';
 
 export function isPluginError(value: unknown): value is PluginError {
   // We can't just do an instanceof check as the error object might be
@@ -22,7 +22,7 @@ export function isPluginError(value: unknown): value is PluginError {
  *
  * @param error caught error object
  */
-export function isProjectBuildError(error: PluginError): boolean {
+function isProjectBuildError(error: PluginError): boolean {
   return !error.showStack;
 }
 
@@ -46,7 +46,7 @@ const ignoredPluginErrorProps = new Set([
   'stack',
 ]);
 
-export function convertPluginErrorToDiagnostic(
+function convertToDiagnostic(
   error: PluginError<{ columnNumber?: number }>,
 ): Diagnostic {
   const diagnostic: Diagnostic = {
@@ -103,3 +103,10 @@ export function convertPluginErrorToDiagnostic(
   }
   return diagnostic;
 }
+
+const pluginError = {
+  convertToDiagnostic,
+  isPluginError,
+  isProjectBuildError,
+};
+export default pluginError;
