@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`toDiagnostic() returns an error diagnostic 1`] = `
+Object {
+  "category": 1,
+  "messageText": "uh oh!",
+}
+`;

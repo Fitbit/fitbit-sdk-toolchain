@@ -12,6 +12,7 @@ import simpleRandom from 'simple-random';
 import vinylFS from 'vinyl-fs';
 
 import appPackageManifest from './appPackageManifest';
+import BuildError from './util/BuildError';
 import buildTargets, { BuildTargetDescriptor } from './buildTargets';
 import collectComponentSourceMaps from './collectComponentSourceMaps';
 import compile from './compile';
@@ -32,17 +33,13 @@ import {
 import filterResourceTag from './filterResourceTag';
 import findEntryPoint from './findEntryPoint';
 import nativeComponents from './nativeComponents';
+import pluginError from './util/pluginError';
 import ProjectConfiguration, { normalizeProjectConfig, validate } from './ProjectConfiguration';
 import * as resources from './resources';
 import sdkVersion from './sdkVersion';
 import validateIcon from './validateIcon';
 import vinylAssertFiles from './vinylAssertFiles';
 import zip from './zip';
-import {
-  isPluginError,
-  isProjectBuildError,
-  convertPluginErrorToDiagnostic,
-} from './buildError';
 
 export { DiagnosticCategory };
 
@@ -258,7 +255,9 @@ export function buildCompanion({
     });
 
   if (settings && !companion) {
-    throw new Error('This project is being built with settings, but has no companion component');
+    throw new BuildError(
+      'This project is being built with settings, but has no companion component.',
+    );
   }
 
   const components = [companion, settings]
@@ -374,8 +373,12 @@ export function build({
       .on('error', reject)
       .on('finish', resolve);
   }).catch((e) => {
-    if (isPluginError(e) && isProjectBuildError(e)) {
-      onDiagnostic(convertPluginErrorToDiagnostic(e));
+    if (pluginError.isPluginError(e) && pluginError.isProjectBuildError(e)) {
+      onDiagnostic(pluginError.convertToDiagnostic(e));
+      return Promise.reject();
+    }
+    if (BuildError.is(e)) {
+      onDiagnostic(e.toDiagnostic());
       return Promise.reject();
     }
     return Promise.reject(e);

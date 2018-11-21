@@ -1,7 +1,7 @@
 import PluginError from 'plugin-error';
 
-import { isPluginError, isProjectBuildError, convertPluginErrorToDiagnostic } from './buildError';
-import { Diagnostic, DiagnosticMessage } from './diagnostics';
+import pluginError from './pluginError';
+import { Diagnostic, DiagnosticMessage } from '../diagnostics';
 
 describe('isPluginError', () => {
   it.each([
@@ -9,7 +9,7 @@ describe('isPluginError', () => {
     ['constructed from an Error', new PluginError('bar', new Error('asdf'))],
     ['with showStack enabled', new PluginError('a', new Error('foo'), { showStack: true })],
   ])('correctly identifies a PluginError %s', (_, error) => {
-    expect(isPluginError(error)).toBe(true);
+    expect(pluginError.isPluginError(error)).toBe(true);
   });
 
   it.each([
@@ -31,24 +31,24 @@ describe('isPluginError', () => {
       }),
     ],
   ])('correctly identifies %s not to be a PluginError', (_, value) => {
-    expect(isPluginError(value)).toBe(false);
+    expect(pluginError.isPluginError(value)).toBe(false);
   });
 });
 
 describe('isProjectBuildError', () => {
   it('returns true for PluginError with default options', () => {
-    expect(isProjectBuildError(new PluginError('foo', 'bar'))).toBe(true);
+    expect(pluginError.isProjectBuildError(new PluginError('foo', 'bar'))).toBe(true);
   });
 
   it('returns false for PluginError with showStack set', () => {
-    expect(isProjectBuildError(new PluginError('foo', 'bar', { showStack: true })))
+    expect(pluginError.isProjectBuildError(new PluginError('foo', 'bar', { showStack: true })))
       .toBe(false);
   });
 });
 
-describe('convertPluginErrorToDiagnostic', () => {
+describe('convertToDiagnostic', () => {
   it('deals with PluginErrors constructed from another Error', () =>
-    expect(convertPluginErrorToDiagnostic(
+    expect(pluginError.convertToDiagnostic(
       new PluginError('foo', new TypeError('ouch')),
     )).toMatchSnapshot());
 
@@ -56,7 +56,7 @@ describe('convertPluginErrorToDiagnostic', () => {
     it('copies the fileName into the diagnostic', () => {
       const fileName = 'app/foo.js';
       const error = new PluginError('asdf', 'blah', { fileName });
-      expect(convertPluginErrorToDiagnostic(error)).toHaveProperty('file.path', fileName);
+      expect(pluginError.convertToDiagnostic(error)).toHaveProperty('file.path', fileName);
     });
   });
 
@@ -64,7 +64,7 @@ describe('convertPluginErrorToDiagnostic', () => {
     it('does not copy any position info', () => {
       const error: PluginError<{ columnNumber?: number }> = new PluginError('foo', 'bar');
       error.columnNumber = 5;
-      expect(convertPluginErrorToDiagnostic(error)).not.toHaveProperty('file');
+      expect(pluginError.convertToDiagnostic(error)).not.toHaveProperty('file');
     });
   });
 
@@ -73,7 +73,7 @@ describe('convertPluginErrorToDiagnostic', () => {
       const error: PluginError<{ columnNumber?: number }> =
         new PluginError('foo', 'bar', { lineNumber: 7 });
       error.columnNumber = 5;
-      expect(convertPluginErrorToDiagnostic(error)).not.toHaveProperty('file');
+      expect(pluginError.convertToDiagnostic(error)).not.toHaveProperty('file');
     });
   });
 
@@ -83,7 +83,7 @@ describe('convertPluginErrorToDiagnostic', () => {
       const error: PluginError<{ columnNumber?: number }> =
         new PluginError('foo', 'bar', { fileName, lineNumber: 7 });
       error.columnNumber = 5;
-      expect(convertPluginErrorToDiagnostic(error)).toHaveProperty('file', {
+      expect(pluginError.convertToDiagnostic(error)).toHaveProperty('file', {
         path: fileName,
         position: {
           // PluginError is 1-based; Diagnostic is 0-based.
@@ -99,7 +99,7 @@ describe('convertPluginErrorToDiagnostic', () => {
       lineNumber: { value: 5, enumerable: false },
       columnNumber: { value: 12, enumerable: false },
     });
-    const diagnostic = convertPluginErrorToDiagnostic(error);
+    const diagnostic = pluginError.convertToDiagnostic(error);
     expect(diagnostic).toHaveProperty('file', { path: 'foo' });
   });
 
@@ -108,7 +108,7 @@ describe('convertPluginErrorToDiagnostic', () => {
     Object.defineProperties(error, {
       fileName: { value: 'node_modules/dont/care.js', enumerable: false },
     });
-    const diagnostic = convertPluginErrorToDiagnostic(error);
+    const diagnostic = pluginError.convertToDiagnostic(error);
     expect(diagnostic).not.toHaveProperty('file');
   });
 
@@ -125,7 +125,7 @@ describe('convertPluginErrorToDiagnostic', () => {
       error.columnNumber = 3;
       error.fileName = 'path/to/some/file.js';
 
-      diagnostic = convertPluginErrorToDiagnostic(error);
+      diagnostic = pluginError.convertToDiagnostic(error);
     });
 
     it('constructs a diagnostic', () => expect(diagnostic).toMatchSnapshot());
@@ -151,7 +151,7 @@ describe('convertPluginErrorToDiagnostic', () => {
 
     it('respects showProperties = false', () => {
       error.showProperties = false;
-      diagnostic = convertPluginErrorToDiagnostic(error);
+      diagnostic = pluginError.convertToDiagnostic(error);
       expect(diagnostic).toHaveProperty('messageText', expect.any(String));
     });
   });
