@@ -148,7 +148,7 @@ return t}console.log(r(\\"hello\\"))
 exports[`when compiling a module with statements above an import declaration builds 1`] = `
 "\\"use strict\\"
 require(\\"util\\")
-var e=require(\\"cbor\\")
+foo()
 console.log(\\"Hello!\\")
 "
 `;
