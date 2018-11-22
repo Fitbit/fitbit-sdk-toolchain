@@ -118,5 +118,8 @@
     "ignore": [
       "gulp-zip"
     ]
+  },
+  "engines": {
+    "node": ">=8.0.0"
   }
 }
