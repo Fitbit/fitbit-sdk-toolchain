@@ -3,6 +3,7 @@ import { Readable } from 'stream';
 
 import PluginError from 'plugin-error';
 import * as rollup from 'rollup';
+import sourceMapCompactor from 'source-map-compactor';
 import Vinyl from 'vinyl';
 
 interface VinylPluginError {
@@ -20,9 +21,15 @@ export default function rollupToVinyl(
   rollup.rollup(inputOptions).then((bundle) => {
     stream.emit('bundle', bundle);
     return bundle.generate(outputOptions).then(({ code, map }) => {
-      // Rollup only writes the basename to the file property
-      if (map) map.file = outputPath;
+      if (map) {
+        // Rollup produces bad sourcemaps, this package fixes them up.
+        // We've tried taking it out, and source maps have broken each
+        // time. NO TOUCHING!
+        map.mappings = JSON.parse(sourceMapCompactor(map)).mappings;
 
+        // Rollup only writes the basename to the file property
+        map.file = outputPath;
+      }
       stream.push(new Vinyl({
         contents: Buffer.from(code, 'utf8'),
         path: resolve(process.cwd(), outputPath),

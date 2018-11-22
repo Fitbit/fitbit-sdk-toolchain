@@ -1,3 +1,3 @@
-const cbor = require('cbor');
+foo();
 import 'util';
 console.log('Hello!');
