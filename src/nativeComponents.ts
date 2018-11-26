@@ -59,7 +59,6 @@ function readMetadata(elfPath: string) {
 
   const buildIDData = findSection('buildid');
   checkBufferLength(buildIDData, 8, 'Build ID');
-  buildIDData.swap64();
 
   const appIDData = findSection('appuuid');
   checkBufferLength(appIDData, 16, 'App UUID');
@@ -90,7 +89,7 @@ function readMetadata(elfPath: string) {
     path: elfPath,
     data: elfData,
     appID: formatUUID(appIDData),
-    buildID: `0x${buildIDData.toString('hex')}`,
+    buildID: `0x${Buffer.from(buildIDData).swap64().toString('hex')}`,
     family: findSection('appfamily').toString(),
   };
 }
