@@ -1,50 +1,53 @@
 import { Diagnostic, DiagnosticCategory } from './diagnostics';
 
 export default class DiagnosticList {
-  fatalError = false;
+    public fatalError: boolean;
 
-  constructor(public diagnostics = [] as Diagnostic[]) {
-    if (!Array.isArray(diagnostics)) {
-      throw new TypeError(`diagnostics must be array, not ${typeof diagnostics}`);
+    constructor(public diagnostics: Diagnostic[] = []) {
+        this.fatalError = false;
+        if (!Array.isArray(diagnostics)) {
+            throw new TypeError(`diagnostics must be array, not ${typeof diagnostics}`);
+        }
     }
-  }
 
-  extend(otherDiagnosticList: DiagnosticList) {
-    // Add "target" and timestamp iff (if and only if) they don't already exist.
-    this.diagnostics.push(...otherDiagnosticList.diagnostics);
-    if (otherDiagnosticList.fatalError) this.fatalError = true;
-  }
-
-  push(diagnostic: Diagnostic) {
-    if (diagnostic.messageText === undefined || diagnostic.category === undefined) {
-      throw new TypeError('Diagnostic is missing `messageText` or `category` keys');
+    extend(otherDiagnosticList: DiagnosticList): void {
+        // Add "target" and timestamp iff (if and only if) they don't already exist.
+        this.diagnostics.push(...otherDiagnosticList.diagnostics);
+        if (otherDiagnosticList.fatalError) {
+            this.fatalError = true;
+        }
     }
-    this.diagnostics.push(diagnostic);
-  }
 
-  pushMessage(text: string) {
-    this.push({
-      messageText: text,
-      category: DiagnosticCategory.Message,
-    });
-  }
+    push(diagnostic: Diagnostic): void {
+        if (diagnostic.messageText === undefined || diagnostic.category === undefined) {
+            throw new TypeError('Diagnostic is missing `messageText` or `category` keys');
+        }
+        this.diagnostics.push(diagnostic);
+    }
 
-  pushWarning(text: string) {
-    this.push({
-      messageText: text,
-      category: DiagnosticCategory.Warning,
-    });
-  }
+    pushMessage(text: string): void {
+        this.push({
+            messageText: text,
+            category: DiagnosticCategory.Message,
+        });
+    }
 
-  pushError(text: string) {
-    this.push({
-      messageText: text,
-      category: DiagnosticCategory.Error,
-    });
-  }
+    pushWarning(text: string): void {
+        this.push({
+            messageText: text,
+            category: DiagnosticCategory.Warning,
+        });
+    }
 
-  pushFatalError(text: string) {
-    this.pushError(text);
-    this.fatalError = true;
-  }
+    pushError(text: string): void {
+        this.push({
+            messageText: text,
+            category: DiagnosticCategory.Error,
+        });
+    }
+
+    pushFatalError(text: string): void {
+        this.pushError(text);
+        this.fatalError = true;
+    }
 }

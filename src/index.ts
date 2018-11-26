@@ -23,13 +23,7 @@ import convertImageToTXI, { ConvertImageToTXIOptions, TXIOutputFormat } from './
 import { errataPrimaryExpressionInSwitch } from './errataWorkarounds';
 import gulpMagicString from './gulpMagicString';
 import gulpSetProperty from './gulpSetProperty';
-import {
-  logDiagnosticToConsole,
-  Diagnostic,
-  DiagnosticCategory,
-  DiagnosticHandler,
-  DiagnosticTarget,
-} from './diagnostics';
+import { logDiagnosticToConsole, Diagnostic, DiagnosticCategory, DiagnosticHandler, DiagnosticTarget } from './diagnostics';
 import filterResourceTag from './filterResourceTag';
 import findEntryPoint from './findEntryPoint';
 import nativeComponents from './nativeComponents';
@@ -43,310 +37,311 @@ import zip from './zip';
 
 export { DiagnosticCategory };
 
-export function generateBuildId() {
-  return `0x0${simpleRandom({
-    // Edge doesn't support the crypto API in a WebWorker
-    // so we fallback to Math.random here in that case
-    secure: simpleRandom.isSecureSupported,
-    chars: '0123456789abcdef',
-    length: 15,
-  })}`;
+interface IProjectConfigProps {
+    onDiagnostic: DiagnosticHandler;
+    fileName?: string;
 }
 
-function addDiagnosticTarget(target: DiagnosticTarget, onDiagnostic: DiagnosticHandler) {
-  return (diagnostic: Diagnostic) => onDiagnostic({ target, ...diagnostic });
+export function generateBuildId(): string {
+    return `0x0${simpleRandom({
+        // Edge doesn't support the crypto API in a WebWorker
+        // so we fallback to Math.random here in that case
+        secure: simpleRandom.isSecureSupported,
+        chars: '0123456789abcdef',
+        length: 15,
+    })}`;
 }
 
-function lazyObjectReadable(fn: () => Readable) {
-  return new lazystream.Readable(fn, { objectMode: true });
+function addDiagnosticTarget(target: DiagnosticTarget, onDiagnostic: DiagnosticHandler): (diagnostic: Diagnostic) => void {
+    return (diagnostic: Diagnostic) => onDiagnostic({ target, ...diagnostic });
+}
+
+function lazyObjectReadable(fn: () => Readable): lazystream.Readable {
+    return new lazystream.Readable(fn, { objectMode: true });
 }
 
 export function loadProjectConfig({
-  onDiagnostic = logDiagnosticToConsole,
-  fileName = 'package.json',
-}) {
-  try {
-    const config = normalizeProjectConfig(JSON.parse(
-      fs.readFileSync(fileName, 'utf-8'),
-    ));
-    const diagnostics = validate(config);
-    diagnostics.diagnostics.forEach(
-      diagnostic => onDiagnostic({ file: { path: fileName }, ...diagnostic }),
-    );
+    onDiagnostic = logDiagnosticToConsole,
+    fileName = 'package.json',
+}: IProjectConfigProps): ProjectConfiguration {
+    try {
+        const config = normalizeProjectConfig(JSON.parse(fs.readFileSync(fileName, 'utf-8')));
+        const diagnostics = validate(config);
+        diagnostics.diagnostics.forEach(diagnostic => onDiagnostic({ file: { path: fileName }, ...diagnostic }));
 
-    if (diagnostics.fatalError) throw new Error('Project configuration is invalid');
+        if (diagnostics.fatalError) {
+            throw new Error('Project configuration is invalid');
+        }
 
-    if (config.enableProposedAPI) {
-      onDiagnostic({
-        category: DiagnosticCategory.Warning,
-        // tslint:disable-next-line:max-line-length
-        messageText: 'Targeting proposed API may cause your app to behave unexpectedly. Use only when needed for development or QA.',
-      });
+        if (config.enableProposedAPI) {
+            onDiagnostic({
+                category: DiagnosticCategory.Warning,
+                messageText:
+                    'Targeting proposed API may cause your app to behave unexpectedly. Use only when needed for development or QA.',
+            });
+        }
+
+        return config;
+    } catch (err) {
+        throw new PluginError('projectConfig', err, { fileName });
     }
-
-    return config;
-  } catch (err) {
-    throw new PluginError('projectConfig', err, { fileName });
-  }
 }
 
 export function buildComponent({
-  projectConfig,
-  component,
-  onDiagnostic = logDiagnosticToConsole,
+    projectConfig,
+    component,
+    onDiagnostic = logDiagnosticToConsole,
 }: {
-  projectConfig: ProjectConfiguration,
-  component: ComponentType,
-  onDiagnostic?: DiagnosticHandler,
-}) {
-  const { inputs, output, notFoundIsFatal } = componentTargets[component];
-  const entryPoint = findEntryPoint(
-    inputs,
-    { onDiagnostic, component, notFoundIsFatal },
-  );
-  if (!entryPoint) return;
-  return lazyObjectReadable(() => compile(component, entryPoint, output, {
-    onDiagnostic,
-    allowUnknownExternals: projectConfig.enableProposedAPI,
-  }));
+    projectConfig: ProjectConfiguration;
+    component: ComponentType;
+    onDiagnostic?: DiagnosticHandler;
+}): lazystream.Readable | undefined {
+    const { inputs, output, notFoundIsFatal } = componentTargets[component];
+    const entryPoint = findEntryPoint(inputs, { onDiagnostic, component, notFoundIsFatal });
+    if (!entryPoint) {
+        return undefined;
+    }
+    return lazyObjectReadable(() =>
+        compile(component, entryPoint, output, {
+            onDiagnostic,
+            allowUnknownExternals: projectConfig.enableProposedAPI,
+        })
+    );
 }
 
 export function buildDeviceResources(
-  projectConfig: ProjectConfiguration,
-  { resourceFilterTag }: BuildTargetDescriptor,
-  onDiagnostic = logDiagnosticToConsole,
-) {
-  const convertImageToTXIOptions: ConvertImageToTXIOptions = {};
-  if (sdkVersion().major >= 2) convertImageToTXIOptions.rgbaOutputFormat = TXIOutputFormat.RGBA6666;
+    projectConfig: ProjectConfiguration,
+    { resourceFilterTag }: BuildTargetDescriptor,
+    onDiagnostic: DiagnosticHandler = logDiagnosticToConsole
+): pumpify {
+    const convertImageToTXIOptions: ConvertImageToTXIOptions = {};
+    if (sdkVersion().major >= 2) {
+        convertImageToTXIOptions.rgbaOutputFormat = TXIOutputFormat.RGBA6666;
+    }
 
-  return new pumpify.obj(
-    filterResourceTag(resourceFilterTag),
-    validateIcon({ projectConfig, onDiagnostic }),
-    convertImageToTXI(convertImageToTXIOptions),
-    vinylAssertFiles([resources.svgMain, resources.svgWidgets]),
-  );
+    return new pumpify.obj(
+        filterResourceTag(resourceFilterTag),
+        validateIcon({ projectConfig, onDiagnostic }),
+        convertImageToTXI(convertImageToTXIOptions),
+        vinylAssertFiles([resources.svgMain, resources.svgWidgets])
+    );
 }
 
 export function buildDeviceComponents({
-  projectConfig,
-  buildId,
-  onDiagnostic = logDiagnosticToConsole,
+    projectConfig,
+    buildId,
+    onDiagnostic = logDiagnosticToConsole,
 }: {
-  projectConfig: ProjectConfiguration,
-  buildId: string,
-  onDiagnostic?: DiagnosticHandler,
-}) {
-  const deviceJSPipeline: Stream[] = [
-    // TODO: remove is-defined assertion ('!')
-    buildComponent({
-      projectConfig,
-      onDiagnostic,
-      component: ComponentType.DEVICE,
-    })!,
-  ];
+    projectConfig: ProjectConfiguration;
+    buildId: string;
+    onDiagnostic?: DiagnosticHandler;
+}): NodeJS.ReadableStream {
+    const deviceJSPipeline: Stream[] = [
+        // TODO: remove is-defined assertion ('!')
+        buildComponent({
+            projectConfig,
+            onDiagnostic,
+            component: ComponentType.DEVICE,
+        })!,
+    ];
 
-  if (sdkVersion().major < 3) {
-    deviceJSPipeline.push(
-      gulpMagicString(errataPrimaryExpressionInSwitch),
-    );
-  }
+    if (sdkVersion().major < 3) {
+        deviceJSPipeline.push(gulpMagicString(errataPrimaryExpressionInSwitch));
+    }
 
-  const processedJS = new playbackStream({ objectMode: true });
-  deviceJSPipeline.push(processedJS);
+    const processedJS = new playbackStream({ objectMode: true });
+    deviceJSPipeline.push(processedJS);
 
-  return multistream.obj([
-    // Sequence the build process: wait until compilation finishes
-    // before building the resources for each component.
-    new pumpify.obj(
-      ...deviceJSPipeline,
-      // We don't want to send the JS file downstream directly. It will
-      // be played back into the individual device component pipelines.
-      dropStream.obj(),
-    ),
-
-    ...projectConfig.buildTargets.map(family => lazyObjectReadable(() => {
-      const { platform, displayName } = buildTargets[family];
-      onDiagnostic({
-        messageText: `Building app for ${displayName}`,
-        category: DiagnosticCategory.Message,
-      });
-
-      const sourceMap = collectComponentSourceMaps();
-        // Split so that JS doesn't pass through resource filtering
-      return new pumpify.obj(
-        mergeStream(
-          new pumpify.obj(
-            processedJS.newReadableSide({ objectMode: true }),
-            sourceMap.collector(ComponentType.DEVICE, family),
-          ),
-          new pumpify.obj(
-            // Things can start glitching out if multiple vinylFS.src()
-            // streams with the same glob pattern are in use
-            // concurrently. (IPD-102519)
-            // We're serializing the execution of the pipelines, so
-            // there should not be any opportunity for glitches as only
-            // one vinylFS stream is active at a time. Wrapping the
-            // vinylFS stream in a playbackStream would be safer, but
-            // would buffer all the resources into memory at once with
-            // no backpressure. We like our users and don't want to eat
-            // all their RAM, so we just have to be careful not to
-            // introduce a regression when modifying this code.
-            vinylFS.src('./resources/**', { base: '.' }),
-            buildDeviceResources(projectConfig, buildTargets[family], onDiagnostic),
-          ),
-          new pumpify.obj(
-            vinylFS.src('./app/**/*.po', { base: '.' }),
-            compileTranslations(),
-          ),
+    return multistream.obj([
+        // Sequence the build process: wait until compilation finishes
+        // before building the resources for each component.
+        new pumpify.obj(
+            ...deviceJSPipeline,
+            // We don't want to send the JS file downstream directly. It will
+            // be played back into the individual device component pipelines.
+            dropStream.obj()
         ),
-        makeDeviceManifest({ projectConfig, buildId }),
-        zip(`device-${family}.zip`, { compress: sdkVersion().major >= 3 }),
-        gulpSetProperty({
-          componentBundle: {
-            family,
-            platform,
-            type: 'device',
-          },
-        }),
-        sourceMap.emitter,
-      );
-    })),
-  ]);
+
+        ...projectConfig.buildTargets.map(family =>
+            lazyObjectReadable(() => {
+                const { platform, displayName } = buildTargets[family];
+                onDiagnostic({
+                    messageText: `Building app for ${displayName}`,
+                    category: DiagnosticCategory.Message,
+                });
+
+                const sourceMap = collectComponentSourceMaps();
+                // Split so that JS doesn't pass through resource filtering
+                return new pumpify.obj(
+                    mergeStream(
+                        new pumpify.obj(
+                            processedJS.newReadableSide({ objectMode: true }),
+                            sourceMap.collector(ComponentType.DEVICE, family)
+                        ),
+                        new pumpify.obj(
+                            // Things can start glitching out if multiple vinylFS.src()
+                            // streams with the same glob pattern are in use
+                            // concurrently. (IPD-102519)
+                            // We're serializing the execution of the pipelines, so
+                            // there should not be any opportunity for glitches as only
+                            // one vinylFS stream is active at a time. Wrapping the
+                            // vinylFS stream in a playbackStream would be safer, but
+                            // would buffer all the resources into memory at once with
+                            // no backpressure. We like our users and don't want to eat
+                            // all their RAM, so we just have to be careful not to
+                            // introduce a regression when modifying this code.
+                            vinylFS.src('./resources/**', { base: '.' }),
+                            buildDeviceResources(projectConfig, buildTargets[family], onDiagnostic)
+                        ),
+                        new pumpify.obj(vinylFS.src('./app/**/*.po', { base: '.' }), compileTranslations())
+                    ),
+                    makeDeviceManifest({ projectConfig, buildId }),
+                    zip(`device-${family}.zip`, { compress: sdkVersion().major >= 3 }),
+                    gulpSetProperty({
+                        componentBundle: {
+                            family,
+                            platform,
+                            type: 'device',
+                        },
+                    }),
+                    sourceMap.emitter
+                );
+            })
+        ),
+    ]);
 }
 
 export function buildCompanion({
-  projectConfig,
-  buildId,
-  onDiagnostic = logDiagnosticToConsole,
+    projectConfig,
+    buildId,
+    onDiagnostic = logDiagnosticToConsole,
 }: {
-  projectConfig: ProjectConfiguration,
-  buildId: string,
-  onDiagnostic?: DiagnosticHandler,
-}) {
-  const sourceMaps = collectComponentSourceMaps();
+    projectConfig: ProjectConfiguration;
+    buildId: string;
+    onDiagnostic?: DiagnosticHandler;
+}): lazystream.Readable | undefined {
+    const sourceMaps = collectComponentSourceMaps();
 
-  const diagnosticTargets = {
-    [ComponentType.COMPANION]: DiagnosticTarget.Companion,
-    [ComponentType.SETTINGS]: DiagnosticTarget.Settings,
-    [ComponentType.DEVICE]: DiagnosticTarget.App,
-  };
+    const diagnosticTargets = {
+        [ComponentType.COMPANION]: DiagnosticTarget.Companion,
+        [ComponentType.SETTINGS]: DiagnosticTarget.Settings,
+        [ComponentType.DEVICE]: DiagnosticTarget.App,
+    };
 
-  const [companion, settings] = [ComponentType.COMPANION, ComponentType.SETTINGS]
-    .map((componentType) => {
-      const targetedDiagnostic = addDiagnosticTarget(
-        diagnosticTargets[componentType],
-        onDiagnostic,
-      );
-      const component = buildComponent({
-        projectConfig,
-        component: componentType,
-        onDiagnostic: targetedDiagnostic,
-      });
-      if (component) {
-        return lazyObjectReadable(() => {
-          targetedDiagnostic({
-            category: DiagnosticCategory.Message,
-            messageText: `Building ${diagnosticTargets[componentType]}`,
-          });
-          return new pumpify.obj(component, sourceMaps.collector(componentType));
+    const [companion, settings] = [ComponentType.COMPANION, ComponentType.SETTINGS].map(componentType => {
+        const targetedDiagnostic = addDiagnosticTarget(diagnosticTargets[componentType], onDiagnostic);
+        const component = buildComponent({
+            projectConfig,
+            component: componentType,
+            onDiagnostic: targetedDiagnostic,
         });
-      }
-      return component;
+        if (component) {
+            return lazyObjectReadable(() => {
+                targetedDiagnostic({
+                    category: DiagnosticCategory.Message,
+                    messageText: `Building ${diagnosticTargets[componentType]}`,
+                });
+                return new pumpify.obj(component, sourceMaps.collector(componentType));
+            });
+        }
+        return component;
     });
 
-  if (settings && !companion) {
-    throw new BuildError(
-      'This project is being built with settings, but has no companion component.',
+    if (settings && !companion) {
+        throw new BuildError('This project is being built with settings, but has no companion component.');
+    }
+
+    const components = [companion, settings].filter((component): component is pumpify => component !== undefined);
+    if (components.length === 0) {
+        return undefined;
+    }
+
+    return lazyObjectReadable(
+        () =>
+            new pumpify.obj(
+                multistream.obj(components),
+                makeCompanionManifest({
+                    projectConfig,
+                    buildId,
+                    hasSettings: !!settings,
+                }),
+                zip('companion.zip'),
+                gulpSetProperty({
+                    componentBundle: { type: 'companion' },
+                }),
+                sourceMaps.emitter
+            )
     );
-  }
-
-  const components = [companion, settings]
-    .filter((component): component is pumpify => component !== undefined);
-  if (components.length === 0) return;
-
-  return lazyObjectReadable(() => new pumpify.obj(
-    multistream.obj(components),
-    makeCompanionManifest({
-      projectConfig,
-      buildId,
-      hasSettings: !!settings,
-    }),
-    zip('companion.zip'),
-    gulpSetProperty({
-      componentBundle: { type: 'companion' },
-    }),
-    sourceMaps.emitter,
-  ));
 }
 
 export function buildAppPackage({
-  projectConfig,
-  buildId,
-  existingDeviceComponents,
-  onDiagnostic = logDiagnosticToConsole,
-}: {
-  projectConfig: ProjectConfiguration,
-  buildId: string,
-  existingDeviceComponents?: Readable,
-  onDiagnostic?: DiagnosticHandler,
-}) {
-  const components = [];
-
-  if (existingDeviceComponents) {
-    components.push(existingDeviceComponents);
-  } else {
-    components.push(buildDeviceComponents({
-      projectConfig,
-      buildId,
-      onDiagnostic: addDiagnosticTarget(DiagnosticTarget.App, onDiagnostic),
-    }));
-  }
-
-  const companion = buildCompanion({
     projectConfig,
     buildId,
-    onDiagnostic: addDiagnosticTarget(DiagnosticTarget.Companion, onDiagnostic),
-  });
+    existingDeviceComponents,
+    onDiagnostic = logDiagnosticToConsole,
+}: {
+    projectConfig: ProjectConfiguration;
+    buildId: string;
+    existingDeviceComponents?: Readable;
+    onDiagnostic?: DiagnosticHandler;
+}): pumpify {
+    const components = [];
 
-  if (companion) components.push(companion);
+    if (existingDeviceComponents) {
+        components.push(existingDeviceComponents);
+    } else {
+        components.push(
+            buildDeviceComponents({
+                projectConfig,
+                buildId,
+                onDiagnostic: addDiagnosticTarget(DiagnosticTarget.App, onDiagnostic),
+            })
+        );
+    }
 
-  return new pumpify.obj(
-    multistream.obj(components),
-    appPackageManifest({
-      projectConfig,
-      buildId,
-    }),
-    zip('app.fba'),
-  );
+    const companion = buildCompanion({
+        projectConfig,
+        buildId,
+        onDiagnostic: addDiagnosticTarget(DiagnosticTarget.Companion, onDiagnostic),
+    });
+
+    if (companion) {
+        components.push(companion);
+    }
+
+    return new pumpify.obj(
+        multistream.obj(components),
+        appPackageManifest({
+            projectConfig,
+            buildId,
+        }),
+        zip('app.fba')
+    );
 }
 
 export function buildProject({
-  nativeDeviceComponentPaths = [],
-  onDiagnostic = logDiagnosticToConsole,
+    nativeDeviceComponentPaths = [],
+    onDiagnostic = logDiagnosticToConsole,
 }: {
-  nativeDeviceComponentPaths?: string[],
-  onDiagnostic?: DiagnosticHandler,
-}) {
-  let buildId: string;
-  let existingDeviceComponents: Readable | undefined;
+    nativeDeviceComponentPaths?: string[];
+    onDiagnostic?: DiagnosticHandler;
+}): pumpify {
+    let buildId: string;
+    let existingDeviceComponents: Readable | undefined;
 
-  const projectConfig = loadProjectConfig({ onDiagnostic });
+    const projectConfig = loadProjectConfig({ onDiagnostic });
 
-  if (nativeDeviceComponentPaths.length > 0) {
-    ({ buildId, existingDeviceComponents } = nativeComponents(
-      projectConfig.appUUID,
-      nativeDeviceComponentPaths,
-    ));
-  } else {
-    buildId = generateBuildId();
-  }
+    if (nativeDeviceComponentPaths.length > 0) {
+        ({ buildId, existingDeviceComponents } = nativeComponents(projectConfig.appUUID, nativeDeviceComponentPaths));
+    } else {
+        buildId = generateBuildId();
+    }
 
-  return buildAppPackage({ projectConfig, buildId, onDiagnostic, existingDeviceComponents })
-    .on('finish', () => {
-      onDiagnostic({
-        messageText: `App UUID: ${projectConfig.appUUID}, BuildID: ${buildId}`,
-        category: DiagnosticCategory.Message,
-      });
+    return buildAppPackage({ projectConfig, buildId, onDiagnostic, existingDeviceComponents }).on('finish', () => {
+        onDiagnostic({
+            messageText: `App UUID: ${projectConfig.appUUID}, BuildID: ${buildId}`,
+            category: DiagnosticCategory.Message,
+        });
     });
 }
 
@@ -357,30 +352,25 @@ export function buildProject({
  * reason, the returned Promise rejects with the error.
  */
 export function build({
-  dest = vinylFS.dest('./build'),
-  onDiagnostic = logDiagnosticToConsole,
-  nativeDeviceComponentPaths,
+    dest = vinylFS.dest('./build'),
+    onDiagnostic = logDiagnosticToConsole,
+    nativeDeviceComponentPaths,
 }: {
-  dest?: Stream,
-  nativeDeviceComponentPaths?: string[],
-  onDiagnostic?: DiagnosticHandler,
-} = {}) {
-  return new Promise<void>((resolve, reject) => {
-    new pumpify.obj(
-      buildProject({ nativeDeviceComponentPaths, onDiagnostic }),
-      dest,
-    )
-      .on('error', reject)
-      .on('finish', resolve);
-  }).catch((e) => {
-    if (pluginError.isPluginError(e) && pluginError.isProjectBuildError(e)) {
-      onDiagnostic(pluginError.convertToDiagnostic(e));
-      return Promise.reject();
-    }
-    if (BuildError.is(e)) {
-      onDiagnostic(e.toDiagnostic());
-      return Promise.reject();
-    }
-    return Promise.reject(e);
-  });
+    dest?: Stream;
+    nativeDeviceComponentPaths?: string[];
+    onDiagnostic?: DiagnosticHandler;
+} = {}): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        new pumpify.obj(buildProject({ nativeDeviceComponentPaths, onDiagnostic }), dest).on('error', reject).on('finish', resolve);
+    }).catch(e => {
+        if (pluginError.isPluginError(e) && pluginError.isProjectBuildError(e)) {
+            onDiagnostic(pluginError.convertToDiagnostic(e));
+            return Promise.reject();
+        }
+        if (BuildError.is(e)) {
+            onDiagnostic(e.toDiagnostic());
+            return Promise.reject();
+        }
+        return Promise.reject(e);
+    });
 }

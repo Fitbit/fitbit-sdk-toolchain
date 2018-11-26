@@ -9,10 +9,18 @@ const i18nModuleString = `
   export { gettext };
 `;
 
-export default function i18nPolyfill(translationsGlob: string) {
-  return {
-    '\0lang:table': companionTranslations(translationsGlob),
-    '\0lang:gettext-factory': gettextFactoryConst,
-    i18n: i18nModuleString,
-  };
+interface Ii18nPolyfill {
+    // tslint:disable-next-line:no-any
+    [key: string]: any;
+    '\0lang:table': () => Promise<string>;
+    '\0lang:gettext-factory': string;
+    i18n: string;
+}
+
+export default function i18nPolyfill(translationsGlob: string): Ii18nPolyfill {
+    return {
+        '\0lang:table': companionTranslations(translationsGlob),
+        '\0lang:gettext-factory': gettextFactoryConst,
+        i18n: i18nModuleString,
+    };
 }

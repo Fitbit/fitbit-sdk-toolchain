@@ -1,20 +1,51 @@
 {
-  "extends": "tslint-config-airbnb",
-  "rules": {
-    "no-inferrable-types": true,
-    "prefer-template": [true, "allow-single-concat"],
-    "import-name": [true, {
-      "errorSubclass": "ErrorSubclass",
-      "magicString": "MagicString",
-      "pluginError": "PluginError",
-      "typescript": "ts",
-      "vinyl": "Vinyl",
-      "vinylFs": "vinylFS"
-    }]
-  },
-  "linterOptions": {
-    "exclude": [
-      "src/__test__"
-    ]
-  }
+    "extends": ["tslint-config-airbnb", "tslint-config-prettier", "tslint-sonarts"],
+    "rulesDirectory": ["tslint-microsoft-contrib"],
+    "rules": {
+        "no-inferrable-types": false,
+        "prefer-template": [true, "allow-single-concat"],
+        "import-name": [
+            true,
+            {
+                "errorSubclass": "ErrorSubclass",
+                "magicString": "MagicString",
+                "pluginError": "PluginError",
+                "typescript": "ts",
+                "vinyl": "Vinyl",
+                "vinylFs": "vinylFS"
+            }
+        ],
+        "array-type": [true, "array"],
+        "semicolon": [true, "always", "ignore-bound-class-methods"],
+        "typedef": [true, "call-signature", "parameter", "member-variable-declaration"],
+        "curly": true,
+        "interface-name": [false],
+        "no-any": true,
+        "no-floating-promises": true,
+        "no-unused-expression": true,
+        "return-undefined": true,
+        "no-duplicate-super": true,
+        "no-invalid-this": true,
+        "no-use-before-declare": true,
+        "triple-equals": true,
+        "deprecation": true,
+        "max-classes-per-file": [true, 1],
+        "promise-must-complete": true,
+        "no-function-expression": true,
+        "no-gratuitous-expressions": true,
+        "no-inconsistent-return": true,
+        "no-dead-store": true,
+        "cognitive-complexity": false,
+        "parameters-max-number": [true, 14],
+        "use-primitive-type": true,
+        "no-identical-functions": true,
+        "prefer-immediate-return": true,
+        "no-useless-cast": true,
+        "prefer-for-of": false,
+        "variable-name": false
+        // "ordered-imports": true
+    },
+    "linterOptions": {
+        "exclude": ["src/__test__"]
+    }
 }

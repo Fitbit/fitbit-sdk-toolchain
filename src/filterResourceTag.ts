@@ -4,42 +4,42 @@ import Vinyl from 'vinyl';
 import splitTaggedFilename from './splitTaggedFilename';
 
 class FilterResourceTag extends Transform {
-  private files = new Map<string, Vinyl>();
+    private files: Map<string, Vinyl> = new Map<string, Vinyl>();
 
-  constructor(private resourceFilterTag: string) {
-    super({ objectMode: true });
-  }
-
-  // tslint:disable-next-line:function-name
-  _transform(file: Vinyl, _: any, callback: TransformCallback) {
-    if (file.isDirectory()) {
-      callback(undefined, file);
-      return;
+    constructor(private resourceFilterTag: string) {
+        super({ objectMode: true });
     }
 
-    const { basename, tag } = splitTaggedFilename(file.basename);
-    if (tag === this.resourceFilterTag || (tag === undefined && !this.files.has(file.path))) {
-      const newFile = file.clone({ contents: false });
-      newFile.basename = basename;
-      this.files.set(newFile.path, newFile);
-    }
-    callback();
-  }
+    // tslint:disable-next-line:function-name
+    _transform(file: Vinyl, _: unknown, callback: TransformCallback): void {
+        if (file.isDirectory()) {
+            callback(undefined, file);
+            return;
+        }
 
-  // tslint:disable-next-line:function-name
-  _flush(callback: TransformCallback) {
-    for (const file of this.files.values()) {
-      this.push(file);
+        const { basename, tag } = splitTaggedFilename(file.basename);
+        if (tag === this.resourceFilterTag || (tag === undefined && !this.files.has(file.path))) {
+            const newFile = file.clone({ contents: false });
+            newFile.basename = basename;
+            this.files.set(newFile.path, newFile);
+        }
+        callback();
     }
 
-    this.files.clear();
-    callback();
-  }
+    // tslint:disable-next-line:function-name
+    _flush(callback: TransformCallback): void {
+        for (const file of this.files.values()) {
+            this.push(file);
+        }
+
+        this.files.clear();
+        callback();
+    }
 }
 
 /**
  * Strip the resource tags out of file names.
  */
-export default function filterResourceTag(tagName: string) {
-  return new FilterResourceTag(tagName);
+export default function filterResourceTag(tagName: string): FilterResourceTag {
+    return new FilterResourceTag(tagName);
 }

@@ -1,7 +1,8 @@
 import polyfill from './polyfill';
+import { Plugin } from 'rollup';
 
 const modules = {
-  i18n: `
+    i18n: `
 import { getResource } from 'resources';
 
 export function gettext(msgid) {
@@ -12,6 +13,6 @@ export function gettext(msgid) {
 `,
 };
 
-export default function polyfillDevice() {
-  return polyfill(modules);
+export default function polyfillDevice(): Plugin {
+    return polyfill(modules);
 }

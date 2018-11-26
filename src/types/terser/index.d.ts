@@ -1,22 +1,20 @@
-import { MangleOptions } from "uglify-js";
+import { MangleOptions } from 'uglify-js';
 
-interface CompressOptions {
-
-}
+interface CompressOptions {}
 
 interface MangleOptions {
-  toplevel?: boolean;
+    toplevel?: boolean;
 }
 
 interface OutputOptions {
-  semicolons?: boolean;
+    semicolons?: boolean;
 }
 
 export interface TerserOptions {
-  ecma?: 5 | 6 | 7 | 8;
-  compress?: CompressOptions | false;
-  mangle?: MangleOptions | false;
-  output?: OutputOptions;
+    ecma?: 5 | 6 | 7 | 8;
+    compress?: CompressOptions | false;
+    mangle?: MangleOptions | false;
+    output?: OutputOptions;
 }
 
 interface TerserResult {}

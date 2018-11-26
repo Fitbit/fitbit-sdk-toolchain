@@ -3,16 +3,16 @@ import ErrorSubclass from 'error-subclass';
 import { Diagnostic, DiagnosticCategory } from '../diagnostics';
 
 export default class BuildError extends ErrorSubclass {
-  static displayName = 'BuildError';
+    static displayName: string = 'BuildError';
 
-  static is(error: Error): error is BuildError {
-    return error instanceof BuildError;
-  }
+    static is(error: Error): error is BuildError {
+        return error instanceof BuildError;
+    }
 
-  toDiagnostic(): Diagnostic {
-    return {
-      category: DiagnosticCategory.Error,
-      messageText: this.message,
-    };
-  }
+    toDiagnostic(): Diagnostic {
+        return {
+            category: DiagnosticCategory.Error,
+            messageText: this.message,
+        };
+    }
 }

@@ -1,4 +1,4 @@
 declare namespace jestDateMock {
-  function advanceTo(date: Date): void;
+    function advanceTo(date: Date): void;
 }
 export = jestDateMock;

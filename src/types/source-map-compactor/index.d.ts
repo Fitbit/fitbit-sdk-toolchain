@@ -1,3 +1,5 @@
 declare function sourceMapCompactor(map: { toString(): string }): string;
-declare namespace sourceMapCompactor { }
+declare namespace sourceMapCompactor {
+
+}
 export = sourceMapCompactor;

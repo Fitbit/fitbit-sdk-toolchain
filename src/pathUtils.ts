@@ -1,3 +1,3 @@
-export function normalizeToPOSIX(fileName: string) {
-  return fileName.split('\\').join('/');
+export function normalizeToPOSIX(fileName: string): string {
+    return fileName.split('\\').join('/');
 }
