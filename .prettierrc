@@ -10,6 +10,6 @@
   ],
   "printWidth": 100,
   "typescriptEnable": ["typescript"],
-  "trailingComma": "es5",
+  "trailingComma": "all",
   "singleQuote": true
 }
