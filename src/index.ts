@@ -195,7 +195,7 @@ export function buildDeviceComponents({
             buildDeviceResources(projectConfig, buildTargets[family], onDiagnostic),
           ),
           new pumpify.obj(
-            vinylFS.src('./app/**/*.po', { base: '.' }),
+            vinylFS.src('./app/i18n/*.po', { base: '.' }),
             compileTranslations(),
           ),
         ),
