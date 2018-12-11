@@ -26,7 +26,7 @@ async function loadTranslations(filePath: string) {
   return messages;
 }
 
-export default function companionTranslations(globPattern: string) {
+export default function companionTranslations(globPattern: string, fallbackLocale: string) {
   return async () => {
     const languagePaths = new Map<string, string>();
     const translations: LanguageTable = {};
@@ -48,6 +48,13 @@ export default function companionTranslations(globPattern: string) {
 
       languagePaths.set(tag, filePath);
       translations[tag] = await loadTranslations(filePath);
+    }
+
+    const languageTags = Object.keys(translations);
+    if (languageTags.indexOf(fallbackLocale) === -1) {
+      throw new Error(
+        `No translation file found for fallback locale ${fallbackLocale}`,
+      );
     }
 
     return dataToEsm(translations, { namedExports: false });

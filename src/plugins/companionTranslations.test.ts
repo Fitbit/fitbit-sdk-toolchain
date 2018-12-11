@@ -15,21 +15,26 @@ expect.addSnapshotSerializer({
   },
 });
 
-function expectTranslations(...paths: string[]) {
-  return expect(companionTranslations(path.join(basePath, ...paths))());
+function expectTranslations(translationsPath: string, fallbackLocale: string) {
+  return expect(
+    companionTranslations(
+      path.join(basePath, translationsPath),
+      fallbackLocale,
+    )(),
+  );
 }
 
-it('emits an empty module when no .po files are present', () =>
-  expectTranslations('no-po-files', '**', '*.po').resolves.toMatchSnapshot());
-
 it('builds a table from all the available translations', () =>
-  expectTranslations('good', '**', '*.po').resolves.toMatchSnapshot());
+  expectTranslations('good/**/*.po', 'fr').resolves.toMatchSnapshot());
 
 it('throws when multiple files map to the same language', () =>
-  expectTranslations('language-collision', '**', '*.po').rejects.toMatchSnapshot());
+  expectTranslations('language-collision/**/*.po', 'en-US').rejects.toMatchSnapshot());
 
 it('throws when a translation file has multiple msgstr values for the same msgid', () =>
-  expectTranslations('multiple-msgstr', 'en.po').rejects.toMatchSnapshot());
+  expectTranslations('multiple-msgstr/en.po', 'en').rejects.toMatchSnapshot());
+
+it('throws if the fallback locale is not defined', () =>
+  expectTranslations('good/**/*.po', 'it').rejects.toMatchSnapshot());
 
 it.each([
   '.po',
@@ -37,4 +42,4 @@ it.each([
   'english.po',
   'enus.po',
 ])('throws when encountering the badly named file %j', (name: string) =>
-  expectTranslations('bad-name', name).rejects.toMatchSnapshot());
+  expectTranslations(`bad-name/${name}`, 'en').rejects.toMatchSnapshot());

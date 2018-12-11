@@ -202,7 +202,7 @@ export function buildDeviceComponents({
           ),
           new pumpify.obj(
             vinylFS.src(componentTargets.device.translationsGlob, { base: '.' }),
-            compileTranslations(),
+            compileTranslations(projectConfig.fallbackLocale),
           ),
         ),
         makeDeviceManifest({ projectConfig, buildId }),

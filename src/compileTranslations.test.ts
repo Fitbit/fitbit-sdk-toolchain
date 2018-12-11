@@ -42,7 +42,7 @@ function translationFileSource(...paths: string[]) {
 
 describe('when no files are piped', () => {
   it('succeeds with empty output', (done) => {
-    compileTranslations()
+    compileTranslations('en')
       .on('error', done.fail)
       .resume()
       .on('end', done)
@@ -59,7 +59,7 @@ describe('when no .po files are piped in', () => {
 
     const files = new Map<string, Vinyl>();
 
-    compileTranslations()
+    compileTranslations('en')
       .on('error', done.fail)
       .on('data', (file: Vinyl) => files.set(file.relative, file))
       .on('end', () => {
@@ -72,20 +72,20 @@ describe('when no .po files are piped in', () => {
 
 it('grabs .po files from any directory', (done) => {
   translationFileSource('en.po', 'foo/es.po', 'foo/bar/fr.po')
-    .pipe(compileTranslations())
+    .pipe(compileTranslations('en'))
     .on('error', done.fail)
     .pipe(expectTranslationsForLanguages(done, 'en', 'es', 'fr'));
 });
 
 it('normalizes the language tag of the file name', (done) => {
   translationFileSource('eN-us.po', 'DE.po')
-    .pipe(compileTranslations())
+    .pipe(compileTranslations('en-US'))
     .on('error', done.fail)
     .pipe(expectTranslationsForLanguages(done, 'en-US', 'de'));
 });
 
-function compileExpectError(done: jest.DoneCallback) {
-  return compileTranslations()
+function compileExpectError(fallbackLocale: string, done: jest.DoneCallback) {
+  return compileTranslations(fallbackLocale)
     .on('data', () => done.fail('got unexpected data'))
     .on('error', (error) => {
       expect(error).toMatchSnapshot();
@@ -97,7 +97,7 @@ describe('rejects .po files whose names are not acceptable language tags', () =>
   it.each(['e.po', 'en-USA.po', 'sl-IT-nedis.po'])(
     '%s',
     (path: string, done: jest.DoneCallback) => {
-      compileExpectError(done)
+      compileExpectError('en', done)
         .end(new Vinyl({
           path,
           contents: Buffer.from('foo'),
@@ -108,11 +108,16 @@ describe('rejects .po files whose names are not acceptable language tags', () =>
 
 it('bails when multiple .po files of the same name are present', (done) => {
   translationFileSource('en.po', 'a/en.po')
-    .pipe(compileExpectError(done));
+    .pipe(compileExpectError('en', done));
+});
+
+it('bails when the fallback locale is not present', (done) => {
+  translationFileSource('en.po')
+    .pipe(compileExpectError('es', done));
 });
 
 it('bails when a .po file is malformed', (done) => {
-  compileExpectError(done)
+  compileExpectError('en', done)
     .end(new Vinyl({
       path: 'en.po',
       contents: Buffer.from('definitely not gettext format'),
@@ -120,7 +125,7 @@ it('bails when a .po file is malformed', (done) => {
 });
 
 it('gracefully fails when a streaming-mode file is passed in', (done) => {
-  compileExpectError(done)
+  compileExpectError('en', done)
     .end(new Vinyl({
       path: 'en.po',
       contents: new PassThrough(),
@@ -129,7 +134,7 @@ it('gracefully fails when a streaming-mode file is passed in', (done) => {
 
 it('renames the transformed file, replacing the whole relative path', (done) => {
   translationFileSource('a/b/c/en-US.po')
-    .pipe(compileTranslations())
+    .pipe(compileTranslations('en-US'))
     .on('data', (file: Vinyl) => {
       expect(file.relative).toBe('l/en-US');
       done();
