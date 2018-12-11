@@ -2,6 +2,7 @@ interface ComponentTarget {
   inputs: string[];
   output: string;
   notFoundIsFatal: boolean;
+  translationsGlob: string;
 }
 
 export enum ComponentType {
@@ -18,6 +19,7 @@ const componentTarget: {[component in ComponentType]: ComponentTarget} = {
     ],
     output: 'app/index.js',
     notFoundIsFatal: true,
+    translationsGlob: 'app/i18n/*.po',
   },
   [ComponentType.COMPANION]: {
     inputs: [
@@ -26,11 +28,13 @@ const componentTarget: {[component in ComponentType]: ComponentTarget} = {
     ],
     output: 'companion.js',
     notFoundIsFatal: false,
+    translationsGlob: 'companion/i18n/*.po',
   },
   [ComponentType.SETTINGS]: {
     inputs: ['tsx', 'ts', 'jsx', 'js'].map(ext => `settings/index.${ext}`),
     output: 'settings.js',
     notFoundIsFatal: false,
+    translationsGlob: 'settings/i18n/*.po',
   },
 };
 

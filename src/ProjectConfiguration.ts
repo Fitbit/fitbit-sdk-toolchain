@@ -4,6 +4,7 @@ import lodash from 'lodash';
 
 import buildTargets from './buildTargets';
 import DiagnosticList from './DiagnosticList';
+import { normalizeLanguageTag } from './languageTag';
 
 const knownBuildTargets = Object.keys(buildTargets);
 
@@ -22,6 +23,7 @@ export interface BaseProjectConfiguration {
   appUUID: string;
   requestedPermissions: string[];
   i18n: LocalesConfig;
+  fallbackLocale: string;
   buildTargets: string[];
   // We don't want to accidentally serialize `enableProposedAPI: false`
   // out to users' package.json files.
@@ -183,6 +185,7 @@ export function normalizeProjectConfig(
     requestedPermissions: [],
     buildTargets: [],
     i18n: {},
+    fallbackLocale: 'en-US',
 
     // Override defaults
     ...defaults,
@@ -190,6 +193,11 @@ export function normalizeProjectConfig(
     // The config object proper
     ...config.fitbit as {},
   };
+
+  const normalizedFallbackLocale = normalizeLanguageTag(mergedConfig.fallbackLocale);
+  if (normalizedFallbackLocale !== null) {
+    mergedConfig.fallbackLocale = normalizedFallbackLocale;
+  }
 
   const { requestedPermissions } = mergedConfig;
   if (!Array.isArray(requestedPermissions)) {
@@ -322,6 +330,16 @@ export function validateAppUUID({ appUUID }: ProjectConfiguration) {
   return diagnostics;
 }
 
+export function validateFallbackLocale(config: ProjectConfiguration) {
+  const diagnostics = new DiagnosticList();
+  if (normalizeLanguageTag(config.fallbackLocale) === null) {
+    diagnostics.pushFatalError(
+      `Fallback locale is an invalid language tag: ${config.fallbackLocale}`,
+    );
+  }
+  return diagnostics;
+}
+
 export function validate(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
   [
@@ -333,6 +351,7 @@ export function validate(config: ProjectConfiguration) {
     validateBuildTarget,
     validateSupportedLocales,
     validateLocaleDisplayNames,
+    validateFallbackLocale,
   ].forEach(validator => diagnostics.extend(validator(config)));
   return diagnostics;
 }

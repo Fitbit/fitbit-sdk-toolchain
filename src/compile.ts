@@ -7,17 +7,17 @@ import rollupPluginJson from 'rollup-plugin-json';
 import rollupPluginNodeResolve from 'rollup-plugin-node-resolve';
 import ts from 'typescript';
 
-import { ComponentType } from './componentTargets';
-import { DiagnosticCategory, logDiagnosticToConsole } from './diagnostics';
+import componentTargets, { ComponentType } from './componentTargets';
+import { DiagnosticCategory, DiagnosticHandler, logDiagnosticToConsole } from './diagnostics';
 import externals from './externals';
 import rollupToVinyl from './rollupToVinyl';
 import sdkVersion from './sdkVersion';
 
 import brokenImports from './plugins/brokenImports';
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
-import polyfillCompanion from './plugins/polyfillCompanion';
+import i18nPolyfill from './plugins/i18nPolyfill';
+import polyfill from './plugins/polyfill';
 import polyfillDevice from './plugins/polyfillDevice';
-import polyfillSettings from './plugins/polyfillSettings';
 import resourceImports from './plugins/resourceImports';
 import typescript from './plugins/typescript';
 import rollupWarningHandler from './rollupWarningHandler';
@@ -40,15 +40,24 @@ function pluginIf(condition: boolean, plugin: () => rollup.Plugin) {
 }
 
 export default function compile(
-  component: ComponentType,
-  input: string,
-  output: string,
   {
+    component,
+    input,
+    output,
+    fallbackLocale,
     allowUnknownExternals = false,
     onDiagnostic = logDiagnosticToConsole,
+  } : {
+    component: ComponentType,
+    input: string,
+    output: string,
+    fallbackLocale: string,
+    allowUnknownExternals?: boolean,
+    onDiagnostic?: DiagnosticHandler,
   },
 ) {
   const ecma = sdkVersion().major >= 3 && component !== ComponentType.DEVICE ? 6 : 5;
+  const { translationsGlob } = componentTargets[component];
   return new pumpify.obj([
     rollupToVinyl(
       output,
@@ -64,8 +73,10 @@ export default function compile(
             },
           }),
           ...pluginIf(component === ComponentType.DEVICE, polyfillDevice),
-          ...pluginIf(component === ComponentType.COMPANION, polyfillCompanion),
-          ...pluginIf(component === ComponentType.SETTINGS, polyfillSettings),
+          ...pluginIf(
+            component !== ComponentType.DEVICE,
+            () => polyfill(i18nPolyfill(translationsGlob, fallbackLocale)),
+          ),
           ...pluginIf(
             sdkVersion().major < 3 || component === ComponentType.SETTINGS,
             resourceImports,

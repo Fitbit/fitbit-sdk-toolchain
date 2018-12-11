@@ -44,15 +44,14 @@ function compileFile(
     component = ComponentType.COMPANION,
   } = {},
 ) {
-  return getFileFromStream(compile(
+  return getFileFromStream(compile({
     component,
-    testResourcePath(filename),
-    'output.js',
-    {
-      allowUnknownExternals,
-      onDiagnostic: mockDiagnosticHandler,
-    },
-  ));
+    allowUnknownExternals,
+    input: testResourcePath(filename),
+    output: 'output.js',
+    onDiagnostic: mockDiagnosticHandler,
+    fallbackLocale: 'en-US',
+  }));
 }
 
 // Build and assert correct output
