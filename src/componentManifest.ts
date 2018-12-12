@@ -108,8 +108,8 @@ export function makeDeviceManifest({ projectConfig, buildId } : {
       const { [projectConfig.fallbackLocale]: fallbackLocale, ...otherLocales } = manifest.i18n;
       manifest.i18n = {
         [projectConfig.fallbackLocale]: fallbackLocale,
+        ...otherLocales,
       };
-      Object.assign(manifest.i18n, otherLocales);
 
       done(undefined, new Vinyl({
         cwd: '',
