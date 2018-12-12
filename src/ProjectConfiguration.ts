@@ -1,6 +1,7 @@
 import humanizeList from 'humanize-list';
 import { isHexColor, isUUID } from 'validator';
 import lodash from 'lodash';
+import semver from 'semver';
 
 import buildTargets from './buildTargets';
 import DiagnosticList from './DiagnosticList';
@@ -95,7 +96,7 @@ const permissionTypes = [
     key: 'access_exercise',
     name: 'Exercise Tracking',
     description: 'Application may track an exercise.',
-    sdkMajorVersion: 3,
+    sdkVersion: '>=3.0.0',
   },
 ];
 
@@ -121,7 +122,7 @@ function getAllPermissionTypes() {
   return [
     ...restrictedPermissionTypes,
     ...permissionTypes.filter(permission =>
-      !permission.sdkMajorVersion || sdkVersion().major >= permission.sdkMajorVersion),
+      !permission.sdkVersion || semver.satisfies(sdkVersion(), permission.sdkVersion)),
   ];
 }
 
