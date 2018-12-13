@@ -1,9 +1,11 @@
 import humanizeList from 'humanize-list';
 import { isHexColor, isUUID } from 'validator';
 import lodash from 'lodash';
+import semver from 'semver';
 
 import buildTargets from './buildTargets';
 import DiagnosticList from './DiagnosticList';
+import sdkVersion from './sdkVersion';
 
 const knownBuildTargets = Object.keys(buildTargets);
 
@@ -57,55 +59,71 @@ export const LOCALES = Object.freeze({
   'zh-tw': 'Chinese (T)',
 });
 
-const permissionTypes = Object.freeze({
-  access_activity: {
+const permissionTypes = [
+  {
+    key: 'access_activity',
     name: 'Activity',
     // tslint:disable-next-line:max-line-length
     description: 'Read user activities for today (distance, calories, steps, elevation and active minutes), and daily goals.',
   },
-  access_user_profile: {
+  {
+    key: 'access_user_profile',
     name: 'User Profile',
     // tslint:disable-next-line:max-line-length
     description: 'Read non-identifiable personal information (gender, age, height, weight, resting HR, basal metabolic rate, stride, HR zones).',
   },
-  access_heart_rate: {
+  {
+    key: 'access_heart_rate',
     name: 'Heart Rate',
     description: 'Application may read the heart-rate sensor in real-time.',
   },
-  access_location: {
+  {
+    key: 'access_location',
     name: 'Location',
     description: 'Application and companion may use GPS.',
   },
-  access_internet: {
+  {
+    key: 'access_internet',
     name: 'Internet',
     description: 'Companion may communicate with the Internet using your phone data connection.',
   },
-  run_background: {
+  {
+    key: 'run_background',
     name: 'Run in background',
     description: 'Companion may run even when the application is not actively in use.',
   },
-});
+  {
+    key: 'access_exercise',
+    name: 'Exercise Tracking',
+    description: 'Application may track an exercise.',
+    sdkVersion: '>=3.0.0',
+  },
+];
 
-const restrictedPermissionTypes = Object.freeze({
-  fitbit_token: {
+const restrictedPermissionTypes = [
+  {
+    key: 'fitbit_token',
     name: '[Restricted] Fitbit Token',
     description: 'Access Fitbit API token.',
   },
-  external_app_communication: {
+  {
+    key: 'external_app_communication',
     name: '[Restricted] External Application Communication',
     description: 'Allows communication between external mobile applications and companion.',
   },
-  access_secure_exchange: {
+  {
+    key: 'access_secure_exchange',
     name: '[Restricted] Secure Exchange',
     description: 'Allows securing any data and verifying that data was secured',
   },
-});
+];
 
-const allPermissionTypes = { ...permissionTypes, ...restrictedPermissionTypes };
-
-export function getPermissionTypes({ includeRestrictedPermissions = false }) {
-  if (includeRestrictedPermissions) return allPermissionTypes;
-  return permissionTypes;
+function getAllPermissionTypes() {
+  return [
+    ...restrictedPermissionTypes,
+    ...permissionTypes.filter(permission =>
+      !permission.sdkVersion || semver.satisfies(sdkVersion(), permission.sdkVersion)),
+  ];
 }
 
 function constrainedSetDiagnostics({
@@ -242,7 +260,7 @@ export function validateWipeColor(config: ProjectConfiguration) {
 export function validateRequestedPermissions({ requestedPermissions }: ProjectConfiguration) {
   return constrainedSetDiagnostics({
     actualValues: requestedPermissions,
-    knownValues: Object.keys(allPermissionTypes),
+    knownValues: getAllPermissionTypes().map(permission => permission.key),
     valueTypeNoun: 'requested permissions',
     notFoundIsFatal: false,
   });

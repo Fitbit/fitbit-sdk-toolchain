@@ -1,9 +1,18 @@
+import semver from 'semver';
+
 import { DiagnosticCategory } from './diagnostics';
 import * as config from './ProjectConfiguration';
+import sdkVersion from './sdkVersion';
+
+jest.mock('./sdkVersion');
+
+const mockSDKVersion = sdkVersion as jest.Mock<typeof sdkVersion>;
+mockSDKVersion.mockReturnValue(semver.parse('3.0.0'));
 
 const mockUUID = '672bc0d9-624c-4ea9-b08f-a4c05f552031';
 const validPermission = 'access_location';
 const invalidPermission = 'invalid';
+const sdk3Permission = 'access_exercise';
 
 it('validates the length of the app display name', () => {
   const configFile: any = {
@@ -83,6 +92,28 @@ it('validates the requested permissions are valid', () => {
       category: DiagnosticCategory.Warning,
       messageText: `One or more requested permissions was invalid: ${invalidPermission}`,
     }));
+});
+
+it('validates the requested permissions are valid with the current sdk', () => {
+  const configFile: any = {
+    requestedPermissions: [sdk3Permission],
+  };
+
+  mockSDKVersion.mockReturnValueOnce(semver.parse('2.0.0'));
+
+  expect(config.validateRequestedPermissions(configFile).diagnostics[0])
+    .toEqual(expect.objectContaining({
+      category: DiagnosticCategory.Warning,
+      messageText: `One or more requested permissions was invalid: ${sdk3Permission}`,
+    }));
+});
+
+it('does not produce a warning if sdk version is satisfied for the requested permissions', () => {
+  const configFile: any = {
+    requestedPermissions: [sdk3Permission],
+  };
+
+  expect(config.validateRequestedPermissions(configFile).diagnostics).toHaveLength(0);
 });
 
 it('does not produce a validation warning for restricted permissions', () => {
