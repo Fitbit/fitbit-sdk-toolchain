@@ -14,4 +14,5 @@ cache: yarn
 # --runInBand needed so tests don't timeout https://github.com/facebook/jest/issues/3855
 script:
   - yarn lint
+  - yarn checkstyle
   - yarn test --runInBand
