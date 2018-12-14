@@ -13,12 +13,14 @@ describe('when the filename does not contain a tag, it returns the filename unch
     '',
   ];
 
-  vectors.forEach(vector => test(vector, () => (
-    expect(splitTaggedFilename(vector)).toMatchObject({
-      basename: vector,
-      tag: undefined,
-    })
-  )));
+  vectors.forEach((vector) =>
+    test(vector, () =>
+      expect(splitTaggedFilename(vector)).toMatchObject({
+        basename: vector,
+        tag: undefined,
+      }),
+    ),
+  );
 });
 
 describe('when the filename contains a tag, it parses out the tag', () => {
@@ -33,7 +35,9 @@ describe('when the filename contains a tag, it parses out the tag', () => {
     ['index~tag.test.js', 'index.test.js', 'tag'],
   ];
 
-  vectors.forEach(([vector, basename, tag]) => test(vector, () => (
-    expect(splitTaggedFilename(vector)).toMatchObject({ basename, tag })
-  )));
+  vectors.forEach(([vector, basename, tag]) =>
+    test(vector, () =>
+      expect(splitTaggedFilename(vector)).toMatchObject({ basename, tag }),
+    ),
+  );
 });

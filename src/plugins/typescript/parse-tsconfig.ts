@@ -36,13 +36,20 @@ export function parseTsConfig(
   tsconfigOverride?: ts.CompilerOptions,
   onDiagnostics?: (diagnostics: ts.Diagnostic[]) => void,
 ): ts.ParsedCommandLine {
-  const fileName = ts.findConfigFile(process.cwd(), ts.sys.fileExists, tsConfig);
+  const fileName = ts.findConfigFile(
+    process.cwd(),
+    ts.sys.fileExists,
+    tsConfig,
+  );
 
   if (tsConfig !== undefined && !fileName) {
     throw new Error(`Failed to open ${fileName}`);
   }
 
-  const { loadedConfig, configFileName, baseDir } = loadTsConfig(fileName, onDiagnostics);
+  const { loadedConfig, configFileName, baseDir } = loadTsConfig(
+    fileName,
+    onDiagnostics,
+  );
 
   const result = ts.parseJsonConfigFileContent(
     loadedConfig,

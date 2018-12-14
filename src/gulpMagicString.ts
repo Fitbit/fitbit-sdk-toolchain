@@ -2,25 +2,22 @@ import { Transform } from 'stream';
 
 import MagicString from 'magic-string';
 import PluginError from 'plugin-error';
-import { SourceMapConsumer, SourceMapGenerator, RawSourceMap } from 'source-map';
+import {
+  SourceMapConsumer,
+  SourceMapGenerator,
+  RawSourceMap,
+} from 'source-map';
 import Vinyl from 'vinyl';
 
 const PLUGIN_NAME = 'gulp-magic-string';
 
 async function mergeSourceMaps(inMap: RawSourceMap, outMap: RawSourceMap) {
-  return SourceMapConsumer.with(
-    inMap,
-    null,
-    async inConsumer =>
-      SourceMapConsumer.with(
-        outMap,
-        null,
-        async (outConsumer) => {
-          const generator = SourceMapGenerator.fromSourceMap(inConsumer);
-          generator.applySourceMap(outConsumer);
-          return generator.toJSON();
-        },
-      ),
+  return SourceMapConsumer.with(inMap, null, async (inConsumer) =>
+    SourceMapConsumer.with(outMap, null, async (outConsumer) => {
+      const generator = SourceMapGenerator.fromSourceMap(inConsumer);
+      generator.applySourceMap(outConsumer);
+      return generator.toJSON();
+    }),
   );
 }
 
@@ -35,11 +32,15 @@ export default function gulpMagicString(
       }
 
       if (!file.isBuffer()) {
-        next(new PluginError(
-          PLUGIN_NAME,
-          file.isStream() ? 'Streaming mode is not supported.' : 'Internal error processing file.',
-          { fileName: file.relative },
-        ));
+        next(
+          new PluginError(
+            PLUGIN_NAME,
+            file.isStream()
+              ? 'Streaming mode is not supported.'
+              : 'Internal error processing file.',
+            { fileName: file.relative },
+          ),
+        );
         return;
       }
 
@@ -63,11 +64,10 @@ export default function gulpMagicString(
             file: file.relative,
             sources: [file.relative],
           },
-        )
-          .then((sourceMap) => {
-            file.sourceMap = sourceMap;
-            next(undefined, file);
-          });
+        ).then((sourceMap) => {
+          file.sourceMap = sourceMap;
+          next(undefined, file);
+        });
       } catch (error) {
         next(new PluginError(PLUGIN_NAME, error, { fileName: file.relative }));
       }

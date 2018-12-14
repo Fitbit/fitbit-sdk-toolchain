@@ -27,8 +27,9 @@ function isProjectBuildError(error: PluginError): boolean {
 }
 
 function hasEnumerableProp<T, K extends string | number | symbol>(
-  obj: { [P in K]?: T }, prop: K,
-): obj is ({ [P in K]: T }) {
+  obj: { [P in K]?: T },
+  prop: K,
+): obj is { [P in K]: T } {
   return obj.propertyIsEnumerable(prop) && obj[prop] !== undefined;
 }
 
@@ -56,17 +57,21 @@ function convertToDiagnostic(
 
   // Our own spin on PluginError.prototype._messageDetails().
   if (error.showProperties) {
-    const detailKeys = Object.keys(error).filter(key => !ignoredPluginErrorProps.has(key));
+    const detailKeys = Object.keys(error).filter(
+      (key) => !ignoredPluginErrorProps.has(key),
+    );
     if (detailKeys.length) {
-      const detailsText = detailKeys.map((key) => {
-        const value = (error as any)[key];
+      const detailsText = detailKeys
+        .map((key) => {
+          const value = (error as any)[key];
 
-        if (typeof value === 'string' && value.includes('\n')) {
-          return `    ${key}:\n${indentString(value, 6)}\n`;
-        }
+          if (typeof value === 'string' && value.includes('\n')) {
+            return `    ${key}:\n${indentString(value, 6)}\n`;
+          }
 
-        return `    ${key}: ${value}\n`;
-      }).join('');
+          return `    ${key}: ${value}\n`;
+        })
+        .join('');
 
       diagnostic.messageText = [
         {
@@ -95,8 +100,9 @@ function convertToDiagnostic(
       diagnostic.file.position = {
         start: {
           line: error.lineNumber - 1,
-          character: hasEnumerableProp(error, 'columnNumber') ?
-            error.columnNumber - 1 : undefined,
+          character: hasEnumerableProp(error, 'columnNumber')
+            ? error.columnNumber - 1
+            : undefined,
         },
       };
     }

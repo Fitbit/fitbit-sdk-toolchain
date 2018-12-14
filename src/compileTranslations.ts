@@ -26,14 +26,20 @@ export default function compileTranslations() {
         return next(undefined, file);
       }
 
-      const normalizedTag = normalizeLanguageTag(basename(file.basename, '.po'));
+      const normalizedTag = normalizeLanguageTag(
+        basename(file.basename, '.po'),
+      );
       if (normalizedTag === null) {
-        next(new PluginError(
-          PLUGIN_NAME,
-          // tslint:disable-next-line:max-line-length
-          `Translation file ${file.basename} has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)`,
-          { fileName: file.relative },
-        ));
+        next(
+          new PluginError(
+            PLUGIN_NAME,
+            // tslint:disable-next-line:max-line-length
+            `Translation file ${
+              file.basename
+            } has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)`,
+            { fileName: file.relative },
+          ),
+        );
         return;
       }
 
@@ -44,14 +50,20 @@ export default function compileTranslations() {
           translationFiles.set(normalizedTag, file.clone({ contents: false }));
           return next();
         } catch (error) {
-          next(new PluginError(PLUGIN_NAME, error, { fileName: file.relative }));
+          next(
+            new PluginError(PLUGIN_NAME, error, { fileName: file.relative }),
+          );
         }
       } else {
-        next(new PluginError(
-          PLUGIN_NAME,
-          file.isStream() ? 'Streaming mode is not supported.' : 'Internal error processing file.',
-          { fileName: file.relative },
-        ));
+        next(
+          new PluginError(
+            PLUGIN_NAME,
+            file.isStream()
+              ? 'Streaming mode is not supported.'
+              : 'Internal error processing file.',
+            { fileName: file.relative },
+          ),
+        );
         return;
       }
     },
@@ -66,7 +78,9 @@ export default function compileTranslations() {
           file.contents = Buffer.from(languageTable.getLanguage(language));
           file.translationLanguage = language;
         } catch (error) {
-          done(new PluginError(PLUGIN_NAME, error, { fileName: file.relative }));
+          done(
+            new PluginError(PLUGIN_NAME, error, { fileName: file.relative }),
+          );
           return;
         }
 

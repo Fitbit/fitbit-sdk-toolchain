@@ -65,7 +65,10 @@ function transformPNGBuffer(file: Buffer, rgbaOutputFormat?: RGBAOutputFormat) {
  * Lazily parse the PNG to cut down on the number of images
  * concurrently in memory.
  */
-function transformPNGStream(file: NodeJS.ReadableStream, rgbaOutputFormat?: RGBAOutputFormat) {
+function transformPNGStream(
+  file: NodeJS.ReadableStream,
+  rgbaOutputFormat?: RGBAOutputFormat,
+) {
   let started = false;
 
   return new Readable({
@@ -79,16 +82,16 @@ function transformPNGStream(file: NodeJS.ReadableStream, rgbaOutputFormat?: RGBA
           this.push(txi);
           this.push(null);
         })
-        .catch(error => this.emit('error', error));
+        .catch((error) => this.emit('error', error));
 
-      file
-        .on('error', err => this.emit('error', err))
-        .pipe(png);
+      file.on('error', (err) => this.emit('error', err)).pipe(png);
     },
   });
 }
 
-export default function convertImageToTXI(options: ConvertImageToTXIOptions = {}) {
+export default function convertImageToTXI(
+  options: ConvertImageToTXIOptions = {},
+) {
   const stream = new Transform({
     objectMode: true,
     transform(this: Transform, file: Vinyl, _, cb) {
@@ -105,11 +108,14 @@ export default function convertImageToTXI(options: ConvertImageToTXIOptions = {}
             file.contents = txi;
             cb(undefined, file);
           })
-          .catch(err => cb(new PluginError(PLUGIN_NAME, err, { fileName })));
+          .catch((err) => cb(new PluginError(PLUGIN_NAME, err, { fileName })));
       } else if (file.isStream()) {
-        file.contents = transformPNGStream(file.contents, options.rgbaOutputFormat)
-          .on('error', err =>
-            this.emit('error', new PluginError(PLUGIN_NAME, err, { fileName })));
+        file.contents = transformPNGStream(
+          file.contents,
+          options.rgbaOutputFormat,
+        ).on('error', (err) =>
+          this.emit('error', new PluginError(PLUGIN_NAME, err, { fileName })),
+        );
         cb(undefined, file);
       }
     },

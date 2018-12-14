@@ -42,9 +42,7 @@ export default async function newProject() {
   const packageName = packageJSON.name;
 
   const defaultDisplayName =
-    typeof packageName === 'string'
-      ? lodash.startCase(packageName)
-      : undefined;
+    typeof packageName === 'string' ? lodash.startCase(packageName) : undefined;
 
   const {
     appType,
@@ -52,44 +50,43 @@ export default async function newProject() {
     withCompanion,
     withSettings,
     enabledBuildTargets,
-  }: ProjectCreationArgs = await inquirer
-    .prompt<ProjectCreationArgs>([
-      {
-        name: 'appType',
-        type: 'list',
-        choices: Object.values(AppType),
-        message: 'What type of application should be created?',
-      },
-      {
-        name: 'appDisplayName',
-        message: 'What should the name of this application be?',
-        // Inquirer will not allow a default that fails validation
-        // to be submited.
-        default: defaultDisplayName,
-        validate: validateDisplayName,
-      },
-      {
-        name: 'withCompanion',
-        type: 'confirm',
-        message: 'Should this application contain a companion component?',
-      },
-      {
-        name: 'withSettings',
-        type: 'confirm',
-        when: args => args.withCompanion,
-        message: 'Should this application contain a settings component?',
-      },
-      {
-        name: 'enabledBuildTargets',
-        type: 'checkbox',
-        choices: Object.keys(buildTargets).map((platform: string) => ({
-          name: buildTargets[platform].displayName,
-          value: platform,
-        })),
-        default: Object.keys(buildTargets),
-        message: 'Which platforms should this application be built for?',
-      },
-    ]);
+  }: ProjectCreationArgs = await inquirer.prompt<ProjectCreationArgs>([
+    {
+      name: 'appType',
+      type: 'list',
+      choices: Object.values(AppType),
+      message: 'What type of application should be created?',
+    },
+    {
+      name: 'appDisplayName',
+      message: 'What should the name of this application be?',
+      // Inquirer will not allow a default that fails validation
+      // to be submited.
+      default: defaultDisplayName,
+      validate: validateDisplayName,
+    },
+    {
+      name: 'withCompanion',
+      type: 'confirm',
+      message: 'Should this application contain a companion component?',
+    },
+    {
+      name: 'withSettings',
+      type: 'confirm',
+      when: (args) => args.withCompanion,
+      message: 'Should this application contain a settings component?',
+    },
+    {
+      name: 'enabledBuildTargets',
+      type: 'checkbox',
+      choices: Object.keys(buildTargets).map((platform: string) => ({
+        name: buildTargets[platform].displayName,
+        value: platform,
+      })),
+      default: Object.keys(buildTargets),
+      message: 'Which platforms should this application be built for?',
+    },
+  ]);
 
   console.log('Creating device component');
   scaffoldDirectory('app');
@@ -119,5 +116,8 @@ export default async function newProject() {
     debug: 'fitbit',
   };
 
-  fsExtra.writeJSONSync(packageJSONPath, packageJSON, { spaces: 2, EOL: os.EOL });
+  fsExtra.writeJSONSync(packageJSONPath, packageJSON, {
+    spaces: 2,
+    EOL: os.EOL,
+  });
 }
