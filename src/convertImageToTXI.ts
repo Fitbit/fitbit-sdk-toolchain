@@ -92,7 +92,7 @@ function transformPNGStream(
 export default function convertImageToTXI(
   options: ConvertImageToTXIOptions = {},
 ) {
-  const stream = new Transform({
+  return new Transform({
     objectMode: true,
     transform(this: Transform, file: Vinyl, _, cb) {
       if (file.isNull() || file.extname !== '.png') {
@@ -120,6 +120,4 @@ export default function convertImageToTXI(
       }
     },
   });
-
-  return stream;
 }

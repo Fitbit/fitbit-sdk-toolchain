@@ -1,5 +1,9 @@
 {
-  "extends": ["tslint-config-airbnb", "tslint-config-prettier"],
+  "extends": [
+    "tslint-config-airbnb",
+    "tslint-config-prettier",
+    "tslint-sonarts"
+  ],
   "rules": {
     "no-inferrable-types": true,
     "prefer-template": [true, "allow-single-concat"],
@@ -13,7 +17,9 @@
         "vinyl": "Vinyl",
         "vinylFs": "vinylFS"
       }
-    ]
+    ],
+    "no-duplicate-string": false,
+    "no-identical-functions": false
   },
   "linterOptions": {
     "exclude": ["src/**/__test__"]

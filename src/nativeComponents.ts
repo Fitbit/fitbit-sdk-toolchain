@@ -114,29 +114,33 @@ export default function nativeComponents(
     (c) => c.appID.toLowerCase() !== appID.toLowerCase(),
   );
   if (divergentAppIDComponents.length > 0) {
+    const divergentAppIDsList = divergentAppIDComponents
+      .map(
+        ({ path, family, appID }) => `${path} (${family}) has appID ${appID}`,
+      )
+      .join('\n    ');
+
     throw new PluginError(
       PLUGIN_NAME,
       `App IDs of native components do not match package.json.
     Expected appID ${appID}.
-    ${divergentAppIDComponents
-      .map(
-        ({ path, family, appID }) => `${path} (${family}) has appID ${appID}`,
-      )
-      .join('\n  ')}`,
+    ${divergentAppIDsList}`,
     );
   }
 
   // Check that all build IDs of native components match
   if (lodash.uniqBy(components, (c) => c.buildID).length > 1) {
-    throw new PluginError(
-      PLUGIN_NAME,
-      `Build IDs of native components do not match.
-    ${components
+    const mismatchedBuildIDs = components
       .map(
         ({ path, family, buildID }) =>
           `${path} (${family}) has buildID ${buildID}`,
       )
-      .join('\n  ')}`,
+      .join('\n    ');
+
+    throw new PluginError(
+      PLUGIN_NAME,
+      `Build IDs of native components do not match.
+    ${mismatchedBuildIDs}`,
     );
   }
 
