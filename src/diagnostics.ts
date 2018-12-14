@@ -20,12 +20,14 @@ export interface Diagnostic {
   target?: DiagnosticTarget;
   file?: {
     path: string;
-    position?: {
-      start: { line: number; };
-    } | {
-      start: LineAndCharacter;
-      end?: LineAndCharacter;
-    };
+    position?:
+      | {
+          start: { line: number };
+        }
+      | {
+          start: LineAndCharacter;
+          end?: LineAndCharacter;
+        };
   };
 }
 
@@ -79,11 +81,13 @@ export const logDiagnosticToConsole: DiagnosticHandler = (diagnostic) => {
   const colorizer = consoleColors[category];
   const categoryName = categoryNames[category];
   const targetString = target ? target : 'build';
-  const message = typeof messageText === 'string' ?
-    messageText : messageText[0].messageText;
+  const message =
+    typeof messageText === 'string' ? messageText : messageText[0].messageText;
 
   console.log(
-    colorizer(`[${timestamp}][${categoryName}][${targetString}]${filePosition} ${message}`),
+    colorizer(
+      `[${timestamp}][${categoryName}][${targetString}]${filePosition} ${message}`,
+    ),
   );
 
   if (typeof messageText !== 'string') {

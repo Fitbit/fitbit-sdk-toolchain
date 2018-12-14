@@ -5,7 +5,9 @@ export type Polyfill = string | (() => string | Promise<string>);
 /**
  * Polyfill a module to make it seem like a builtin.
  */
-export default function polyfill(modules: { [name: string]: Polyfill }): Plugin {
+export default function polyfill(modules: {
+  [name: string]: Polyfill;
+}): Plugin {
   return {
     name: 'polyfill',
 

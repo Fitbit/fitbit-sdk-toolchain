@@ -3,7 +3,7 @@ import { extname } from 'path';
 import { readFile } from 'fs-extra';
 import { Plugin } from 'rollup';
 
-const mimeTypes: {[ext: string]: string} = {
+const mimeTypes: { [ext: string]: string } = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.png': 'image/png',
@@ -18,7 +18,10 @@ export default function resourceImports(options = {}): Plugin {
       if (!mime) return undefined;
 
       return readFile(id).then(
-        file => `export default "data:${mime};base64,${Buffer.from(file).toString('base64')}";`,
+        (file) =>
+          `export default "data:${mime};base64,${Buffer.from(file).toString(
+            'base64',
+          )}";`,
       );
     },
   };

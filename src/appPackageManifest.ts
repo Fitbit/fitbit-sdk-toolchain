@@ -44,9 +44,12 @@ const ComponentBundleTag = t.taggedUnion('type', [
 ]);
 type ComponentBundleTag = t.TypeOf<typeof ComponentBundleTag>;
 
-export default function appPackageManifest({ projectConfig, buildId } : {
-  projectConfig: ProjectConfiguration,
-  buildId: string,
+export default function appPackageManifest({
+  projectConfig,
+  buildId,
+}: {
+  projectConfig: ProjectConfiguration;
+  buildId: string;
 }) {
   const sourceMaps = {};
   const components: Components = {};
@@ -69,19 +72,27 @@ export default function appPackageManifest({ projectConfig, buildId } : {
           bundleInfo = ComponentBundleTag.decode(
             file.componentBundle,
           ).getOrElseL((errors) => {
-            throw new Error(`Unknown bundle component tag: ${failure(errors).join('\n')}`);
+            throw new Error(
+              `Unknown bundle component tag: ${failure(errors).join('\n')}`,
+            );
           });
         } catch (ex) {
-          return next(new PluginError(PLUGIN_NAME, ex, { fileName: file.relative }));
+          return next(
+            new PluginError(PLUGIN_NAME, ex, { fileName: file.relative }),
+          );
         }
 
         function throwDuplicateComponent(existingPath: string) {
-          const componentType = bundleInfo.type === 'device' ?
-            `${bundleInfo.type}/${bundleInfo.family}` : bundleInfo.type;
+          const componentType =
+            bundleInfo.type === 'device'
+              ? `${bundleInfo.type}/${bundleInfo.family}`
+              : bundleInfo.type;
           next(
             new PluginError(
               PLUGIN_NAME,
-              `Duplicate ${componentType} component bundles: ${file.relative} / ${existingPath}`,
+              `Duplicate ${componentType} component bundles: ${
+                file.relative
+              } / ${existingPath}`,
             ),
           );
         }
@@ -103,7 +114,9 @@ export default function appPackageManifest({ projectConfig, buildId } : {
           if (!components.watch) components.watch = {};
 
           if (components.watch[bundleInfo.family]) {
-            return throwDuplicateComponent(components.watch[bundleInfo.family].filename);
+            return throwDuplicateComponent(
+              components.watch[bundleInfo.family].filename,
+            );
           }
 
           components.watch[bundleInfo.family] = {
@@ -112,12 +125,13 @@ export default function appPackageManifest({ projectConfig, buildId } : {
           };
         } else {
           if (components[bundleInfo.type] !== undefined) {
-            return throwDuplicateComponent(components[bundleInfo.type]!.filename);
+            return throwDuplicateComponent(
+              components[bundleInfo.type]!.filename,
+            );
           }
 
           components[bundleInfo.type] = { filename: file.relative };
         }
-
       }
       next(undefined, file);
     },
@@ -130,20 +144,24 @@ export default function appPackageManifest({ projectConfig, buildId } : {
           components,
           sourceMaps,
           manifestVersion: 6,
-          ...(setSDKVersion && { sdkVersion: {
-            ...(components.watch && hasJS && { deviceApi }),
-            ...(components.companion && { companionApi }),
-          }}),
+          ...(setSDKVersion && {
+            sdkVersion: {
+              ...(components.watch && hasJS && { deviceApi }),
+              ...(components.companion && { companionApi }),
+            },
+          }),
           requestedPermissions: projectConfig.requestedPermissions,
           appId: projectConfig.appUUID,
         },
         undefined,
         2,
       );
-      stream.push(new Vinyl({
-        contents: Buffer.from(manifestJSON, 'utf8'),
-        path: path.resolve(process.cwd(), manifestPath),
-      }));
+      stream.push(
+        new Vinyl({
+          contents: Buffer.from(manifestJSON, 'utf8'),
+          path: path.resolve(process.cwd(), manifestPath),
+        }),
+      );
       callback();
     },
   });

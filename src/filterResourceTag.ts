@@ -18,7 +18,10 @@ class FilterResourceTag extends Transform {
     }
 
     const { basename, tag } = splitTaggedFilename(file.basename);
-    if (tag === this.resourceFilterTag || (tag === undefined && !this.files.has(file.path))) {
+    if (
+      tag === this.resourceFilterTag ||
+      (tag === undefined && !this.files.has(file.path))
+    ) {
       const newFile = file.clone({ contents: false });
       newFile.basename = basename;
       this.files.set(newFile.path, newFile);

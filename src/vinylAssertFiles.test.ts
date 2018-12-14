@@ -8,25 +8,29 @@ function makeTestStream(paths: string[]) {
   stream._read = () => {};
 
   for (const path of paths) {
-    stream.push(
-      new Vinyl({ path, contents: Buffer.alloc(0) }),
-    );
+    stream.push(new Vinyl({ path, contents: Buffer.alloc(0) }));
   }
 
   stream.push(null);
   return stream;
 }
 
-function expectAssertResult({ expected, actual }: {
-  expected: string[],
-  actual?: string[],
+function expectAssertResult({
+  expected,
+  actual,
+}: {
+  expected: string[];
+  actual?: string[];
 }) {
-  return expect(new Promise((resolve, reject) => {
-    const stream = makeTestStream(actual || ['foo', 'bar'])
-      .pipe(vinylAssertFiles(expected));
-    stream.on('error', reject);
-    stream.on('finish', resolve);
-  }));
+  return expect(
+    new Promise((resolve, reject) => {
+      const stream = makeTestStream(actual || ['foo', 'bar']).pipe(
+        vinylAssertFiles(expected),
+      );
+      stream.on('error', reject);
+      stream.on('finish', resolve);
+    }),
+  );
 }
 
 it.each([
@@ -34,7 +38,8 @@ it.each([
   ['two required files are missing', ['baz', 'zab']],
   ['three required files are missing', ['baz', 'zab', 'oof']],
 ])('emits an error if %s', (_, expected) =>
-  expectAssertResult({ expected }).rejects.toMatchSnapshot());
+  expectAssertResult({ expected }).rejects.toMatchSnapshot(),
+);
 
 it('resolves if all requested files are present', () =>
   expectAssertResult({

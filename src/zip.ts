@@ -2,7 +2,10 @@ import gulpZip from 'gulp-zip';
 import pumpify from 'pumpify';
 import vinylBuffer from 'vinyl-buffer';
 
-export default function zip(filename: string, options?: gulpZip.GulpZipOptions) {
+export default function zip(
+  filename: string,
+  options?: gulpZip.GulpZipOptions,
+) {
   return new pumpify.obj(
     vinylBuffer(),
     // FW-62978: Fitbit OS is very picky about zip file flags and will reject

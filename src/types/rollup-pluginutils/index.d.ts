@@ -1,6 +1,9 @@
 declare namespace rollupPluginUtils {
   type Filter = string | string[] | RegExp | RegExp[];
-  function createFilter(include: Filter, exclude: Filter): (id: string) => boolean;
+  function createFilter(
+    include: Filter,
+    exclude: Filter,
+  ): (id: string) => boolean;
 
   interface DataToEsmOptions {
     compact?: boolean;

@@ -17,11 +17,16 @@ export default function brokenImports(): Plugin {
       if (/^\.{0,2}\//.test(importee)) return;
 
       const relativeImportee = path.join(path.dirname(importer), importee);
-      const importeeJS = importee.endsWith('.js') ? relativeImportee : `${relativeImportee}.js`;
+      const importeeJS = importee.endsWith('.js')
+        ? relativeImportee
+        : `${relativeImportee}.js`;
       if (fs.existsSync(importeeJS)) {
         this.warn(
           // tslint:disable-next-line:max-line-length
-          `Import in ${path.relative(process.cwd(), importer)} has non-relative path but should be relative: replace '${importee}' with './${importee}'.`,
+          `Import in ${path.relative(
+            process.cwd(),
+            importer,
+          )} has non-relative path but should be relative: replace '${importee}' with './${importee}'.`,
         );
         return importeeJS;
       }

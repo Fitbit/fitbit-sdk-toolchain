@@ -9,9 +9,7 @@ export default class LanguageServiceHost implements ts.LanguageServiceHost {
   private versions: { [fileName: string]: number } = {};
   private fileNames: Set<string>;
 
-  constructor(
-    private parsedConfig: ts.ParsedCommandLine,
-  ) {
+  constructor(private parsedConfig: ts.ParsedCommandLine) {
     this.fileNames = new Set(parsedConfig.fileNames);
   }
 
@@ -20,7 +18,8 @@ export default class LanguageServiceHost implements ts.LanguageServiceHost {
 
     const snapshot = ts.ScriptSnapshot.fromString(data);
     this.snapshots[normalizedFileName] = snapshot;
-    this.versions[normalizedFileName] = (this.versions[normalizedFileName] || 0) + 1;
+    this.versions[normalizedFileName] =
+      (this.versions[normalizedFileName] || 0) + 1;
     this.fileNames.add(normalizedFileName);
     return snapshot;
   }
@@ -28,13 +27,16 @@ export default class LanguageServiceHost implements ts.LanguageServiceHost {
   public getScriptSnapshot(fileName: string): ts.IScriptSnapshot | undefined {
     const normalizedFileName = normalizeToPOSIX(fileName);
 
-    if (lodash.has(this.snapshots, normalizedFileName)) return this.snapshots[normalizedFileName];
+    if (lodash.has(this.snapshots, normalizedFileName)) {
+      return this.snapshots[normalizedFileName];
+    }
 
     if (ts.sys.fileExists(normalizedFileName)) {
       this.snapshots[normalizedFileName] = ts.ScriptSnapshot.fromString(
         ts.sys.readFile(normalizedFileName)!,
       );
-      this.versions[normalizedFileName] = (this.versions[normalizedFileName] || 0) + 1;
+      this.versions[normalizedFileName] =
+        (this.versions[normalizedFileName] || 0) + 1;
       return this.snapshots[normalizedFileName];
     }
 

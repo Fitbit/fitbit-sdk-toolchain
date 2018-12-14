@@ -15,7 +15,9 @@ expect.addSnapshotSerializer({
     // plain object with the label "PluginError" instead of "Object"
     // so that we don't have to write a fully-custom serializer.
     const newObj: { [key: string]: any } = {};
-    Object.defineProperty(newObj, 'constructor', { value: function PluginError() {} });
+    Object.defineProperty(newObj, 'constructor', {
+      value: function PluginError() {},
+    });
 
     props.forEach((prop) => {
       if (prop in val) newObj[prop] = (val as any)[prop];

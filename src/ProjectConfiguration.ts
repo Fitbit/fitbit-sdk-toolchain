@@ -16,7 +16,7 @@ export enum AppType {
 
 export const VALID_APP_TYPES = Object.values(AppType);
 
-export type LocalesConfig = { [locale: string]: { name: string; } };
+export type LocalesConfig = { [locale: string]: { name: string } };
 
 export interface BaseProjectConfiguration {
   appType: AppType;
@@ -64,13 +64,15 @@ const permissionTypes = [
     key: 'access_activity',
     name: 'Activity',
     // tslint:disable-next-line:max-line-length
-    description: 'Read user activities for today (distance, calories, steps, elevation and active minutes), and daily goals.',
+    description:
+      'Read user activities for today (distance, calories, steps, elevation and active minutes), and daily goals.',
   },
   {
     key: 'access_user_profile',
     name: 'User Profile',
     // tslint:disable-next-line:max-line-length
-    description: 'Read non-identifiable personal information (gender, age, height, weight, resting HR, basal metabolic rate, stride, HR zones).',
+    description:
+      'Read non-identifiable personal information (gender, age, height, weight, resting HR, basal metabolic rate, stride, HR zones).',
   },
   {
     key: 'access_heart_rate',
@@ -85,12 +87,14 @@ const permissionTypes = [
   {
     key: 'access_internet',
     name: 'Internet',
-    description: 'Companion may communicate with the Internet using your phone data connection.',
+    description:
+      'Companion may communicate with the Internet using your phone data connection.',
   },
   {
     key: 'run_background',
     name: 'Run in background',
-    description: 'Companion may run even when the application is not actively in use.',
+    description:
+      'Companion may run even when the application is not actively in use.',
   },
   {
     key: 'access_exercise',
@@ -109,7 +113,8 @@ const restrictedPermissionTypes = [
   {
     key: 'external_app_communication',
     name: '[Restricted] External Application Communication',
-    description: 'Allows communication between external mobile applications and companion.',
+    description:
+      'Allows communication between external mobile applications and companion.',
   },
   {
     key: 'access_secure_exchange',
@@ -121,8 +126,11 @@ const restrictedPermissionTypes = [
 function getAllPermissionTypes() {
   return [
     ...restrictedPermissionTypes,
-    ...permissionTypes.filter(permission =>
-      !permission.sdkVersion || semver.satisfies(sdkVersion(), permission.sdkVersion)),
+    ...permissionTypes.filter(
+      (permission) =>
+        !permission.sdkVersion ||
+        semver.satisfies(sdkVersion(), permission.sdkVersion),
+    ),
   ];
 }
 
@@ -132,45 +140,46 @@ function constrainedSetDiagnostics({
   valueTypeNoun,
   notFoundIsFatal = false,
 }: {
-  actualValues: ReadonlyArray<any>,
-  knownValues: ReadonlyArray<any>,
-  valueTypeNoun: string,
-  notFoundIsFatal?: boolean,
+  actualValues: ReadonlyArray<any>;
+  knownValues: ReadonlyArray<any>;
+  valueTypeNoun: string;
+  notFoundIsFatal?: boolean;
 }) {
-  const unknownValues = lodash.without(
-    actualValues,
-    ...knownValues,
-  );
+  const unknownValues = lodash.without(actualValues, ...knownValues);
   const diagnostics = new DiagnosticList();
 
   if (unknownValues.length > 0) {
     const unknownValueStrings = unknownValues.filter(lodash.isString);
-    const unknownValueOther = lodash.without(
-      unknownValues,
-      ...unknownValueStrings,
-    ).map(String);
+    const unknownValueOther = lodash
+      .without(unknownValues, ...unknownValueStrings)
+      .map(String);
     if (unknownValueStrings.length) {
-      const errStr = `One or more ${valueTypeNoun} was invalid: ${unknownValueStrings.join(', ')}`;
+      const errStr = `One or more ${valueTypeNoun} was invalid: ${unknownValueStrings.join(
+        ', ',
+      )}`;
       if (notFoundIsFatal) diagnostics.pushFatalError(errStr);
       else diagnostics.pushWarning(errStr);
     }
     if (unknownValueOther.length) {
       diagnostics.pushFatalError(
-        `One or more ${valueTypeNoun} was not a string: ${unknownValueOther.join(', ')}`,
+        `One or more ${valueTypeNoun} was not a string: ${unknownValueOther.join(
+          ', ',
+        )}`,
       );
     }
   }
 
-  const duplicatedValues = lodash.uniq(actualValues)
+  const duplicatedValues = lodash
+    .uniq(actualValues)
     .filter(
-      value => (
-        actualValues.indexOf(value)
-          !== actualValues.lastIndexOf(value)
-      ),
+      (value) =>
+        actualValues.indexOf(value) !== actualValues.lastIndexOf(value),
     );
   if (duplicatedValues.length > 0) {
     diagnostics.pushWarning(
-      `One or more ${valueTypeNoun} was specified multiple times: ${duplicatedValues.join(', ')}`,
+      `One or more ${valueTypeNoun} was specified multiple times: ${duplicatedValues.join(
+        ', ',
+      )}`,
     );
   }
 
@@ -206,13 +215,15 @@ export function normalizeProjectConfig(
     ...defaults,
 
     // The config object proper
-    ...config.fitbit as {},
+    ...(config.fitbit as {}),
   };
 
   const { requestedPermissions } = mergedConfig;
   if (!Array.isArray(requestedPermissions)) {
     // tslint:disable-next-line:max-line-length
-    throw new TypeError(`fitbit.requestedPermissions must be an array, not ${typeof requestedPermissions}`);
+    throw new TypeError(
+      `fitbit.requestedPermissions must be an array, not ${typeof requestedPermissions}`,
+    );
   }
 
   return mergedConfig;
@@ -257,10 +268,12 @@ export function validateWipeColor(config: ProjectConfiguration) {
   return diagnostics;
 }
 
-export function validateRequestedPermissions({ requestedPermissions }: ProjectConfiguration) {
+export function validateRequestedPermissions({
+  requestedPermissions,
+}: ProjectConfiguration) {
   return constrainedSetDiagnostics({
     actualValues: requestedPermissions,
-    knownValues: getAllPermissionTypes().map(permission => permission.key),
+    knownValues: getAllPermissionTypes().map((permission) => permission.key),
     valueTypeNoun: 'requested permissions',
     notFoundIsFatal: false,
   });
@@ -292,11 +305,17 @@ export function validateLocaleDisplayName(
 
   if (!locale.name || locale.name.length === 0) {
     // tslint:disable-next-line:max-line-length
-    diagnostics.pushFatalError(`Localized display name for ${LOCALES[localeKey]} must not be blank`);
+    diagnostics.pushFatalError(
+      `Localized display name for ${LOCALES[localeKey]} must not be blank`,
+    );
   }
   if (locale.name.length > MAX_DISPLAY_NAME_LENGTH) {
     // tslint:disable-next-line:max-line-length
-    diagnostics.pushFatalError(`Localized display name for ${LOCALES[localeKey]} must not exceed ${MAX_DISPLAY_NAME_LENGTH} characters`);
+    diagnostics.pushFatalError(
+      `Localized display name for ${
+        LOCALES[localeKey]
+      } must not exceed ${MAX_DISPLAY_NAME_LENGTH} characters`,
+    );
   }
 
   return diagnostics;
@@ -305,10 +324,9 @@ export function validateLocaleDisplayName(
 export function validateLocaleDisplayNames(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
   for (const localeKey of Object.keys(LOCALES)) {
-    diagnostics.extend(validateLocaleDisplayName(
-      config,
-      localeKey as keyof typeof LOCALES,
-    ));
+    diagnostics.extend(
+      validateLocaleDisplayName(config, localeKey as keyof typeof LOCALES),
+    );
   }
   return diagnostics;
 }
@@ -321,9 +339,7 @@ export function validateSupportedLocales({ i18n }: ProjectConfiguration) {
     ...Object.keys(LOCALES),
   );
   if (unknownLocales.length > 0) {
-    diagnostics.pushWarning(
-      `Invalid locales: ${unknownLocales.join(', ')}`,
-    );
+    diagnostics.pushWarning(`Invalid locales: ${unknownLocales.join(', ')}`);
   }
 
   return diagnostics;
@@ -351,6 +367,6 @@ export function validate(config: ProjectConfiguration) {
     validateBuildTarget,
     validateSupportedLocales,
     validateLocaleDisplayNames,
-  ].forEach(validator => diagnostics.extend(validator(config)));
+  ].forEach((validator) => diagnostics.extend(validator(config)));
   return diagnostics;
 }
