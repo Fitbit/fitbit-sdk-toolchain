@@ -1493,6 +1493,11 @@ event-stream@^4.0.1:
     stream-combiner "^0.2.2"
     through "^2.3.8"
 
+events-intercept@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/events-intercept/-/events-intercept-2.0.0.tgz#adbf38681c5a4b2011c41ee41f61a34cba448897"
+  integrity sha1-rb84aBxaSyARxB7kH2GjTLpEiJc=
+
 exec-sh@^0.2.0:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.2.2.tgz#2a5e7ffcbd7d0ba2755bdecb16e5a427dfbdec36"

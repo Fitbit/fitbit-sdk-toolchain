@@ -1,7 +1,7 @@
 import indentString from 'indent-string';
 import PluginError from 'plugin-error';
 
-import { Diagnostic, DiagnosticCategory } from '../diagnostics';
+import { Diagnostic, DiagnosticCategory, DiagnosticTarget } from '../diagnostics';
 
 export function isPluginError(value: unknown): value is PluginError {
   // We can't just do an instanceof check as the error object might be
@@ -44,7 +44,13 @@ const ignoredPluginErrorProps = new Set([
   'showProperties',
   'showStack',
   'stack',
+  'target',
 ]);
+
+function hasDiagnosticTarget<T extends PluginError>(err: T):
+  err is T & { target: DiagnosticTarget } {
+  return Object.values(DiagnosticTarget).indexOf((err as any).target) !== -1;
+}
 
 function convertToDiagnostic(
   error: PluginError<{ columnNumber?: number }>,
@@ -53,6 +59,10 @@ function convertToDiagnostic(
     category: DiagnosticCategory.Error,
     messageText: `${error.name}: ${error.message}`,
   };
+
+  if (hasDiagnosticTarget(error)) {
+    diagnostic.target = error.target;
+  }
 
   // Our own spin on PluginError.prototype._messageDetails().
   if (error.showProperties) {

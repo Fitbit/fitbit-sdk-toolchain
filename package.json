@@ -66,6 +66,7 @@
     "drop-stream": "^1.0.0",
     "elfy": "^0.1.0",
     "error-subclass": "^2.2.0",
+    "events-intercept": "^2.0.0",
     "fs-extra": "^7.0.0",
     "glob": "^7.1.3",
     "gulp-file": "^0.4.0",
