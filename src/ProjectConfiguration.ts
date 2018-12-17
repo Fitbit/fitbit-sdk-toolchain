@@ -25,7 +25,7 @@ export interface BaseProjectConfiguration {
   appUUID: string;
   requestedPermissions: string[];
   i18n: LocalesConfig;
-  fallbackLocale: string;
+  defaultLocale: string;
   buildTargets: string[];
   // We don't want to accidentally serialize `enableProposedAPI: false`
   // out to users' package.json files.
@@ -212,7 +212,7 @@ export function normalizeProjectConfig(
     requestedPermissions: [],
     buildTargets: [],
     i18n: {},
-    fallbackLocale: 'en-US',
+    defaultLocale: 'en-US',
 
     // Override defaults
     ...defaults,
@@ -221,11 +221,11 @@ export function normalizeProjectConfig(
     ...(config.fitbit as {}),
   };
 
-  const normalizedFallbackLocale = normalizeLanguageTag(
-    mergedConfig.fallbackLocale,
+  const normalizedDefaultLocale = normalizeLanguageTag(
+    mergedConfig.defaultLocale,
   );
-  if (normalizedFallbackLocale !== null) {
-    mergedConfig.fallbackLocale = normalizedFallbackLocale;
+  if (normalizedDefaultLocale !== null) {
+    mergedConfig.defaultLocale = normalizedDefaultLocale;
   }
 
   const { requestedPermissions } = mergedConfig;
@@ -366,11 +366,11 @@ export function validateAppUUID({ appUUID }: ProjectConfiguration) {
   return diagnostics;
 }
 
-export function validateFallbackLocale(config: ProjectConfiguration) {
+export function validateDefaultLocale(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
-  if (normalizeLanguageTag(config.fallbackLocale) === null) {
+  if (normalizeLanguageTag(config.defaultLocale) === null) {
     diagnostics.pushFatalError(
-      `Fallback locale is an invalid language tag: ${config.fallbackLocale}`,
+      `Default locale is an invalid language tag: ${config.defaultLocale}`,
     );
   }
   return diagnostics;
@@ -387,7 +387,7 @@ export function validate(config: ProjectConfiguration) {
     validateBuildTarget,
     validateSupportedLocales,
     validateLocaleDisplayNames,
-    validateFallbackLocale,
+    validateDefaultLocale,
   ].forEach((validator) => diagnostics.extend(validator(config)));
   return diagnostics;
 }

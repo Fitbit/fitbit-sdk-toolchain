@@ -28,7 +28,7 @@ const makeClockfaceProjectConfig = (): ClockProjectConfiguration => ({
   },
   buildTargets: ['higgs'],
   requestedPermissions: [],
-  fallbackLocale: 'en-US',
+  defaultLocale: 'en-US',
 });
 
 const makeAppProjectConfig = (): AppProjectConfiguration => ({
@@ -137,8 +137,8 @@ describe('when there are compiled language files', () => {
   });
 
   it.each(['es', 'en'])(
-    'ensures the fallback locale %s is the first key in the i18n object',
-    (fallbackLocale) => {
+    'ensures the default locale %s is the first key in the i18n object',
+    (defaultLocale) => {
       return expect(
         getFileFromStream(
           sources.pipe(
@@ -146,7 +146,7 @@ describe('when there are compiled language files', () => {
               buildId,
               projectConfig: {
                 ...makeClockfaceProjectConfig(),
-                fallbackLocale,
+                defaultLocale,
               },
             }),
           ),

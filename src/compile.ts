@@ -47,14 +47,14 @@ export default function compile({
   component,
   input,
   output,
-  fallbackLocale,
+  defaultLocale,
   allowUnknownExternals = false,
   onDiagnostic = logDiagnosticToConsole,
 }: {
   component: ComponentType;
   input: string;
   output: string;
-  fallbackLocale: string;
+  defaultLocale: string;
   allowUnknownExternals?: boolean;
   onDiagnostic?: DiagnosticHandler;
 }) {
@@ -77,7 +77,7 @@ export default function compile({
           }),
           ...pluginIf(component === ComponentType.DEVICE, polyfillDevice),
           ...pluginIf(component !== ComponentType.DEVICE, () =>
-            polyfill(i18nPolyfill(translationsGlob, fallbackLocale)),
+            polyfill(i18nPolyfill(translationsGlob, defaultLocale)),
           ),
           ...pluginIf(
             sdkVersion().major < 3 || component === ComponentType.SETTINGS,

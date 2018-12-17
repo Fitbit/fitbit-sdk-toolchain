@@ -20,7 +20,7 @@ exports[`builds a table from all the available translations 1`] = `
 };"
 `;
 
-exports[`throws if the fallback locale is not defined 1`] = `[Error: No translation file found for fallback locale it]`;
+exports[`throws if the default locale is not found 1`] = `[Error: No translation file found for default locale "it"]`;
 
 exports[`throws when a translation file has multiple msgstr values for the same msgid 1`] = `[Error: msgid "foo" in file "<base>/multiple-msgstr/en.po" has multiple msgstr values. This is not supported.]`;
 

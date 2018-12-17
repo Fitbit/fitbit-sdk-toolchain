@@ -148,7 +148,7 @@ export function buildComponent({
       onDiagnostic,
       input: entryPoint,
       allowUnknownExternals: projectConfig.enableProposedAPI,
-      fallbackLocale: projectConfig.fallbackLocale,
+      defaultLocale: projectConfig.defaultLocale,
     }),
   );
 }
@@ -245,7 +245,7 @@ export function buildDeviceComponents({
               vinylFS.src(componentTargets.device.translationsGlob, {
                 base: '.',
               }),
-              compileTranslations(projectConfig.fallbackLocale),
+              compileTranslations(projectConfig.defaultLocale),
             ),
           ),
           makeDeviceManifest({ projectConfig, buildId }),

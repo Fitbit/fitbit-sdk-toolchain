@@ -91,8 +91,8 @@ it('normalizes the language tag of the file name', (done) => {
     .pipe(expectTranslationsForLanguages(done, 'en-US', 'de'));
 });
 
-function compileExpectError(fallbackLocale: string, done: jest.DoneCallback) {
-  return compileTranslations(fallbackLocale)
+function compileExpectError(defaultLocale: string, done: jest.DoneCallback) {
+  return compileTranslations(defaultLocale)
     .on('data', () => done.fail('got unexpected data'))
     .on('error', (error) => {
       expect(error).toMatchSnapshot();
@@ -120,7 +120,7 @@ it('bails when multiple .po files of the same name are present', (done) => {
   );
 });
 
-it('bails when the fallback locale is not present', (done) => {
+it('bails when the default locale is not present', (done) => {
   translationFileSource('en.po').pipe(compileExpectError('es', done));
 });
 

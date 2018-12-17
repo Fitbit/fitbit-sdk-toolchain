@@ -111,13 +111,13 @@ export function makeDeviceManifest({
     },
 
     flush(done) {
-      // Ensure the fallback locale is the first listed in the manifest
+      // Ensure the default locale is the first listed in the manifest
       const {
-        [projectConfig.fallbackLocale]: fallbackLocale,
+        [projectConfig.defaultLocale]: defaultLocale,
         ...otherLocales
       } = manifest.i18n;
       manifest.i18n = {
-        [projectConfig.fallbackLocale]: fallbackLocale,
+        [projectConfig.defaultLocale]: defaultLocale,
         ...otherLocales,
       };
 

@@ -15,11 +15,11 @@ expect.addSnapshotSerializer({
   },
 });
 
-function expectTranslations(translationsPath: string, fallbackLocale: string) {
+function expectTranslations(translationsPath: string, defaultLocale: string) {
   return expect(
     companionTranslations(
       path.join(basePath, translationsPath),
-      fallbackLocale,
+      defaultLocale,
     )(),
   );
 }
@@ -36,7 +36,7 @@ it('throws when multiple files map to the same language', () =>
 it('throws when a translation file has multiple msgstr values for the same msgid', () =>
   expectTranslations('multiple-msgstr/en.po', 'en').rejects.toMatchSnapshot());
 
-it('throws if the fallback locale is not defined', () =>
+it('throws if the default locale is not found', () =>
   expectTranslations('good/**/*.po', 'it').rejects.toMatchSnapshot());
 
 it.each(['.po', 'a.po', 'english.po', 'enus.po'])(

@@ -51,7 +51,7 @@ function compileFile(
       input: testResourcePath(filename),
       output: 'output.js',
       onDiagnostic: mockDiagnosticHandler,
-      fallbackLocale: 'en-US',
+      defaultLocale: 'en-US',
     }),
   );
 }

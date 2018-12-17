@@ -30,7 +30,7 @@ async function loadTranslations(filePath: string) {
 
 export default function companionTranslations(
   globPattern: string,
-  fallbackLocale: string,
+  defaultLocale: string,
 ) {
   return async () => {
     const languagePaths = new Map<string, string>();
@@ -59,10 +59,9 @@ export default function companionTranslations(
       translations[tag] = await loadTranslations(filePath);
     }
 
-    const languageTags = Object.keys(translations);
-    if (languageTags.indexOf(fallbackLocale) === -1) {
+    if (!translations.hasOwnProperty(defaultLocale)) {
       throw new Error(
-        `No translation file found for fallback locale ${fallbackLocale}`,
+        `No translation file found for default locale "${defaultLocale}"`,
       );
     }
 
