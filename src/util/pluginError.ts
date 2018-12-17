@@ -48,7 +48,8 @@ const ignoredPluginErrorProps = new Set([
 ]);
 
 function hasDiagnosticTarget<T extends PluginError>(err: T):
-  err is T & { target: DiagnosticTarget } {
+  err is T & { target: DiagnosticTarget }
+{
   return Object.values(DiagnosticTarget).indexOf((err as any).target) !== -1;
 }
 
