@@ -78,7 +78,7 @@ export default function compileTranslations(defaultLanguage: string) {
         done(
           new PluginError(
             PLUGIN_NAME,
-            `No translation file found for default language: ${defaultLanguage}`,
+            `No translation file found for default language "${defaultLanguage}"`,
           ),
         );
         return;
