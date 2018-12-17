@@ -5,7 +5,10 @@ import { PassThrough, Writable } from 'stream';
 
 const translationContents = 'msgid "foo"\nmsgstr "foo"';
 
-function expectTranslationsForLanguages(done: jest.DoneCallback, ...languages: string[]) {
+function expectTranslationsForLanguages(
+  done: jest.DoneCallback,
+  ...languages: string[]
+) {
   const expected = new Set(languages);
   const actual = new Set<string>();
 
@@ -30,10 +33,14 @@ function expectTranslationsForLanguages(done: jest.DoneCallback, ...languages: s
 function translationFileSource(...paths: string[]) {
   const stream = new PassThrough({ objectMode: true });
 
-  paths.forEach(path => stream.write(new Vinyl({
-    path,
-    contents: Buffer.from(translationContents),
-  })));
+  paths.forEach((path) =>
+    stream.write(
+      new Vinyl({
+        path,
+        contents: Buffer.from(translationContents),
+      }),
+    ),
+  );
 
   stream.end();
 
@@ -97,39 +104,42 @@ describe('rejects .po files whose names are not acceptable language tags', () =>
   it.each(['e.po', 'en-USA.po', 'sl-IT-nedis.po'])(
     '%s',
     (path: string, done: jest.DoneCallback) => {
-      compileExpectError('en', done)
-        .end(new Vinyl({
+      compileExpectError('en', done).end(
+        new Vinyl({
           path,
           contents: Buffer.from('foo'),
-        }));
+        }),
+      );
     },
   );
 });
 
 it('bails when multiple .po files of the same name are present', (done) => {
-  translationFileSource('en.po', 'a/en.po')
-    .pipe(compileExpectError('en', done));
+  translationFileSource('en.po', 'a/en.po').pipe(
+    compileExpectError('en', done),
+  );
 });
 
 it('bails when the fallback locale is not present', (done) => {
-  translationFileSource('en.po')
-    .pipe(compileExpectError('es', done));
+  translationFileSource('en.po').pipe(compileExpectError('es', done));
 });
 
 it('bails when a .po file is malformed', (done) => {
-  compileExpectError('en', done)
-    .end(new Vinyl({
+  compileExpectError('en', done).end(
+    new Vinyl({
       path: 'en.po',
       contents: Buffer.from('definitely not gettext format'),
-    }));
+    }),
+  );
 });
 
 it('gracefully fails when a streaming-mode file is passed in', (done) => {
-  compileExpectError('en', done)
-    .end(new Vinyl({
+  compileExpectError('en', done).end(
+    new Vinyl({
       path: 'en.po',
       contents: new PassThrough(),
-    }));
+    }),
+  );
 });
 
 it('renames the transformed file, replacing the whole relative path', (done) => {

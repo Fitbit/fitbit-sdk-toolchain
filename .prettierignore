@@ -1,0 +1,4 @@
+/coverage/
+/lib/
+__test__/
+__snapshots__/

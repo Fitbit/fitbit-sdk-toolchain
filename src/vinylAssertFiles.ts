@@ -22,7 +22,9 @@ export default function vinylAssertFiles(expected: string[]) {
           new PluginError(
             PLUGIN_NAME,
             // tslint:disable-next-line:max-line-length
-            `One or more required files do not exist in the project: ${humanizeList([...expectedPaths])}`,
+            `One or more required files do not exist in the project: ${humanizeList(
+              [...expectedPaths],
+            )}`,
           ),
         );
       }

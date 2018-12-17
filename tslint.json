@@ -1,20 +1,21 @@
 {
-  "extends": "tslint-config-airbnb",
+  "extends": ["tslint-config-airbnb", "tslint-config-prettier"],
   "rules": {
     "no-inferrable-types": true,
     "prefer-template": [true, "allow-single-concat"],
-    "import-name": [true, {
-      "errorSubclass": "ErrorSubclass",
-      "magicString": "MagicString",
-      "pluginError": "PluginError",
-      "typescript": "ts",
-      "vinyl": "Vinyl",
-      "vinylFs": "vinylFS"
-    }]
+    "import-name": [
+      true,
+      {
+        "errorSubclass": "ErrorSubclass",
+        "magicString": "MagicString",
+        "pluginError": "PluginError",
+        "typescript": "ts",
+        "vinyl": "Vinyl",
+        "vinylFs": "vinylFS"
+      }
+    ]
   },
   "linterOptions": {
-    "exclude": [
-      "src/__test__"
-    ]
+    "exclude": ["src/**/__test__"]
   }
 }

@@ -9,7 +9,10 @@ const geti18nModuleString = (fallbackLocale: string) => `
   export { gettext };
 `;
 
-export default function i18nPolyfill(translationsGlob: string, fallbackLocale: string) {
+export default function i18nPolyfill(
+  translationsGlob: string,
+  fallbackLocale: string,
+) {
   return {
     '\0lang:table': companionTranslations(translationsGlob, fallbackLocale),
     '\0lang:gettext-factory': gettextFactoryConst,

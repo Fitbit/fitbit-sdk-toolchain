@@ -5,7 +5,9 @@ export default class DiagnosticList {
 
   constructor(public diagnostics = [] as Diagnostic[]) {
     if (!Array.isArray(diagnostics)) {
-      throw new TypeError(`diagnostics must be array, not ${typeof diagnostics}`);
+      throw new TypeError(
+        `diagnostics must be array, not ${typeof diagnostics}`,
+      );
     }
   }
 
@@ -16,8 +18,13 @@ export default class DiagnosticList {
   }
 
   push(diagnostic: Diagnostic) {
-    if (diagnostic.messageText === undefined || diagnostic.category === undefined) {
-      throw new TypeError('Diagnostic is missing `messageText` or `category` keys');
+    if (
+      diagnostic.messageText === undefined ||
+      diagnostic.category === undefined
+    ) {
+      throw new TypeError(
+        'Diagnostic is missing `messageText` or `category` keys',
+      );
     }
     this.diagnostics.push(diagnostic);
   }

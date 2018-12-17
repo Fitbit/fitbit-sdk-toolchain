@@ -14,7 +14,9 @@ export default function generateAppID() {
   if (config.fitbit === undefined) config.fitbit = {};
 
   if (!lodash.isPlainObject(config.fitbit)) {
-    throw new TypeError('Project configuration \'fitbit\' property must be an object');
+    throw new TypeError(
+      "Project configuration 'fitbit' property must be an object",
+    );
   }
 
   config.fitbit.appUUID = uuid.v4();

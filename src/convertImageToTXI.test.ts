@@ -7,7 +7,12 @@ import { Readable, PassThrough } from 'stream';
 import { join } from 'path';
 import { readFileSync } from 'fs';
 
-const corruptImage = join(__dirname, '__test__', 'PngSuite-2017jul19', 'xs1n0g01.png');
+const corruptImage = join(
+  __dirname,
+  '__test__',
+  'PngSuite-2017jul19',
+  'xs1n0g01.png',
+);
 
 function eventCounter(total: number, callback: () => void) {
   let counter = total;
@@ -42,11 +47,12 @@ it('passes through non-PNG files untouched', (done) => {
     .on('end', () => {
       expect(handleData).toHaveBeenCalledTimes(files.length);
       files.forEach((value, index) =>
-        expect(handleData).toHaveBeenNthCalledWith(index + 1, value));
+        expect(handleData).toHaveBeenNthCalledWith(index + 1, value),
+      );
       done();
     });
 
-  files.forEach(file => converter.write(file));
+  files.forEach((file) => converter.write(file));
   converter.end();
 });
 
@@ -64,18 +70,22 @@ describe('in streaming mode', () => {
     });
 
     convertImageToTXI()
-      .on('data', (file: Vinyl) => process.nextTick(() => {
-        shouldRead = true;
-        if (!file.isStream()) {
-          done.fail('Got a non-stream file');
-          return;
-        }
-        file.contents.on('data', () => {});
-      }))
-      .end(new Vinyl({
-        path: 'foo.png',
-        contents: fileStream,
-      }));
+      .on('data', (file: Vinyl) =>
+        process.nextTick(() => {
+          shouldRead = true;
+          if (!file.isStream()) {
+            done.fail('Got a non-stream file');
+            return;
+          }
+          file.contents.on('data', () => {});
+        }),
+      )
+      .end(
+        new Vinyl({
+          path: 'foo.png',
+          contents: fileStream,
+        }),
+      );
   });
 
   it('handles a stream read error', (done) => {
@@ -97,23 +107,26 @@ describe('in streaming mode', () => {
 
         // Start the lazy transform.
         file.contents
-          .on('error', error => expect(error).toMatchSnapshot())
+          .on('error', (error) => expect(error).toMatchSnapshot())
           .on('data', () => {});
       })
-      .on('error', error => expect(error).toMatchSnapshot())
+      .on('error', (error) => expect(error).toMatchSnapshot())
       .on('end', done);
 
-    converter.end(new Vinyl({
-      path: 'dead.png',
-      contents: fileStream,
-    }));
+    converter.end(
+      new Vinyl({
+        path: 'dead.png',
+        contents: fileStream,
+      }),
+    );
   });
 
   it('handles a corrupt PNG', (done) => {
     expect.assertions(2);
     const tally = eventCounter(2, done);
 
-    vinylFS.src(corruptImage, { buffer: false })
+    vinylFS
+      .src(corruptImage, { buffer: false })
       .pipe(convertImageToTXI())
       .on('error', (error) => {
         expect(error).toMatchSnapshot();
@@ -125,10 +138,11 @@ describe('in streaming mode', () => {
           return;
         }
 
-        file.contents.on('error', (error) => {
-          expect(error).toMatchSnapshot();
-          tally();
-        })
+        file.contents
+          .on('error', (error) => {
+            expect(error).toMatchSnapshot();
+            tally();
+          })
           .on('data', () => {});
       });
   });
@@ -154,47 +168,57 @@ describe('in streaming mode', () => {
           return;
         }
 
-        file.contents.on('error', (error) => {
-          expect(error).toMatchSnapshot();
-          tally();
-        })
+        file.contents
+          .on('error', (error) => {
+            expect(error).toMatchSnapshot();
+            tally();
+          })
           .on('data', () => {});
       })
-      .end(new Vinyl({
-        contents,
-        path: 'image.png',
-      }));
+      .end(
+        new Vinyl({
+          contents,
+          path: 'image.png',
+        }),
+      );
   });
 
   it.each([
     ['1bit.png', 'monochrome'],
     ['rgb_image.png', 'RGB'],
     ['rle_no_leftovers.png', 'RGBA'],
-  ])('converts %s to a %s TXI', (filename: string, _, done: jest.DoneCallback) => {
-    expect.hasAssertions();
+  ])(
+    'converts %s to a %s TXI',
+    (filename: string, _, done: jest.DoneCallback) => {
+      expect.hasAssertions();
 
-    const png = join(__dirname, '__test__', filename);
-    vinylFS.src(png, { buffer: false })
-      .pipe(convertImageToTXI())
-      .on('error', done.fail)
-      .on('data', (txi: Vinyl) => {
-        expect(txi.basename).toBe(`${filename}.txi`);
-        expect(txi.isStream()).toBe(true);
-        if (txi.isStream()) {
-          txi.contents.pipe(concatStream((contents) => {
-            expect(contents.compare(readFileSync(`${png}.txi`))).toBe(0);
-            done();
-          }));
-        }
-      });
-  });
+      const png = join(__dirname, '__test__', filename);
+      vinylFS
+        .src(png, { buffer: false })
+        .pipe(convertImageToTXI())
+        .on('error', done.fail)
+        .on('data', (txi: Vinyl) => {
+          expect(txi.basename).toBe(`${filename}.txi`);
+          expect(txi.isStream()).toBe(true);
+          if (txi.isStream()) {
+            txi.contents.pipe(
+              concatStream((contents) => {
+                expect(contents.compare(readFileSync(`${png}.txi`))).toBe(0);
+                done();
+              }),
+            );
+          }
+        });
+    },
+  );
 });
 
 describe('in buffered mode', () => {
   it('handles a corrupt PNG', (done) => {
     expect.assertions(1);
 
-    vinylFS.src(corruptImage)
+    vinylFS
+      .src(corruptImage)
       .pipe(convertImageToTXI())
       .on('error', (error) => {
         expect(error).toMatchSnapshot();
@@ -215,44 +239,53 @@ describe('in buffered mode', () => {
         done();
       })
       .on('data', () => done.fail('Got an unexpected file'))
-      .end(new Vinyl({
-        contents,
-        path: 'image.png',
-      }));
+      .end(
+        new Vinyl({
+          contents,
+          path: 'image.png',
+        }),
+      );
   });
 
   it.each([
     ['1bit.png', 'monochrome'],
     ['rgb_image.png', 'RGB'],
     ['rle_no_leftovers.png', 'RGBA'],
-  ])('converts %s to a %s TXI', (filename: string, _, done: jest.DoneCallback) => {
-    expect.hasAssertions();
+  ])(
+    'converts %s to a %s TXI',
+    (filename: string, _, done: jest.DoneCallback) => {
+      expect.hasAssertions();
 
-    const png = join(__dirname, '__test__', filename);
-    vinylFS.src(png)
-      .pipe(convertImageToTXI())
-      .on('error', done.fail)
-      .on('data', (txi: Vinyl) => {
-        expect(txi.basename).toBe(`${filename}.txi`);
-        expect(txi.isBuffer()).toBe(true);
-        if (txi.isBuffer()) {
-          expect(txi.contents.compare(readFileSync(`${png}.txi`))).toBe(0);
-          done();
-        }
-      });
-  });
+      const png = join(__dirname, '__test__', filename);
+      vinylFS
+        .src(png)
+        .pipe(convertImageToTXI())
+        .on('error', done.fail)
+        .on('data', (txi: Vinyl) => {
+          expect(txi.basename).toBe(`${filename}.txi`);
+          expect(txi.isBuffer()).toBe(true);
+          if (txi.isBuffer()) {
+            expect(txi.contents.compare(readFileSync(`${png}.txi`))).toBe(0);
+            done();
+          }
+        });
+    },
+  );
 });
 
 describe('RGBA output format for alpha channel images', () => {
   it('converts to RGBA6666 if specified', (done: jest.DoneCallback) => {
     const png = join(__dirname, '__test__/rle_no_leftovers.png');
 
-    vinylFS.src(png)
+    vinylFS
+      .src(png)
       .pipe(convertImageToTXI({ rgbaOutputFormat: TXIOutputFormat.RGBA6666 }))
       .on('error', done.fail)
       .on('data', (txi: Vinyl) => {
         if (txi.isBuffer()) {
-          expect(txi.contents.compare(readFileSync(`${png}.RGBA6666.txi`))).toBe(0);
+          expect(
+            txi.contents.compare(readFileSync(`${png}.RGBA6666.txi`)),
+          ).toBe(0);
           done();
         }
       });
@@ -261,7 +294,8 @@ describe('RGBA output format for alpha channel images', () => {
   it('defaults to RGBA8888 if RGBA6666 is not specified', (done: jest.DoneCallback) => {
     const png = join(__dirname, '__test__/rle_no_leftovers.png');
 
-    vinylFS.src(png)
+    vinylFS
+      .src(png)
       .pipe(convertImageToTXI())
       .on('error', done.fail)
       .on('data', (txi: Vinyl) => {

@@ -18,7 +18,9 @@ async function loadTranslations(filePath: string) {
   for (const { msgid, msgstr } of po.items) {
     if (msgstr.length > 1) {
       // tslint:disable-next-line:max-line-length
-      throw new Error(`msgid "${msgid}" in file "${filePath}" has multiple msgstr values. This is not supported.`);
+      throw new Error(
+        `msgid "${msgid}" in file "${filePath}" has multiple msgstr values. This is not supported.`,
+      );
     }
     messages[msgid] = msgstr[0];
   }
@@ -26,7 +28,10 @@ async function loadTranslations(filePath: string) {
   return messages;
 }
 
-export default function companionTranslations(globPattern: string, fallbackLocale: string) {
+export default function companionTranslations(
+  globPattern: string,
+  fallbackLocale: string,
+) {
   return async () => {
     const languagePaths = new Map<string, string>();
     const translations: LanguageTable = {};
@@ -36,14 +41,18 @@ export default function companionTranslations(globPattern: string, fallbackLocal
 
       if (tag === null) {
         // tslint:disable-next-line:max-line-length
-        throw new Error(`Translation file "${filePath}" has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)`);
+        throw new Error(
+          `Translation file "${filePath}" has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)`,
+        );
       }
 
       const existingTranslations = languagePaths.get(tag);
 
       if (existingTranslations) {
         // tslint:disable-next-line:max-line-length
-        throw new Error(`More than one translation file found for language ${tag}. Found "${existingTranslations}" and "${filePath}".`);
+        throw new Error(
+          `More than one translation file found for language ${tag}. Found "${existingTranslations}" and "${filePath}".`,
+        );
       }
 
       languagePaths.set(tag, filePath);

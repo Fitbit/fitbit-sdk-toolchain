@@ -44,17 +44,21 @@ interface DeviceManifest extends ComponentManifest {
 interface CompanionManifest extends ComponentManifest {
   manifestVersion: 2;
   companion: {
-    main: string,
+    main: string;
   };
   settings?: {
-    main: string,
+    main: string;
   };
 }
 
-function makeCommonManifest({ projectConfig, buildId, apiVersion }: {
-  projectConfig: ProjectConfiguration,
-  buildId: string,
-  apiVersion: string,
+function makeCommonManifest({
+  projectConfig,
+  buildId,
+  apiVersion,
+}: {
+  projectConfig: ProjectConfiguration;
+  buildId: string;
+  apiVersion: string;
 }): ComponentManifest {
   return {
     apiVersion,
@@ -66,9 +70,12 @@ function makeCommonManifest({ projectConfig, buildId, apiVersion }: {
   };
 }
 
-export function makeDeviceManifest({ projectConfig, buildId } : {
-  projectConfig: ProjectConfiguration,
-  buildId: string,
+export function makeDeviceManifest({
+  projectConfig,
+  buildId,
+}: {
+  projectConfig: ProjectConfiguration;
+  buildId: string;
 }) {
   const manifest: DeviceManifest = {
     appManifestVersion: 1,
@@ -105,26 +112,36 @@ export function makeDeviceManifest({ projectConfig, buildId } : {
 
     flush(done) {
       // Ensure the fallback locale is the first listed in the manifest
-      const { [projectConfig.fallbackLocale]: fallbackLocale, ...otherLocales } = manifest.i18n;
+      const {
+        [projectConfig.fallbackLocale]: fallbackLocale,
+        ...otherLocales
+      } = manifest.i18n;
       manifest.i18n = {
         [projectConfig.fallbackLocale]: fallbackLocale,
         ...otherLocales,
       };
 
-      done(undefined, new Vinyl({
-        cwd: '',
-        base: undefined,
-        path: manifestPath,
-        contents: Buffer.from(JSON.stringify(manifest)),
-      }));
+      done(
+        undefined,
+        new Vinyl({
+          cwd: '',
+          base: undefined,
+          path: manifestPath,
+          contents: Buffer.from(JSON.stringify(manifest)),
+        }),
+      );
     },
   });
 }
 
-export function makeCompanionManifest({ projectConfig, hasSettings, buildId } : {
-  projectConfig: ProjectConfiguration,
-  hasSettings: boolean,
-  buildId: string,
+export function makeCompanionManifest({
+  projectConfig,
+  hasSettings,
+  buildId,
+}: {
+  projectConfig: ProjectConfiguration;
+  hasSettings: boolean;
+  buildId: string;
 }) {
   const manifest: CompanionManifest = {
     manifestVersion: 2,
@@ -136,9 +153,8 @@ export function makeCompanionManifest({ projectConfig, hasSettings, buildId } : 
     }),
   };
 
-  if (hasSettings) manifest.settings = { main: componentTargets.settings.output };
-  return gulpFile(
-    manifestPath,
-    JSON.stringify(manifest),
-  );
+  if (hasSettings) {
+    manifest.settings = { main: componentTargets.settings.output };
+  }
+  return gulpFile(manifestPath, JSON.stringify(manifest));
 }
