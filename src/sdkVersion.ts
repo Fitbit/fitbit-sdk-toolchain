@@ -7,6 +7,10 @@ export default function sdkVersion(toolchainVersion = packageVersionConst) {
   if (version === null) {
     throw new Error(`Invalid SDK package version: ${toolchainVersion}`);
   }
+  // SDK versions do not have a patch or prerelease. Strip them out.
+  version.patch = 0;
+  version.prerelease = [];
+  version.format(); // Side effect: updates the version.version property.
   return version;
 }
 
