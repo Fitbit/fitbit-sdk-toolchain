@@ -24,6 +24,7 @@ import convertImageToTXI, {
   TXIOutputFormat,
 } from './convertImageToTXI';
 import { errataPrimaryExpressionInSwitch } from './errataWorkarounds';
+import eventsIntercept from './util/eventsIntercept';
 import gulpMagicString from './gulpMagicString';
 import gulpSetProperty from './gulpSetProperty';
 import {
@@ -64,6 +65,26 @@ function addDiagnosticTarget(
   onDiagnostic: DiagnosticHandler,
 ) {
   return (diagnostic: Diagnostic) => onDiagnostic({ target, ...diagnostic });
+}
+
+function addErrorTarget(
+  target: DiagnosticTarget,
+  fn: () => NodeJS.ReadableStream,
+): NodeJS.ReadableStream {
+  function wrap(err: any) {
+    if (BuildError.is(err) || pluginError.isPluginError(err)) {
+      (err as any).target = target;
+    }
+    return err;
+  }
+
+  try {
+    const buildStream = eventsIntercept(fn());
+    buildStream.intercept('error', (err, done) => done(null, wrap(err)));
+    return buildStream;
+  } catch (ex) {
+    throw wrap(ex);
+  }
 }
 
 function lazyObjectReadable(fn: () => Readable) {
@@ -271,7 +292,10 @@ export function buildCompanion({
           category: DiagnosticCategory.Message,
           messageText: `Building ${diagnosticTargets[componentType]}`,
         });
-        return new pumpify.obj(component, sourceMaps.collector(componentType));
+        return new pumpify.obj(
+          addErrorTarget(diagnosticTargets[componentType], () => component),
+          sourceMaps.collector(componentType),
+        );
       });
     }
     return component;
@@ -323,11 +347,13 @@ export function buildAppPackage({
     components.push(existingDeviceComponents);
   } else {
     components.push(
-      buildDeviceComponents({
-        projectConfig,
-        buildId,
-        onDiagnostic: addDiagnosticTarget(DiagnosticTarget.App, onDiagnostic),
-      }),
+      addErrorTarget(DiagnosticTarget.App, () =>
+        buildDeviceComponents({
+          projectConfig,
+          buildId,
+          onDiagnostic: addDiagnosticTarget(DiagnosticTarget.App, onDiagnostic),
+        }),
+      ),
     );
   }
 

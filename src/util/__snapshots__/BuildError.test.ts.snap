@@ -6,3 +6,11 @@ Object {
   "messageText": "uh oh!",
 }
 `;
+
+exports[`toDiagnostic() returns an error diagnostic with a target set 1`] = `
+Object {
+  "category": 1,
+  "messageText": "uh oh!",
+  "target": "companion",
+}
+`;

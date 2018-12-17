@@ -1,4 +1,5 @@
 import BuildError from './BuildError';
+import { DiagnosticTarget } from '../diagnostics';
 
 describe('is()', () => {
   it('returns false if error is not a BuildError', () =>
@@ -11,4 +12,10 @@ describe('is()', () => {
 describe('toDiagnostic()', () => {
   it('returns an error diagnostic', () =>
     expect(new BuildError('uh oh!').toDiagnostic()).toMatchSnapshot());
+
+  it('returns an error diagnostic with a target set', () => {
+    const err = new BuildError('uh oh!');
+    err.target = DiagnosticTarget.Companion;
+    expect(err.toDiagnostic()).toMatchSnapshot();
+  });
 });
