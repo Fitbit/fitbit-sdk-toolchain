@@ -1,3 +1,4 @@
+import { SemVer, satisfies } from 'semver';
 import sdkVersion, { apiVersions } from './sdkVersion';
 
 it('throws if package version has no known mapping', () => {
@@ -47,5 +48,27 @@ it('is able to map the current SDK version to API versions', () => {
   expect(apiVersions()).toEqual({
     deviceApi: expect.any(String),
     companionApi: expect.any(String),
+  });
+});
+
+describe('given a specific toolchain version', () => {
+  let version: SemVer;
+
+  beforeEach(() => {
+    version = sdkVersion('3.0.5-pre.7');
+  });
+
+  it('converts the toolchain version to an SDK version', () => {
+    expect(version).toMatchObject({
+      major: 3,
+      minor: 0,
+      patch: 0,
+      prerelease: [],
+      version: '3.0.0',
+    });
+  });
+
+  it('returns an SDK version that compares as expected', () => {
+    expect(satisfies(version, '>=3.0.0')).toBe(true);
   });
 });
