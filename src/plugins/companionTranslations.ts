@@ -61,7 +61,7 @@ export default function companionTranslations(
 
     if (!translations.hasOwnProperty(defaultLanguage)) {
       throw new Error(
-        `No translation file found for default language "${defaultLanguage}"`,
+        `No translation file found for default language: ${defaultLanguage}`,
       );
     }
 
