@@ -24,7 +24,7 @@ const makeProjectConfig = (): ClockProjectConfiguration => ({
   },
   buildTargets: ['higgs'],
   requestedPermissions: [],
-  defaultLocale: 'en-US',
+  defaultLanguage: 'en-US',
 });
 
 function makeReadStream() {

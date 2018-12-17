@@ -25,7 +25,7 @@ export interface BaseProjectConfiguration {
   appUUID: string;
   requestedPermissions: string[];
   i18n: LocalesConfig;
-  defaultLocale: string;
+  defaultLanguage: string;
   buildTargets: string[];
   // We don't want to accidentally serialize `enableProposedAPI: false`
   // out to users' package.json files.
@@ -212,7 +212,7 @@ export function normalizeProjectConfig(
     requestedPermissions: [],
     buildTargets: [],
     i18n: {},
-    defaultLocale: 'en-US',
+    defaultLanguage: 'en-US',
 
     // Override defaults
     ...defaults,
@@ -221,11 +221,11 @@ export function normalizeProjectConfig(
     ...(config.fitbit as {}),
   };
 
-  const normalizedDefaultLocale = normalizeLanguageTag(
-    mergedConfig.defaultLocale,
+  const normalizedDefaultLanguage = normalizeLanguageTag(
+    mergedConfig.defaultLanguage,
   );
-  if (normalizedDefaultLocale !== null) {
-    mergedConfig.defaultLocale = normalizedDefaultLocale;
+  if (normalizedDefaultLanguage !== null) {
+    mergedConfig.defaultLanguage = normalizedDefaultLanguage;
   }
 
   const { requestedPermissions } = mergedConfig;
@@ -366,11 +366,11 @@ export function validateAppUUID({ appUUID }: ProjectConfiguration) {
   return diagnostics;
 }
 
-export function validateDefaultLocale(config: ProjectConfiguration) {
+export function validateDefaultLanguage(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
-  if (normalizeLanguageTag(config.defaultLocale) === null) {
+  if (normalizeLanguageTag(config.defaultLanguage) === null) {
     diagnostics.pushFatalError(
-      `Default locale is an invalid language tag: ${config.defaultLocale}`,
+      `Default language is an invalid language tag: ${config.defaultLanguage}`,
     );
   }
   return diagnostics;
@@ -387,7 +387,7 @@ export function validate(config: ProjectConfiguration) {
     validateBuildTarget,
     validateSupportedLocales,
     validateLocaleDisplayNames,
-    validateDefaultLocale,
+    validateDefaultLanguage,
   ].forEach((validator) => diagnostics.extend(validator(config)));
   return diagnostics;
 }

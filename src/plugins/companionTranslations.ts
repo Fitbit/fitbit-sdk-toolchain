@@ -30,7 +30,7 @@ async function loadTranslations(filePath: string) {
 
 export default function companionTranslations(
   globPattern: string,
-  defaultLocale: string,
+  defaultLanguage: string,
 ) {
   return async () => {
     const languagePaths = new Map<string, string>();
@@ -59,9 +59,9 @@ export default function companionTranslations(
       translations[tag] = await loadTranslations(filePath);
     }
 
-    if (!translations.hasOwnProperty(defaultLocale)) {
+    if (!translations.hasOwnProperty(defaultLanguage)) {
       throw new Error(
-        `No translation file found for default locale "${defaultLocale}"`,
+        `No translation file found for default language "${defaultLanguage}"`,
       );
     }
 

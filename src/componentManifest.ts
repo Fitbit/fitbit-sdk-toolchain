@@ -111,13 +111,13 @@ export function makeDeviceManifest({
     },
 
     flush(done) {
-      // Ensure the default locale is the first listed in the manifest
+      // Ensure the default language is the first listed in the manifest
       const {
-        [projectConfig.defaultLocale]: defaultLocale,
+        [projectConfig.defaultLanguage]: defaultLanguage,
         ...otherLocales
       } = manifest.i18n;
       manifest.i18n = {
-        [projectConfig.defaultLocale]: defaultLocale,
+        [projectConfig.defaultLanguage]: defaultLanguage,
         ...otherLocales,
       };
 

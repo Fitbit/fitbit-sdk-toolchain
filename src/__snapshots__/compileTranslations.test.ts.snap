@@ -18,9 +18,9 @@ PluginError {
 }
 `;
 
-exports[`bails when the default locale is not present 1`] = `
+exports[`bails when the default langugage is not present 1`] = `
 PluginError {
-  "message": "No translation file found for default locale \\"es\\"",
+  "message": "No translation file found for default language: es",
   "name": "Error",
   "plugin": "compileTranslations",
 }

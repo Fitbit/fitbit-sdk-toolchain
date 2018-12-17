@@ -28,7 +28,7 @@ const projectConfig: ProjectConfiguration = {
   },
   buildTargets: ['higgs'],
   requestedPermissions: ['permission'],
-  defaultLocale: 'en-US',
+  defaultLanguage: 'en-US',
 };
 
 let mockDiagnosticHandler: jest.Mock;
