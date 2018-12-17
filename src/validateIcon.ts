@@ -46,7 +46,7 @@ export default function validateIcon({
 
   let iconExists = false;
 
-  const validateStream = new stream.Transform({
+  return new stream.Transform({
     objectMode: true,
     transform(this: stream.Transform, file: Vinyl, _, cb) {
       if (
@@ -103,6 +103,4 @@ export default function validateIcon({
       cb();
     },
   });
-
-  return validateStream;
 }

@@ -1,5 +1,5 @@
 import { Plugin } from 'rollup';
-import { createFilter } from 'rollup-pluginutils';
+import { createFilter, Filter } from 'rollup-pluginutils';
 import ts from 'typescript';
 
 import LanguageServiceHost from './LanguageServiceHost';
@@ -10,8 +10,8 @@ import { default as tslib } from './tslib.const';
 import { Diagnostic } from '../../diagnostics';
 
 interface IOptions {
-  include: string | string[] | RegExp | RegExp[];
-  exclude: string | string[] | RegExp | RegExp[];
+  include: Filter;
+  exclude: Filter;
   tsconfig?: string;
   tsconfigOverride?: ts.CompilerOptions;
   onDiagnostic: (diagnostic: Diagnostic) => void;
@@ -26,7 +26,7 @@ const generateMessage = (tsDiagnostic: ts.Diagnostic) => {
   if (typeof tsDiagnostic.messageText === 'string') {
     return formatTSDiagMessage({
       code: tsDiagnostic.code,
-      messageText: tsDiagnostic.messageText as string,
+      messageText: tsDiagnostic.messageText,
     });
   }
   const messages = [];
