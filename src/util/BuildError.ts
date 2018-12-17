@@ -1,6 +1,10 @@
 import ErrorSubclass from 'error-subclass';
 
-import { Diagnostic, DiagnosticCategory, DiagnosticTarget } from '../diagnostics';
+import {
+  Diagnostic,
+  DiagnosticCategory,
+  DiagnosticTarget,
+} from '../diagnostics';
 
 export default class BuildError extends ErrorSubclass {
   static displayName = 'BuildError';
