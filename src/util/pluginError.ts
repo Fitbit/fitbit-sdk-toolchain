@@ -1,7 +1,11 @@
 import indentString from 'indent-string';
 import PluginError from 'plugin-error';
 
-import { Diagnostic, DiagnosticCategory, DiagnosticTarget } from '../diagnostics';
+import {
+  Diagnostic,
+  DiagnosticCategory,
+  DiagnosticTarget,
+} from '../diagnostics';
 
 export function isPluginError(value: unknown): value is PluginError {
   // We can't just do an instanceof check as the error object might be
@@ -27,8 +31,9 @@ function isProjectBuildError(error: PluginError): boolean {
 }
 
 function hasEnumerableProp<T, K extends string | number | symbol>(
-  obj: { [P in K]?: T }, prop: K,
-): obj is ({ [P in K]: T }) {
+  obj: { [P in K]?: T },
+  prop: K,
+): obj is { [P in K]: T } {
   return obj.propertyIsEnumerable(prop) && obj[prop] !== undefined;
 }
 
@@ -47,9 +52,9 @@ const ignoredPluginErrorProps = new Set([
   'target',
 ]);
 
-function hasDiagnosticTarget<T extends PluginError>(err: T):
-  err is T & { target: DiagnosticTarget }
-{
+function hasDiagnosticTarget<T extends PluginError>(
+  err: T,
+): err is T & { target: DiagnosticTarget } {
   return Object.values(DiagnosticTarget).indexOf((err as any).target) !== -1;
 }
 
@@ -67,17 +72,21 @@ function convertToDiagnostic(
 
   // Our own spin on PluginError.prototype._messageDetails().
   if (error.showProperties) {
-    const detailKeys = Object.keys(error).filter(key => !ignoredPluginErrorProps.has(key));
+    const detailKeys = Object.keys(error).filter(
+      (key) => !ignoredPluginErrorProps.has(key),
+    );
     if (detailKeys.length) {
-      const detailsText = detailKeys.map((key) => {
-        const value = (error as any)[key];
+      const detailsText = detailKeys
+        .map((key) => {
+          const value = (error as any)[key];
 
-        if (typeof value === 'string' && value.includes('\n')) {
-          return `    ${key}:\n${indentString(value, 6)}\n`;
-        }
+          if (typeof value === 'string' && value.includes('\n')) {
+            return `    ${key}:\n${indentString(value, 6)}\n`;
+          }
 
-        return `    ${key}: ${value}\n`;
-      }).join('');
+          return `    ${key}: ${value}\n`;
+        })
+        .join('');
 
       diagnostic.messageText = [
         {
@@ -106,8 +115,9 @@ function convertToDiagnostic(
       diagnostic.file.position = {
         start: {
           line: error.lineNumber - 1,
-          character: hasEnumerableProp(error, 'columnNumber') ?
-            error.columnNumber - 1 : undefined,
+          character: hasEnumerableProp(error, 'columnNumber')
+            ? error.columnNumber - 1
+            : undefined,
         },
       };
     }

@@ -24,38 +24,42 @@ const projectDir = new Map<string, Vinyl>();
 
   '/resources/images/icon~higgs.png',
   '/resources/images/icon.png',
-].forEach(path => projectDir.set(
-  path,
-  new Vinyl({
+].forEach((path) =>
+  projectDir.set(
     path,
-    contents: Buffer.from(`content of ${path}`, 'utf8'),
-  })));
+    new Vinyl({
+      path,
+      contents: Buffer.from(`content of ${path}`, 'utf8'),
+    }),
+  ),
+);
 
 const fs = new Map<string, Vinyl>();
 const paths: string[] = [];
 
 beforeAll((done) => {
   const filter = filterResourceTag('higgs');
-  filter.pipe(writeArray((err: any, files: Vinyl[]) => {
-    if (err) return done.fail(err);
-    files.forEach((file) => {
-      fs.set(file.path, file);
-      paths.push(file.path);
-    });
-    done();
-  }));
+  filter.pipe(
+    writeArray((err: any, files: Vinyl[]) => {
+      if (err) return done.fail(err);
+      files.forEach((file) => {
+        fs.set(file.path, file);
+        paths.push(file.path);
+      });
+      done();
+    }),
+  );
 
-  projectDir.forEach(file => filter.write(file));
+  projectDir.forEach((file) => filter.write(file));
   filter.end();
 });
 
-it.each([
-  '/app/index.js',
-  '/resources/resources.json',
-])('passes through %s with no tagged alternative', (path) => {
-  expect(fs.get(path))
-    .toEqual(projectDir.get(path));
-});
+it.each(['/app/index.js', '/resources/resources.json'])(
+  'passes through %s with no tagged alternative',
+  (path) => {
+    expect(fs.get(path)).toEqual(projectDir.get(path));
+  },
+);
 
 it.each([
   'index~higgs.gui',
@@ -74,14 +78,18 @@ it.each([
   ['index~higgs.gui', 'index.gui'],
   ['widgets~higgs.gui', 'widgets.gui'],
   ['images/icon~higgs.png', 'images/icon.png'],
-])('prefers the tagged file %s over the untagged %s', (tagged: string, untagged: string) => {
-  expect(fs.get('/resources/' + untagged)!.contents)
-    .toEqual(projectDir.get('/resources/' + tagged)!.contents);
-});
+])(
+  'prefers the tagged file %s over the untagged %s',
+  (tagged: string, untagged: string) => {
+    expect(fs.get('/resources/' + untagged)!.contents).toEqual(
+      projectDir.get('/resources/' + tagged)!.contents,
+    );
+  },
+);
 
 it('excludes tagged resources with no matching tag option', () => {
-  ['no.txt', 'exclude.txt'].forEach(
-    path => expect(paths).not.toContain('/resources/' + path),
+  ['no.txt', 'exclude.txt'].forEach((path) =>
+    expect(paths).not.toContain('/resources/' + path),
   );
 });
 
@@ -96,7 +104,7 @@ it('passes directories through untouched', (done) => {
   expect.assertions(1);
   const filter = filterResourceTag('foo');
   filter.on('error', done.fail);
-  filter.on('data', value => expect(value).toBe(dir));
+  filter.on('data', (value) => expect(value).toBe(dir));
   filter.on('end', done);
 
   filter.end(dir);

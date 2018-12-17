@@ -9,5 +9,5 @@ interface Options extends TransformOptions {
   extensions?: string[];
 }
 declare function rollupPluginBabel(options?: Options): Plugin;
-declare namespace rollupPluginBabel { }
+declare namespace rollupPluginBabel {}
 export = rollupPluginBabel;

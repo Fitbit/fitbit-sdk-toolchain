@@ -32,21 +32,27 @@ function makeReadStream() {
   return stream;
 }
 
-function expectPackageManifest(stream: Readable, projectConfig: ProjectConfiguration) {
+function expectPackageManifest(
+  stream: Readable,
+  projectConfig: ProjectConfiguration,
+) {
   return expect(
     getJSONFileFromStream(
-      stream.pipe(appPackageManifest({
-        buildId,
-        projectConfig,
-      })),
+      stream.pipe(
+        appPackageManifest({
+          buildId,
+          projectConfig,
+        }),
+      ),
       'manifest.json',
-    ));
+    ),
+  );
 }
 
 function expectValidPackageManifest(options?: {
-  hasCompanion?: boolean,
-  projectConfig?: ProjectConfiguration,
-  nativeApp?: boolean,
+  hasCompanion?: boolean;
+  projectConfig?: ProjectConfiguration;
+  nativeApp?: boolean;
 }) {
   const { hasCompanion, projectConfig, nativeApp } = {
     projectConfig: makeProjectConfig(),
@@ -79,7 +85,10 @@ function expectValidPackageManifest(options?: {
     );
   }
   if (hasCompanion) {
-    for (const componentType of [ComponentType.COMPANION, ComponentType.SETTINGS]) {
+    for (const componentType of [
+      ComponentType.COMPANION,
+      ComponentType.SETTINGS,
+    ]) {
       stream.push(
         new Vinyl({
           path: `sourceMaps/${componentType}/${componentType}.js.json`,
@@ -102,10 +111,11 @@ function expectValidPackageManifest(options?: {
   return expectPackageManifest(stream, projectConfig).resolves;
 }
 
-it('builds a package manifest', () => expectValidPackageManifest().toMatchSnapshot());
+it('builds a package manifest', () =>
+  expectValidPackageManifest().toMatchSnapshot());
 
 it('builds a package manifest with a companion', () =>
-expectValidPackageManifest({ hasCompanion: true }).toMatchSnapshot());
+  expectValidPackageManifest({ hasCompanion: true }).toMatchSnapshot());
 
 it('builds a package manifest with multiple device components', () =>
   expectValidPackageManifest({
@@ -143,8 +153,10 @@ it('emits an error if both JS and native device components are present', () => {
   );
   stream.push(null);
 
-  return expectPackageManifest(stream, projectConfig)
-    .rejects.toThrowErrorMatchingSnapshot();
+  return expectPackageManifest(
+    stream,
+    projectConfig,
+  ).rejects.toThrowErrorMatchingSnapshot();
 });
 
 it('emits an error if multiple bundles are present for the same device family', () => {
@@ -165,21 +177,32 @@ it('emits an error if multiple bundles are present for the same device family', 
   }
   stream.push(null);
 
-  return expectPackageManifest(stream, projectConfig)
-    .rejects.toThrowErrorMatchingSnapshot();
+  return expectPackageManifest(
+    stream,
+    projectConfig,
+  ).rejects.toThrowErrorMatchingSnapshot();
 });
 
 it('builds a package manifest with a native device component', () =>
   expectValidPackageManifest({ nativeApp: true }).toMatchSnapshot());
 
 it('builds a package manifest with a native device component and companion', () =>
-  expectValidPackageManifest({ nativeApp: true, hasCompanion: true }).toMatchSnapshot());
+  expectValidPackageManifest({
+    nativeApp: true,
+    hasCompanion: true,
+  }).toMatchSnapshot());
 
 it.each([
   ['has an invalid type field', { type: '__invalid__' }],
   ['has a device type but missing platform', { type: 'device', family: 'foo' }],
-  ['has a device type but missing family', { type: 'device', platform: ['1.1.1+'] }],
-  ['has a device type but invalid platform', { type: 'device', family: 'foo', platform: '1.1.1+' }],
+  [
+    'has a device type but missing family',
+    { type: 'device', platform: ['1.1.1+'] },
+  ],
+  [
+    'has a device type but invalid platform',
+    { type: 'device', family: 'foo', platform: '1.1.1+' },
+  ],
 ])('emits an error if a component bundle tag %s', (_, componentBundle) => {
   const projectConfig = makeProjectConfig();
   const stream = makeReadStream();
@@ -191,6 +214,8 @@ it.each([
     }),
   );
 
-  return expectPackageManifest(stream, projectConfig)
-    .rejects.toThrowErrorMatchingSnapshot();
+  return expectPackageManifest(
+    stream,
+    projectConfig,
+  ).rejects.toThrowErrorMatchingSnapshot();
 });

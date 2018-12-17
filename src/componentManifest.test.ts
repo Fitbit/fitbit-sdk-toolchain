@@ -35,7 +35,9 @@ const makeAppProjectConfig = (): AppProjectConfiguration => ({
   iconFile: 'resources/icon.png',
 });
 
-function expectDeviceManifest(projectConfig: ProjectConfiguration = makeClockfaceProjectConfig()) {
+function expectDeviceManifest(
+  projectConfig: ProjectConfiguration = makeClockfaceProjectConfig(),
+) {
   const manifest = makeDeviceManifest({
     buildId,
     projectConfig,
@@ -46,34 +48,44 @@ function expectDeviceManifest(projectConfig: ProjectConfiguration = makeClockfac
 }
 
 function expectCompanionManifest(hasSettings = false) {
-  return expect(getJSONFileFromStream(makeCompanionManifest({
-    buildId,
-    hasSettings,
-    projectConfig: makeClockfaceProjectConfig(),
-  }))).resolves;
+  return expect(
+    getJSONFileFromStream(
+      makeCompanionManifest({
+        buildId,
+        hasSettings,
+        projectConfig: makeClockfaceProjectConfig(),
+      }),
+    ),
+  ).resolves;
 }
 
 beforeEach(() => {
   advanceTo(new Date(Date.UTC(2018, 5, 27, 0, 0, 0)));
 });
 
-it('builds a device manifest for a clock', () => expectDeviceManifest().toMatchSnapshot());
+it('builds a device manifest for a clock', () =>
+  expectDeviceManifest().toMatchSnapshot());
 
 it('builds a device manifest for an app', () =>
   expectDeviceManifest(makeAppProjectConfig()).toMatchSnapshot());
 
-it('builds a companion manifest', () => expectCompanionManifest().toMatchSnapshot());
+it('builds a companion manifest', () =>
+  expectCompanionManifest().toMatchSnapshot());
 
 it('builds a companion manifest with settings', () =>
   expectCompanionManifest(true).toMatchSnapshot());
 
 it('sets apiVersion in app manifest', () =>
-  expectDeviceManifest().toHaveProperty('apiVersion', apiVersions({}).deviceApi),
-);
+  expectDeviceManifest().toHaveProperty(
+    'apiVersion',
+    apiVersions({}).deviceApi,
+  ));
 
 it('sets apiVersion in companion manifest', () =>
-  expectCompanionManifest().toHaveProperty('apiVersion', apiVersions({}).companionApi),
-);
+  expectCompanionManifest().toHaveProperty(
+    'apiVersion',
+    apiVersions({}).companionApi,
+  ));
 
 describe('when there are compiled language files', () => {
   let sources: PassThrough;
@@ -81,40 +93,56 @@ describe('when there are compiled language files', () => {
   beforeEach(() => {
     sources = new PassThrough({ objectMode: true });
 
-    sources.write(new Vinyl({
-      path: 'lang/english',
-      translationLanguage: 'en',
-      contents: Buffer.from('foo'),
-    }));
+    sources.write(
+      new Vinyl({
+        path: 'lang/english',
+        translationLanguage: 'en',
+        contents: Buffer.from('foo'),
+      }),
+    );
 
-    sources.write(new Vinyl({
-      path: 'app/index.js',
-      contents: Buffer.from('foo'),
-    }));
+    sources.write(
+      new Vinyl({
+        path: 'app/index.js',
+        contents: Buffer.from('foo'),
+      }),
+    );
 
-    sources.write(new Vinyl({
-      path: 'spanish/language',
-      translationLanguage: 'es',
-      contents: Buffer.from('foo'),
-    }));
+    sources.write(
+      new Vinyl({
+        path: 'spanish/language',
+        translationLanguage: 'es',
+        contents: Buffer.from('foo'),
+      }),
+    );
 
     sources.end();
   });
 
   it('sets the i18n[lang].resources key for language files that pass through', () => {
-    return expect(getJSONFileFromStream(
-      sources.pipe(makeDeviceManifest({
-        buildId,
-        projectConfig: makeClockfaceProjectConfig(),
-      })),
-      'manifest.json',
-    )).resolves.toMatchSnapshot();
+    return expect(
+      getJSONFileFromStream(
+        sources.pipe(
+          makeDeviceManifest({
+            buildId,
+            projectConfig: makeClockfaceProjectConfig(),
+          }),
+        ),
+        'manifest.json',
+      ),
+    ).resolves.toMatchSnapshot();
   });
 
   it('passes all files through', (done) => {
     const files: string[] = [];
 
-    sources.pipe(makeDeviceManifest({ buildId, projectConfig: makeClockfaceProjectConfig() }))
+    sources
+      .pipe(
+        makeDeviceManifest({
+          buildId,
+          projectConfig: makeClockfaceProjectConfig(),
+        }),
+      )
       .on('error', done.fail)
       .on('data', (file: Vinyl) => files.push(file.relative))
       .on('end', () => {

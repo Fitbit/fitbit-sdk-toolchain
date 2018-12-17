@@ -78,7 +78,7 @@ it('tries to push a diagnostic to the list without messageText', () => {
 it('pushes multiple diagnostics to the list', () => {
   const list = new DiagnosticList();
   list.pushMessage('Message 1');
-  list.pushError('I\'m sorry Dave, I can\'t let you do that');
+  list.pushError("I'm sorry Dave, I can't let you do that");
   list.pushMessage('Message 2');
   list.pushWarning('Uh oh');
   expect(list.diagnostics).toEqual([
@@ -87,7 +87,7 @@ it('pushes multiple diagnostics to the list', () => {
       category: DiagnosticCategory.Message,
     }),
     expect.objectContaining({
-      messageText: 'I\'m sorry Dave, I can\'t let you do that',
+      messageText: "I'm sorry Dave, I can't let you do that",
       category: DiagnosticCategory.Error,
     }),
     expect.objectContaining({

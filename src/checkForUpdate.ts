@@ -14,11 +14,14 @@ export default function checkForUpdate(updateNotifier: UpdateNotifierFunc) {
   if (!update) return;
 
   if (update.type === 'patch') {
-    const message = `${update.name} update available ${update.current} → ${update.latest}`;
+    const message = `${update.name} update available ${update.current} → ${
+      update.latest
+    }`;
     console.log(chalk.red(message));
   } else {
     // tslint:disable-next-line:max-line-length
-    const message = 'You\'re targeting an older version of the Fitbit SDK. Consider updating to access new features.';
+    const message =
+      "You're targeting an older version of the Fitbit SDK. Consider updating to access new features.";
     console.log(chalk.keyword('orange')(message));
   }
 }
