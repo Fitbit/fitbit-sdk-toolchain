@@ -24,7 +24,7 @@ async function mergeSourceMaps(inMap: RawSourceMap, outMap: RawSourceMap) {
 export default function gulpMagicString(
   transformerFunc: (code: string, magicString: MagicString) => void,
 ) {
-  const transform = new Transform({
+  return new Transform({
     objectMode: true,
     transform(file: Vinyl, _, next) {
       if (file.isNull() || file.extname !== '.js') {
@@ -73,6 +73,4 @@ export default function gulpMagicString(
       }
     },
   });
-
-  return transform;
 }
