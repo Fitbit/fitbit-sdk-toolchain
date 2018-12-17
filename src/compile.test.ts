@@ -45,9 +45,13 @@ function compileFile(
   } = {},
 ) {
   return getFileFromStream(
-    compile(component, testResourcePath(filename), 'output.js', {
+    compile({
+      component,
       allowUnknownExternals,
+      input: testResourcePath(filename),
+      output: 'output.js',
       onDiagnostic: mockDiagnosticHandler,
+      defaultLanguage: 'en-US',
     }),
   );
 }

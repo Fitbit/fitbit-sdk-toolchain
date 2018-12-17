@@ -133,16 +133,22 @@ export function buildComponent({
   onDiagnostic?: DiagnosticHandler;
 }) {
   const { inputs, output, notFoundIsFatal } = componentTargets[component];
+
   const entryPoint = findEntryPoint(inputs, {
     onDiagnostic,
     component,
     notFoundIsFatal,
   });
   if (!entryPoint) return;
+
   return lazyObjectReadable(() =>
-    compile(component, entryPoint, output, {
+    compile({
+      component,
+      output,
       onDiagnostic,
+      input: entryPoint,
       allowUnknownExternals: projectConfig.enableProposedAPI,
+      defaultLanguage: projectConfig.defaultLanguage,
     }),
   );
 }
@@ -236,8 +242,10 @@ export function buildDeviceComponents({
               ),
             ),
             new pumpify.obj(
-              vinylFS.src('./app/i18n/*.po', { base: '.' }),
-              compileTranslations(),
+              vinylFS.src(componentTargets.device.translationsGlob, {
+                base: '.',
+              }),
+              compileTranslations(projectConfig.defaultLanguage),
             ),
           ),
           makeDeviceManifest({ projectConfig, buildId }),

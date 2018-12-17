@@ -28,7 +28,10 @@ async function loadTranslations(filePath: string) {
   return messages;
 }
 
-export default function companionTranslations(globPattern: string) {
+export default function companionTranslations(
+  globPattern: string,
+  defaultLanguage: string,
+) {
   return async () => {
     const languagePaths = new Map<string, string>();
     const translations: LanguageTable = {};
@@ -54,6 +57,12 @@ export default function companionTranslations(globPattern: string) {
 
       languagePaths.set(tag, filePath);
       translations[tag] = await loadTranslations(filePath);
+    }
+
+    if (!translations.hasOwnProperty(defaultLanguage)) {
+      throw new Error(
+        `No translation file found for default language "${defaultLanguage}"`,
+      );
     }
 
     return dataToEsm(translations, { namedExports: false });

@@ -111,6 +111,16 @@ export function makeDeviceManifest({
     },
 
     flush(done) {
+      // Ensure the default language is the first listed in the manifest
+      const {
+        [projectConfig.defaultLanguage]: defaultLanguage,
+        ...otherLocales
+      } = manifest.i18n;
+      manifest.i18n = {
+        [projectConfig.defaultLanguage]: defaultLanguage,
+        ...otherLocales,
+      };
+
       done(
         undefined,
         new Vinyl({

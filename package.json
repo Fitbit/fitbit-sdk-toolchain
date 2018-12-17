@@ -63,7 +63,7 @@
     "@babel/core": "^7.1.2",
     "@babel/plugin-transform-block-scoped-functions": "^7.0.0",
     "@babel/plugin-transform-block-scoping": "^7.0.0",
-    "@fitbit-sdk/companion-gettext": "^1.0.1",
+    "@fitbit-sdk/companion-gettext": "^2.0.0",
     "@fitbit/bison-i18n": "^1.0.0",
     "@fitbit/image-codec-txi": "^1.1.1",
     "@fitbit/pngjs": "^3.3.3-fitbit.4",

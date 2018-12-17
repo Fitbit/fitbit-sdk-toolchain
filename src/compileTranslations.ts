@@ -15,7 +15,7 @@ const PLUGIN_NAME = 'compileTranslations';
  * The emitted files have a .translationLanguage property which holds
  * the string BCP 47 language tag for the translations in the file.
  */
-export default function compileTranslations() {
+export default function compileTranslations(defaultLanguage: string) {
   const translations = new TranslationLoader();
   const translationFiles = new Map<string, Vinyl>();
 
@@ -70,6 +70,19 @@ export default function compileTranslations() {
 
     flush(done) {
       const languageTable = translations.build();
+
+      if (
+        languageTable.languages.size > 0 &&
+        !languageTable.languages.has(defaultLanguage)
+      ) {
+        done(
+          new PluginError(
+            PLUGIN_NAME,
+            `No translation file found for default language "${defaultLanguage}"`,
+          ),
+        );
+        return;
+      }
 
       for (const language of languageTable.languages) {
         const file = translationFiles.get(language)!;

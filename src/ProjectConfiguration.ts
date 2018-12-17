@@ -5,6 +5,7 @@ import semver from 'semver';
 
 import buildTargets from './buildTargets';
 import DiagnosticList from './DiagnosticList';
+import { normalizeLanguageTag } from './languageTag';
 import sdkVersion from './sdkVersion';
 
 const knownBuildTargets = Object.keys(buildTargets);
@@ -24,6 +25,7 @@ export interface BaseProjectConfiguration {
   appUUID: string;
   requestedPermissions: string[];
   i18n: LocalesConfig;
+  defaultLanguage: string;
   buildTargets: string[];
   // We don't want to accidentally serialize `enableProposedAPI: false`
   // out to users' package.json files.
@@ -210,6 +212,7 @@ export function normalizeProjectConfig(
     requestedPermissions: [],
     buildTargets: [],
     i18n: {},
+    defaultLanguage: 'en-US',
 
     // Override defaults
     ...defaults,
@@ -217,6 +220,13 @@ export function normalizeProjectConfig(
     // The config object proper
     ...(config.fitbit as {}),
   };
+
+  const normalizedDefaultLanguage = normalizeLanguageTag(
+    mergedConfig.defaultLanguage,
+  );
+  if (normalizedDefaultLanguage !== null) {
+    mergedConfig.defaultLanguage = normalizedDefaultLanguage;
+  }
 
   const { requestedPermissions } = mergedConfig;
   if (!Array.isArray(requestedPermissions)) {
@@ -356,6 +366,16 @@ export function validateAppUUID({ appUUID }: ProjectConfiguration) {
   return diagnostics;
 }
 
+export function validateDefaultLanguage(config: ProjectConfiguration) {
+  const diagnostics = new DiagnosticList();
+  if (normalizeLanguageTag(config.defaultLanguage) === null) {
+    diagnostics.pushFatalError(
+      `Default language is an invalid language tag: ${config.defaultLanguage}`,
+    );
+  }
+  return diagnostics;
+}
+
 export function validate(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
   [
@@ -367,6 +387,7 @@ export function validate(config: ProjectConfiguration) {
     validateBuildTarget,
     validateSupportedLocales,
     validateLocaleDisplayNames,
+    validateDefaultLanguage,
   ].forEach((validator) => diagnostics.extend(validator(config)));
   return diagnostics;
 }

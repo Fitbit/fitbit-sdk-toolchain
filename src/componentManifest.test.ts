@@ -11,7 +11,9 @@ import ProjectConfiguration, {
 } from './ProjectConfiguration';
 import { apiVersions } from './sdkVersion';
 
+import getFileFromStream from './testUtils/getFileFromStream';
 import getJSONFileFromStream from './testUtils/getJSONFileFromStream';
+import getVinylContents from './testUtils/getVinylContents';
 
 jest.mock('./packageVersion.const');
 
@@ -26,6 +28,7 @@ const makeClockfaceProjectConfig = (): ClockProjectConfiguration => ({
   },
   buildTargets: ['higgs'],
   requestedPermissions: [],
+  defaultLanguage: 'en-US',
 });
 
 const makeAppProjectConfig = (): AppProjectConfiguration => ({
@@ -132,6 +135,26 @@ describe('when there are compiled language files', () => {
       ),
     ).resolves.toMatchSnapshot();
   });
+
+  it.each(['es', 'en'])(
+    'ensures the default language %s is the first key in the i18n object',
+    (defaultLanguage) => {
+      return expect(
+        getFileFromStream(
+          sources.pipe(
+            makeDeviceManifest({
+              buildId,
+              projectConfig: {
+                ...makeClockfaceProjectConfig(),
+                defaultLanguage,
+              },
+            }),
+          ),
+          'manifest.json',
+        ).then(getVinylContents),
+      ).resolves.toMatchSnapshot();
+    },
+  );
 
   it('passes all files through', (done) => {
     const files: string[] = [];
