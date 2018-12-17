@@ -1,8 +1,6 @@
-import { MangleOptions } from "uglify-js";
+import { MangleOptions } from 'uglify-js';
 
-interface CompressOptions {
-
-}
+interface CompressOptions {}
 
 interface MangleOptions {
   toplevel?: boolean;

@@ -23,42 +23,44 @@ const common = [
   'util',
 ];
 
-const device = internalsFilter([
-  'accelerometer',
-  'appbit',
-  'barometer',
-  'body-presence',
-  'clock',
-  'display',
-  'document',
-  'exercise',
-  'fs',
-  'gyroscope',
-  'haptics',
-  'heart-rate',
-  'jpeg',
-  'orientation',
-  'power',
-  'scientific',
-  'scientific/signal',
-  'sensors',
-  'system',
-  'user-activity',
-  'user-profile',
-].concat(common));
+const device = internalsFilter(
+  [
+    'accelerometer',
+    'appbit',
+    'barometer',
+    'body-presence',
+    'clock',
+    'display',
+    'document',
+    'exercise',
+    'fs',
+    'gyroscope',
+    'haptics',
+    'heart-rate',
+    'jpeg',
+    'orientation',
+    'power',
+    'scientific',
+    'scientific/signal',
+    'sensors',
+    'system',
+    'user-activity',
+    'user-profile',
+  ].concat(common),
+);
 
-const companion = internalsFilter([
-  'companion',
-  'external-app',
-  'image',
-  'local-storage',
-  'peer',
-  'secure-exchange',
-  'settings',
-].concat(common));
+const companion = internalsFilter(
+  [
+    'companion',
+    'external-app',
+    'image',
+    'local-storage',
+    'peer',
+    'secure-exchange',
+    'settings',
+  ].concat(common),
+);
 
-const settings = internalsFilter([
-  'user-settings',
-]);
+const settings = internalsFilter(['user-settings']);
 
 export default { device, companion, settings };

@@ -7,17 +7,21 @@ import rollupPluginJson from 'rollup-plugin-json';
 import rollupPluginNodeResolve from 'rollup-plugin-node-resolve';
 import ts from 'typescript';
 
-import { ComponentType } from './componentTargets';
-import { DiagnosticCategory, logDiagnosticToConsole } from './diagnostics';
+import componentTargets, { ComponentType } from './componentTargets';
+import {
+  DiagnosticCategory,
+  DiagnosticHandler,
+  logDiagnosticToConsole,
+} from './diagnostics';
 import externals from './externals';
 import rollupToVinyl from './rollupToVinyl';
 import sdkVersion from './sdkVersion';
 
 import brokenImports from './plugins/brokenImports';
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
-import polyfillCompanion from './plugins/polyfillCompanion';
+import i18nPolyfill from './plugins/i18nPolyfill';
+import polyfill from './plugins/polyfill';
 import polyfillDevice from './plugins/polyfillDevice';
-import polyfillSettings from './plugins/polyfillSettings';
 import resourceImports from './plugins/resourceImports';
 import typescript from './plugins/typescript';
 import rollupWarningHandler from './rollupWarningHandler';
@@ -39,16 +43,24 @@ function pluginIf(condition: boolean, plugin: () => rollup.Plugin) {
   return condition ? [plugin()] : [];
 }
 
-export default function compile(
-  component: ComponentType,
-  input: string,
-  output: string,
-  {
-    allowUnknownExternals = false,
-    onDiagnostic = logDiagnosticToConsole,
-  },
-) {
-  const ecma = sdkVersion().major >= 3 && component !== ComponentType.DEVICE ? 6 : 5;
+export default function compile({
+  component,
+  input,
+  output,
+  defaultLanguage,
+  allowUnknownExternals = false,
+  onDiagnostic = logDiagnosticToConsole,
+}: {
+  component: ComponentType;
+  input: string;
+  output: string;
+  defaultLanguage: string;
+  allowUnknownExternals?: boolean;
+  onDiagnostic?: DiagnosticHandler;
+}) {
+  const ecma =
+    sdkVersion().major >= 3 && component !== ComponentType.DEVICE ? 6 : 5;
+  const { translationsGlob } = componentTargets[component];
   return new pumpify.obj([
     rollupToVinyl(
       output,
@@ -64,8 +76,9 @@ export default function compile(
             },
           }),
           ...pluginIf(component === ComponentType.DEVICE, polyfillDevice),
-          ...pluginIf(component === ComponentType.COMPANION, polyfillCompanion),
-          ...pluginIf(component === ComponentType.SETTINGS, polyfillSettings),
+          ...pluginIf(component !== ComponentType.DEVICE, () =>
+            polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
+          ),
           ...pluginIf(
             sdkVersion().major < 3 || component === ComponentType.SETTINGS,
             resourceImports,
@@ -75,26 +88,29 @@ export default function compile(
           ...pluginIf(sdkVersion().major < 2, brokenImports),
           rollupPluginNodeResolve({ preferBuiltins: false }),
           rollupPluginCommonjs({ include: ['node_modules/**'] }),
-          ...pluginIf(ecma === 5, () => rollupPluginBabel({
-            plugins: [
-              // Plugins are specified in this way to avoid this:
-              // https://github.com/webpack/webpack/issues/1866
-              // Also makes this work correctly in a browser environment
-              require('@babel/plugin-transform-block-scoped-functions'),
-              require('@babel/plugin-transform-block-scoping'),
-            ],
-            compact: false,
-            babelrc: false,
-            // We include JSON here to get a more sane error that includes the path
-            extensions: ['.js', '.json'],
-            // Types for babel are broken and don't accept anything but an object here
-            inputSourceMap: false as any,
-          })),
+          ...pluginIf(ecma === 5, () =>
+            rollupPluginBabel({
+              plugins: [
+                // Plugins are specified in this way to avoid this:
+                // https://github.com/webpack/webpack/issues/1866
+                // Also makes this work correctly in a browser environment
+                require('@babel/plugin-transform-block-scoped-functions'),
+                require('@babel/plugin-transform-block-scoping'),
+              ],
+              compact: false,
+              babelrc: false,
+              // We include JSON here to get a more sane error that includes the path
+              extensions: ['.js', '.json'],
+              // Types for babel are broken and don't accept anything but an object here
+              inputSourceMap: false as any,
+            }),
+          ),
         ],
         onwarn: rollupWarningHandler({
           onDiagnostic,
-          codeCategories: allowUnknownExternals ?
-            { UNRESOLVED_IMPORT: DiagnosticCategory.Warning } : undefined,
+          codeCategories: allowUnknownExternals
+            ? { UNRESOLVED_IMPORT: DiagnosticCategory.Warning }
+            : undefined,
         }),
       },
       {

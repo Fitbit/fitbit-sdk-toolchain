@@ -8,11 +8,17 @@ import Vinyl from 'vinyl';
 
 const PLUGIN_NAME = 'nativeComponents';
 
-function checkBufferLength(buffer: Buffer, expectedLength: number, name: string) {
+function checkBufferLength(
+  buffer: Buffer,
+  expectedLength: number,
+  name: string,
+) {
   if (buffer.length !== expectedLength) {
     throw new PluginError(
       PLUGIN_NAME,
-      `${name} must be ${expectedLength} bytes, found ${buffer.length} in ${buffer}`,
+      `${name} must be ${expectedLength} bytes, found ${
+        buffer.length
+      } in ${buffer}`,
     );
   }
 }
@@ -32,18 +38,16 @@ function readMetadata(elfPath: string) {
   const elfData = fs.readFileSync(elfPath);
   const elf = elfy.parse(elfData);
 
-  const elfSections = lodash.groupBy(elf.body.sections, s => s.name);
+  const elfSections = lodash.groupBy(elf.body.sections, (s) => s.name);
 
   function findSection(name: string) {
     const sectionName = `.${name}`;
 
     const sections = elfSections[sectionName];
     if (!sections) {
-      throw new PluginError(
-        PLUGIN_NAME,
-        `ELF section '${name}' is missing`,
-        { fileName: elfPath },
-      );
+      throw new PluginError(PLUGIN_NAME, `ELF section '${name}' is missing`, {
+        fileName: elfPath,
+      });
     }
 
     if (sections.length > 1) {
@@ -71,7 +75,9 @@ function readMetadata(elfPath: string) {
   } catch (ex) {
     throw new PluginError(
       PLUGIN_NAME,
-      `Could not parse platform specification in .appplatform section: ${ex.message}`,
+      `Could not parse platform specification in .appplatform section: ${
+        ex.message
+      }`,
       { fileName: elfPath },
     );
   }
@@ -89,7 +95,9 @@ function readMetadata(elfPath: string) {
     path: elfPath,
     data: elfData,
     appID: formatUUID(appIDData),
-    buildID: `0x${Buffer.from(buildIDData).swap64().toString('hex')}`,
+    buildID: `0x${Buffer.from(buildIDData)
+      .swap64()
+      .toString('hex')}`,
     family: findSection('appfamily').toString(),
   };
 }
@@ -103,36 +111,49 @@ export default function nativeComponents(
 
   // Check that all app IDs of native components match
   const divergentAppIDComponents = components.filter(
-    c => c.appID.toLowerCase() !== appID.toLowerCase(),
+    (c) => c.appID.toLowerCase() !== appID.toLowerCase(),
   );
   if (divergentAppIDComponents.length > 0) {
+    const divergentAppIDsList = divergentAppIDComponents
+      .map(
+        ({ path, family, appID }) => `${path} (${family}) has appID ${appID}`,
+      )
+      .join('\n    ');
+
     throw new PluginError(
       PLUGIN_NAME,
       `App IDs of native components do not match package.json.
     Expected appID ${appID}.
-    ${divergentAppIDComponents.map(
-        ({ path, family, appID }) => `${path} (${family}) has appID ${appID}`).join('\n  ')}`,
+    ${divergentAppIDsList}`,
     );
   }
 
   // Check that all build IDs of native components match
-  if (lodash.uniqBy(components, c => c.buildID).length > 1) {
+  if (lodash.uniqBy(components, (c) => c.buildID).length > 1) {
+    const mismatchedBuildIDs = components
+      .map(
+        ({ path, family, buildID }) =>
+          `${path} (${family}) has buildID ${buildID}`,
+      )
+      .join('\n    ');
+
     throw new PluginError(
       PLUGIN_NAME,
       `Build IDs of native components do not match.
-    ${components.map(
-        ({ path, family, buildID }) => `${path} (${family}) has buildID ${buildID}`).join('\n  ')}`,
+    ${mismatchedBuildIDs}`,
     );
   }
 
   const componentStream = new stream.PassThrough({ objectMode: true });
-  components.forEach(({ family, platform, data }) => componentStream.push(
-    new Vinyl({
-      contents: data,
-      path: `${family}.bundle`,
-      componentBundle: { family, platform, type: 'device', isNative: true },
-    }),
-  ));
+  components.forEach(({ family, platform, data }) =>
+    componentStream.push(
+      new Vinyl({
+        contents: data,
+        path: `${family}.bundle`,
+        componentBundle: { family, platform, type: 'device', isNative: true },
+      }),
+    ),
+  );
   componentStream.push(null);
 
   return {

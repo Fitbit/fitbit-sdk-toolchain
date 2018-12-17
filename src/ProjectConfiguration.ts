@@ -1,9 +1,12 @@
 import humanizeList from 'humanize-list';
 import { isHexColor, isUUID } from 'validator';
 import lodash from 'lodash';
+import semver from 'semver';
 
 import buildTargets from './buildTargets';
 import DiagnosticList from './DiagnosticList';
+import { normalizeLanguageTag } from './languageTag';
+import sdkVersion from './sdkVersion';
 
 const knownBuildTargets = Object.keys(buildTargets);
 
@@ -14,7 +17,7 @@ export enum AppType {
 
 export const VALID_APP_TYPES = Object.values(AppType);
 
-export type LocalesConfig = { [locale: string]: { name: string; } };
+export type LocalesConfig = { [locale: string]: { name: string } };
 
 export interface BaseProjectConfiguration {
   appType: AppType;
@@ -22,6 +25,7 @@ export interface BaseProjectConfiguration {
   appUUID: string;
   requestedPermissions: string[];
   i18n: LocalesConfig;
+  defaultLanguage: string;
   buildTargets: string[];
   // We don't want to accidentally serialize `enableProposedAPI: false`
   // out to users' package.json files.
@@ -57,55 +61,79 @@ export const LOCALES = Object.freeze({
   'zh-tw': 'Chinese (T)',
 });
 
-const permissionTypes = Object.freeze({
-  access_activity: {
+const permissionTypes = [
+  {
+    key: 'access_activity',
     name: 'Activity',
     // tslint:disable-next-line:max-line-length
-    description: 'Read user activities for today (distance, calories, steps, elevation and active minutes), and daily goals.',
+    description:
+      'Read user activities for today (distance, calories, steps, elevation and active minutes), and daily goals.',
   },
-  access_user_profile: {
+  {
+    key: 'access_user_profile',
     name: 'User Profile',
     // tslint:disable-next-line:max-line-length
-    description: 'Read non-identifiable personal information (gender, age, height, weight, resting HR, basal metabolic rate, stride, HR zones).',
+    description:
+      'Read non-identifiable personal information (gender, age, height, weight, resting HR, basal metabolic rate, stride, HR zones).',
   },
-  access_heart_rate: {
+  {
+    key: 'access_heart_rate',
     name: 'Heart Rate',
     description: 'Application may read the heart-rate sensor in real-time.',
   },
-  access_location: {
+  {
+    key: 'access_location',
     name: 'Location',
     description: 'Application and companion may use GPS.',
   },
-  access_internet: {
+  {
+    key: 'access_internet',
     name: 'Internet',
-    description: 'Companion may communicate with the Internet using your phone data connection.',
+    description:
+      'Companion may communicate with the Internet using your phone data connection.',
   },
-  run_background: {
+  {
+    key: 'run_background',
     name: 'Run in background',
-    description: 'Companion may run even when the application is not actively in use.',
+    description:
+      'Companion may run even when the application is not actively in use.',
   },
-});
+  {
+    key: 'access_exercise',
+    name: 'Exercise Tracking',
+    description: 'Application may track an exercise.',
+    sdkVersion: '>=3.0.0',
+  },
+];
 
-const restrictedPermissionTypes = Object.freeze({
-  fitbit_token: {
+const restrictedPermissionTypes = [
+  {
+    key: 'fitbit_token',
     name: '[Restricted] Fitbit Token',
     description: 'Access Fitbit API token.',
   },
-  external_app_communication: {
+  {
+    key: 'external_app_communication',
     name: '[Restricted] External Application Communication',
-    description: 'Allows communication between external mobile applications and companion.',
+    description:
+      'Allows communication between external mobile applications and companion.',
   },
-  access_secure_exchange: {
+  {
+    key: 'access_secure_exchange',
     name: '[Restricted] Secure Exchange',
     description: 'Allows securing any data and verifying that data was secured',
   },
-});
+];
 
-const allPermissionTypes = { ...permissionTypes, ...restrictedPermissionTypes };
-
-export function getPermissionTypes({ includeRestrictedPermissions = false }) {
-  if (includeRestrictedPermissions) return allPermissionTypes;
-  return permissionTypes;
+function getAllPermissionTypes() {
+  return [
+    ...restrictedPermissionTypes,
+    ...permissionTypes.filter(
+      (permission) =>
+        !permission.sdkVersion ||
+        semver.satisfies(sdkVersion(), permission.sdkVersion),
+    ),
+  ];
 }
 
 function constrainedSetDiagnostics({
@@ -114,45 +142,46 @@ function constrainedSetDiagnostics({
   valueTypeNoun,
   notFoundIsFatal = false,
 }: {
-  actualValues: ReadonlyArray<any>,
-  knownValues: ReadonlyArray<any>,
-  valueTypeNoun: string,
-  notFoundIsFatal?: boolean,
+  actualValues: ReadonlyArray<any>;
+  knownValues: ReadonlyArray<any>;
+  valueTypeNoun: string;
+  notFoundIsFatal?: boolean;
 }) {
-  const unknownValues = lodash.without(
-    actualValues,
-    ...knownValues,
-  );
+  const unknownValues = lodash.without(actualValues, ...knownValues);
   const diagnostics = new DiagnosticList();
 
   if (unknownValues.length > 0) {
     const unknownValueStrings = unknownValues.filter(lodash.isString);
-    const unknownValueOther = lodash.without(
-      unknownValues,
-      ...unknownValueStrings,
-    ).map(String);
+    const unknownValueOther = lodash
+      .without(unknownValues, ...unknownValueStrings)
+      .map(String);
     if (unknownValueStrings.length) {
-      const errStr = `One or more ${valueTypeNoun} was invalid: ${unknownValueStrings.join(', ')}`;
+      const errStr = `One or more ${valueTypeNoun} was invalid: ${unknownValueStrings.join(
+        ', ',
+      )}`;
       if (notFoundIsFatal) diagnostics.pushFatalError(errStr);
       else diagnostics.pushWarning(errStr);
     }
     if (unknownValueOther.length) {
       diagnostics.pushFatalError(
-        `One or more ${valueTypeNoun} was not a string: ${unknownValueOther.join(', ')}`,
+        `One or more ${valueTypeNoun} was not a string: ${unknownValueOther.join(
+          ', ',
+        )}`,
       );
     }
   }
 
-  const duplicatedValues = lodash.uniq(actualValues)
+  const duplicatedValues = lodash
+    .uniq(actualValues)
     .filter(
-      value => (
-        actualValues.indexOf(value)
-          !== actualValues.lastIndexOf(value)
-      ),
+      (value) =>
+        actualValues.indexOf(value) !== actualValues.lastIndexOf(value),
     );
   if (duplicatedValues.length > 0) {
     diagnostics.pushWarning(
-      `One or more ${valueTypeNoun} was specified multiple times: ${duplicatedValues.join(', ')}`,
+      `One or more ${valueTypeNoun} was specified multiple times: ${duplicatedValues.join(
+        ', ',
+      )}`,
     );
   }
 
@@ -183,18 +212,28 @@ export function normalizeProjectConfig(
     requestedPermissions: [],
     buildTargets: [],
     i18n: {},
+    defaultLanguage: 'en-US',
 
     // Override defaults
     ...defaults,
 
     // The config object proper
-    ...config.fitbit as {},
+    ...(config.fitbit as {}),
   };
+
+  const normalizedDefaultLanguage = normalizeLanguageTag(
+    mergedConfig.defaultLanguage,
+  );
+  if (normalizedDefaultLanguage !== null) {
+    mergedConfig.defaultLanguage = normalizedDefaultLanguage;
+  }
 
   const { requestedPermissions } = mergedConfig;
   if (!Array.isArray(requestedPermissions)) {
     // tslint:disable-next-line:max-line-length
-    throw new TypeError(`fitbit.requestedPermissions must be an array, not ${typeof requestedPermissions}`);
+    throw new TypeError(
+      `fitbit.requestedPermissions must be an array, not ${typeof requestedPermissions}`,
+    );
   }
 
   return mergedConfig;
@@ -239,10 +278,12 @@ export function validateWipeColor(config: ProjectConfiguration) {
   return diagnostics;
 }
 
-export function validateRequestedPermissions({ requestedPermissions }: ProjectConfiguration) {
+export function validateRequestedPermissions({
+  requestedPermissions,
+}: ProjectConfiguration) {
   return constrainedSetDiagnostics({
     actualValues: requestedPermissions,
-    knownValues: Object.keys(allPermissionTypes),
+    knownValues: getAllPermissionTypes().map((permission) => permission.key),
     valueTypeNoun: 'requested permissions',
     notFoundIsFatal: false,
   });
@@ -274,11 +315,17 @@ export function validateLocaleDisplayName(
 
   if (!locale.name || locale.name.length === 0) {
     // tslint:disable-next-line:max-line-length
-    diagnostics.pushFatalError(`Localized display name for ${LOCALES[localeKey]} must not be blank`);
+    diagnostics.pushFatalError(
+      `Localized display name for ${LOCALES[localeKey]} must not be blank`,
+    );
   }
   if (locale.name.length > MAX_DISPLAY_NAME_LENGTH) {
     // tslint:disable-next-line:max-line-length
-    diagnostics.pushFatalError(`Localized display name for ${LOCALES[localeKey]} must not exceed ${MAX_DISPLAY_NAME_LENGTH} characters`);
+    diagnostics.pushFatalError(
+      `Localized display name for ${
+        LOCALES[localeKey]
+      } must not exceed ${MAX_DISPLAY_NAME_LENGTH} characters`,
+    );
   }
 
   return diagnostics;
@@ -287,10 +334,9 @@ export function validateLocaleDisplayName(
 export function validateLocaleDisplayNames(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
   for (const localeKey of Object.keys(LOCALES)) {
-    diagnostics.extend(validateLocaleDisplayName(
-      config,
-      localeKey as keyof typeof LOCALES,
-    ));
+    diagnostics.extend(
+      validateLocaleDisplayName(config, localeKey as keyof typeof LOCALES),
+    );
   }
   return diagnostics;
 }
@@ -303,9 +349,7 @@ export function validateSupportedLocales({ i18n }: ProjectConfiguration) {
     ...Object.keys(LOCALES),
   );
   if (unknownLocales.length > 0) {
-    diagnostics.pushWarning(
-      `Invalid locales: ${unknownLocales.join(', ')}`,
-    );
+    diagnostics.pushWarning(`Invalid locales: ${unknownLocales.join(', ')}`);
   }
 
   return diagnostics;
@@ -322,6 +366,16 @@ export function validateAppUUID({ appUUID }: ProjectConfiguration) {
   return diagnostics;
 }
 
+export function validateDefaultLanguage(config: ProjectConfiguration) {
+  const diagnostics = new DiagnosticList();
+  if (normalizeLanguageTag(config.defaultLanguage) === null) {
+    diagnostics.pushFatalError(
+      `Default language is an invalid language tag: ${config.defaultLanguage}`,
+    );
+  }
+  return diagnostics;
+}
+
 export function validate(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
   [
@@ -333,6 +387,7 @@ export function validate(config: ProjectConfiguration) {
     validateBuildTarget,
     validateSupportedLocales,
     validateLocaleDisplayNames,
-  ].forEach(validator => diagnostics.extend(validator(config)));
+    validateDefaultLanguage,
+  ].forEach((validator) => diagnostics.extend(validator(config)));
   return diagnostics;
 }

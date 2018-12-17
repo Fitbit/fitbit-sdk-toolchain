@@ -1,5 +1,5 @@
 import path from 'path';
-import { Transform } from 'stream';
+import { Transform, TransformCallback } from 'stream';
 
 import * as t from 'io-ts';
 import { failure } from 'io-ts/lib/PathReporter';
@@ -44,109 +44,139 @@ const ComponentBundleTag = t.taggedUnion('type', [
 ]);
 type ComponentBundleTag = t.TypeOf<typeof ComponentBundleTag>;
 
-export default function appPackageManifest({ projectConfig, buildId } : {
-  projectConfig: ProjectConfiguration,
-  buildId: string,
-}) {
-  const sourceMaps = {};
-  const components: Components = {};
-  let hasJS = false;
-  let hasNative = false;
+function getBundleInfo(file: Vinyl) {
+  return ComponentBundleTag.decode(file.componentBundle).getOrElseL(
+    (errors) => {
+      throw new PluginError(
+        PLUGIN_NAME,
+        `Unknown bundle component tag: ${failure(errors).join('\n')}`,
+        { fileName: file.relative },
+      );
+    },
+  );
+}
 
-  const stream = new Transform({
-    objectMode: true,
-    transform(file: Vinyl, _, next) {
-      if (file.componentMapKey) {
-        lodash.merge(
-          sourceMaps,
-          lodash.set({}, file.componentMapKey, normalizeToPOSIX(file.relative)),
+class AppPackageManifestTransform extends Transform {
+  sourceMaps = {};
+  components: Components = {};
+  hasJS = false;
+  hasNative = false;
+
+  constructor(
+    public projectConfig: ProjectConfiguration,
+    public buildID: string,
+  ) {
+    super({ objectMode: true });
+  }
+
+  private transformComponentBundle(file: Vinyl) {
+    const bundleInfo = getBundleInfo(file);
+
+    function throwDuplicateComponent(existingPath: string) {
+      const componentType =
+        bundleInfo.type === 'device'
+          ? `${bundleInfo.type}/${bundleInfo.family}`
+          : bundleInfo.type;
+      throw new PluginError(
+        PLUGIN_NAME,
+        `Duplicate ${componentType} component bundles: ${
+          file.relative
+        } / ${existingPath}`,
+      );
+    }
+
+    if (bundleInfo.type === 'device') {
+      if (bundleInfo.isNative) this.hasNative = true;
+      else this.hasJS = true;
+
+      if (this.hasJS && this.hasNative) {
+        throw new PluginError(
+          PLUGIN_NAME,
+          'Cannot bundle mixed native/JS device components',
+          { fileName: file.relative },
         );
       }
 
-      if (file.componentBundle) {
-        let bundleInfo: ComponentBundleTag;
-        try {
-          bundleInfo = ComponentBundleTag.decode(
-            file.componentBundle,
-          ).getOrElseL((errors) => {
-            throw new Error(`Unknown bundle component tag: ${failure(errors).join('\n')}`);
-          });
-        } catch (ex) {
-          return next(new PluginError(PLUGIN_NAME, ex, { fileName: file.relative }));
-        }
+      if (!this.components.watch) this.components.watch = {};
 
-        function throwDuplicateComponent(existingPath: string) {
-          const componentType = bundleInfo.type === 'device' ?
-            `${bundleInfo.type}/${bundleInfo.family}` : bundleInfo.type;
-          next(
-            new PluginError(
-              PLUGIN_NAME,
-              `Duplicate ${componentType} component bundles: ${file.relative} / ${existingPath}`,
-            ),
-          );
-        }
-
-        if (bundleInfo.type === 'device') {
-          if (bundleInfo.isNative) hasNative = true;
-          else hasJS = true;
-
-          if (hasJS && hasNative) {
-            return next(
-              new PluginError(
-                PLUGIN_NAME,
-                'Cannot bundle mixed native/JS device components',
-                { fileName: file.relative },
-              ),
-            );
-          }
-
-          if (!components.watch) components.watch = {};
-
-          if (components.watch[bundleInfo.family]) {
-            return throwDuplicateComponent(components.watch[bundleInfo.family].filename);
-          }
-
-          components.watch[bundleInfo.family] = {
-            platform: bundleInfo.platform,
-            filename: file.relative,
-          };
-        } else {
-          if (components[bundleInfo.type] !== undefined) {
-            return throwDuplicateComponent(components[bundleInfo.type]!.filename);
-          }
-
-          components[bundleInfo.type] = { filename: file.relative };
-        }
-
+      if (this.components.watch[bundleInfo.family]) {
+        throwDuplicateComponent(
+          this.components.watch[bundleInfo.family].filename,
+        );
       }
-      next(undefined, file);
-    },
-    flush(callback) {
-      const setSDKVersion = (components.watch && hasJS) || components.companion;
-      const { deviceApi, companionApi } = apiVersions(projectConfig);
-      const manifestJSON = JSON.stringify(
-        {
-          buildId,
-          components,
-          sourceMaps,
-          manifestVersion: 6,
-          ...(setSDKVersion && { sdkVersion: {
-            ...(components.watch && hasJS && { deviceApi }),
-            ...(components.companion && { companionApi }),
-          }}),
-          requestedPermissions: projectConfig.requestedPermissions,
-          appId: projectConfig.appUUID,
-        },
-        undefined,
-        2,
+
+      this.components.watch[bundleInfo.family] = {
+        platform: bundleInfo.platform,
+        filename: file.relative,
+      };
+    } else {
+      if (this.components[bundleInfo.type] !== undefined) {
+        throwDuplicateComponent(this.components[bundleInfo.type]!.filename);
+      }
+
+      this.components[bundleInfo.type] = { filename: file.relative };
+    }
+  }
+
+  // tslint:disable-next-line:function-name
+  _transform(file: Vinyl, _: unknown, next: TransformCallback) {
+    if (file.componentMapKey) {
+      lodash.merge(
+        this.sourceMaps,
+        lodash.set({}, file.componentMapKey, normalizeToPOSIX(file.relative)),
       );
-      stream.push(new Vinyl({
+    }
+
+    if (file.componentBundle) {
+      try {
+        this.transformComponentBundle(file);
+      } catch (ex) {
+        return next(ex);
+      }
+    }
+
+    return next(undefined, file);
+  }
+
+  // tslint:disable-next-line:function-name
+  _flush(callback: TransformCallback) {
+    const setSDKVersion =
+      (this.components.watch && this.hasJS) || this.components.companion;
+    const { deviceApi, companionApi } = apiVersions(this.projectConfig);
+    const manifestJSON = JSON.stringify(
+      {
+        buildId: this.buildID,
+        components: this.components,
+        sourceMaps: this.sourceMaps,
+        manifestVersion: 6,
+        ...(setSDKVersion && {
+          sdkVersion: {
+            ...(this.components.watch && this.hasJS && { deviceApi }),
+            ...(this.components.companion && { companionApi }),
+          },
+        }),
+        requestedPermissions: this.projectConfig.requestedPermissions,
+        appId: this.projectConfig.appUUID,
+      },
+      undefined,
+      2,
+    );
+    this.push(
+      new Vinyl({
         contents: Buffer.from(manifestJSON, 'utf8'),
         path: path.resolve(process.cwd(), manifestPath),
-      }));
-      callback();
-    },
-  });
+      }),
+    );
+    callback();
+  }
+}
 
-  return stream;
+export default function appPackageManifest({
+  projectConfig,
+  buildId,
+}: {
+  projectConfig: ProjectConfiguration;
+  buildId: string;
+}) {
+  return new AppPackageManifestTransform(projectConfig, buildId);
 }

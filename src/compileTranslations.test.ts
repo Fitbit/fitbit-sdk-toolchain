@@ -5,7 +5,10 @@ import { PassThrough, Writable } from 'stream';
 
 const translationContents = 'msgid "foo"\nmsgstr "foo"';
 
-function expectTranslationsForLanguages(done: jest.DoneCallback, ...languages: string[]) {
+function expectTranslationsForLanguages(
+  done: jest.DoneCallback,
+  ...languages: string[]
+) {
   const expected = new Set(languages);
   const actual = new Set<string>();
 
@@ -30,10 +33,14 @@ function expectTranslationsForLanguages(done: jest.DoneCallback, ...languages: s
 function translationFileSource(...paths: string[]) {
   const stream = new PassThrough({ objectMode: true });
 
-  paths.forEach(path => stream.write(new Vinyl({
-    path,
-    contents: Buffer.from(translationContents),
-  })));
+  paths.forEach((path) =>
+    stream.write(
+      new Vinyl({
+        path,
+        contents: Buffer.from(translationContents),
+      }),
+    ),
+  );
 
   stream.end();
 
@@ -42,7 +49,7 @@ function translationFileSource(...paths: string[]) {
 
 describe('when no files are piped', () => {
   it('succeeds with empty output', (done) => {
-    compileTranslations()
+    compileTranslations('en')
       .on('error', done.fail)
       .resume()
       .on('end', done)
@@ -59,7 +66,7 @@ describe('when no .po files are piped in', () => {
 
     const files = new Map<string, Vinyl>();
 
-    compileTranslations()
+    compileTranslations('en')
       .on('error', done.fail)
       .on('data', (file: Vinyl) => files.set(file.relative, file))
       .on('end', () => {
@@ -72,20 +79,20 @@ describe('when no .po files are piped in', () => {
 
 it('grabs .po files from any directory', (done) => {
   translationFileSource('en.po', 'foo/es.po', 'foo/bar/fr.po')
-    .pipe(compileTranslations())
+    .pipe(compileTranslations('en'))
     .on('error', done.fail)
     .pipe(expectTranslationsForLanguages(done, 'en', 'es', 'fr'));
 });
 
 it('normalizes the language tag of the file name', (done) => {
   translationFileSource('eN-us.po', 'DE.po')
-    .pipe(compileTranslations())
+    .pipe(compileTranslations('en-US'))
     .on('error', done.fail)
     .pipe(expectTranslationsForLanguages(done, 'en-US', 'de'));
 });
 
-function compileExpectError(done: jest.DoneCallback) {
-  return compileTranslations()
+function compileExpectError(defaultLanguage: string, done: jest.DoneCallback) {
+  return compileTranslations(defaultLanguage)
     .on('data', () => done.fail('got unexpected data'))
     .on('error', (error) => {
       expect(error).toMatchSnapshot();
@@ -97,39 +104,47 @@ describe('rejects .po files whose names are not acceptable language tags', () =>
   it.each(['e.po', 'en-USA.po', 'sl-IT-nedis.po'])(
     '%s',
     (path: string, done: jest.DoneCallback) => {
-      compileExpectError(done)
-        .end(new Vinyl({
+      compileExpectError('en', done).end(
+        new Vinyl({
           path,
           contents: Buffer.from('foo'),
-        }));
+        }),
+      );
     },
   );
 });
 
 it('bails when multiple .po files of the same name are present', (done) => {
-  translationFileSource('en.po', 'a/en.po')
-    .pipe(compileExpectError(done));
+  translationFileSource('en.po', 'a/en.po').pipe(
+    compileExpectError('en', done),
+  );
+});
+
+it('bails when the default langugage is not present', (done) => {
+  translationFileSource('en.po').pipe(compileExpectError('es', done));
 });
 
 it('bails when a .po file is malformed', (done) => {
-  compileExpectError(done)
-    .end(new Vinyl({
+  compileExpectError('en', done).end(
+    new Vinyl({
       path: 'en.po',
       contents: Buffer.from('definitely not gettext format'),
-    }));
+    }),
+  );
 });
 
 it('gracefully fails when a streaming-mode file is passed in', (done) => {
-  compileExpectError(done)
-    .end(new Vinyl({
+  compileExpectError('en', done).end(
+    new Vinyl({
       path: 'en.po',
       contents: new PassThrough(),
-    }));
+    }),
+  );
 });
 
 it('renames the transformed file, replacing the whole relative path', (done) => {
   translationFileSource('a/b/c/en-US.po')
-    .pipe(compileTranslations())
+    .pipe(compileTranslations('en-US'))
     .on('data', (file: Vinyl) => {
       expect(file.relative).toBe('l/en-US');
       done();

@@ -8,7 +8,12 @@ import { DiagnosticHandler } from './diagnostics';
 import ProjectConfiguration, { AppType } from './ProjectConfiguration';
 import validateIcon from './validateIcon';
 
-const corruptImage = join(__dirname, '__test__', 'PngSuite-2017jul19', 'xs1n0g01.png');
+const corruptImage = join(
+  __dirname,
+  '__test__',
+  'PngSuite-2017jul19',
+  'xs1n0g01.png',
+);
 const iconPath = 'resources/icon.png';
 
 const projectConfig: ProjectConfiguration = {
@@ -23,12 +28,13 @@ const projectConfig: ProjectConfiguration = {
   },
   buildTargets: ['higgs'],
   requestedPermissions: ['permission'],
+  defaultLanguage: 'en-US',
 };
 
 let mockDiagnosticHandler: jest.Mock;
 let validateIconParams: {
-  projectConfig: ProjectConfiguration,
-  onDiagnostic: DiagnosticHandler,
+  projectConfig: ProjectConfiguration;
+  onDiagnostic: DiagnosticHandler;
 };
 
 beforeEach(() => {
@@ -72,7 +78,9 @@ describe('in streaming mode', () => {
   it('throws an error as icon validation is not supported in streaming mode', (done) => {
     expect.assertions(1);
     const fileStream = new Readable({
-      read() { done(); },
+      read() {
+        done();
+      },
     });
     fileStream.push('someIcon');
 
@@ -80,11 +88,13 @@ describe('in streaming mode', () => {
 
     validator
       .on('data', (file: Vinyl) => {})
-      .on('error', error => expect(error).toMatchSnapshot())
-      .end(new Vinyl({
-        path: iconPath,
-        contents: fileStream,
-      }));
+      .on('error', (error) => expect(error).toMatchSnapshot())
+      .end(
+        new Vinyl({
+          path: iconPath,
+          contents: fileStream,
+        }),
+      );
   });
 });
 
@@ -122,17 +132,21 @@ describe('in buffered mode', () => {
       .on('end', () => {
         expect(handleData).toHaveBeenCalledTimes(files.length);
         files.forEach((value, index) =>
-          expect(handleData).toHaveBeenNthCalledWith(index + 1, value));
+          expect(handleData).toHaveBeenNthCalledWith(index + 1, value),
+        );
         done();
       });
 
-    files.forEach(file => validator.write(file));
+    files.forEach((file) => validator.write(file));
     validator.end();
   });
 
   it.each([
     ['corrupt', readFileSync(corruptImage)],
-    ['an invalid width and height', readFileSync(join(__dirname, '__test__', 'tiny.png'))],
+    [
+      'an invalid width and height',
+      readFileSync(join(__dirname, '__test__', 'tiny.png')),
+    ],
     ['an empty file', Buffer.of()],
     ['truncated', Buffer.from('89504E470D0A1A0A', 'hex')],
   ])('errors if the icon PNG is %s', (_, contents, done) => {
@@ -147,10 +161,12 @@ describe('in buffered mode', () => {
       })
       .on('data', () => done.fail('Got an unexpected file'));
 
-    validator.write(new Vinyl({
-      contents,
-      path: iconPath,
-    }));
+    validator.write(
+      new Vinyl({
+        contents,
+        path: iconPath,
+      }),
+    );
     validator.end();
   });
 
@@ -167,10 +183,12 @@ describe('in buffered mode', () => {
         done();
       });
 
-    validator.write(new Vinyl({
-      path: 'index.js',
-      contents: Buffer.of(),
-    }));
+    validator.write(
+      new Vinyl({
+        path: 'index.js',
+        contents: Buffer.of(),
+      }),
+    );
     validator.end();
   });
 });

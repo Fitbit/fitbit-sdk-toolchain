@@ -1,4 +1,3 @@
-
 import fs from 'fs';
 
 import humanizeList from 'humanize-list';
@@ -9,9 +8,9 @@ import { DiagnosticCategory, DiagnosticHandler } from './diagnostics';
 export default function findEntryPoint(
   possibilities: string[],
   options: {
-    notFoundIsFatal?: boolean,
-    component: string,
-    onDiagnostic: DiagnosticHandler,
+    notFoundIsFatal?: boolean;
+    component: string;
+    onDiagnostic: DiagnosticHandler;
   },
 ) {
   const { onDiagnostic, notFoundIsFatal, component } = {
@@ -19,9 +18,7 @@ export default function findEntryPoint(
     ...options,
   };
 
-  const foundEntryPoints = possibilities.filter(
-    path => fs.existsSync(path),
-  );
+  const foundEntryPoints = possibilities.filter((path) => fs.existsSync(path));
 
   let entryPoint;
   if (foundEntryPoints.length === 1) entryPoint = foundEntryPoints[0];
@@ -42,7 +39,9 @@ export default function findEntryPoint(
   } else if (foundEntryPoints.length > 1) {
     throw new BuildError(
       // tslint:disable-next-line:max-line-length
-      `Multiple ${component} entry points found! ${humanizeList(foundEntryPoints)} are all valid entry points; rename all but one and try again.`,
+      `Multiple ${component} entry points found! ${humanizeList(
+        foundEntryPoints,
+      )} are all valid entry points; rename all but one and try again.`,
     );
   }
 

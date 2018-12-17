@@ -18,6 +18,14 @@ PluginError {
 }
 `;
 
+exports[`bails when the default langugage is not present 1`] = `
+PluginError {
+  "message": "No translation file found for default language \\"es\\"",
+  "name": "Error",
+  "plugin": "compileTranslations",
+}
+`;
+
 exports[`gracefully fails when a streaming-mode file is passed in 1`] = `
 PluginError {
   "fileName": "en.po",

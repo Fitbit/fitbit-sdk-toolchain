@@ -22,54 +22,62 @@ const defaultCodeCategories: CodeCategoryMap = {
 };
 
 const messageFormatter: { [code: string]: (w: RollupWarning) => string } = {
-  UNRESOLVED_IMPORT: w => `${w.source} is imported by ${w.importer}, but could not be resolved`,
+  UNRESOLVED_IMPORT: (w) =>
+    `${w.source} is imported by ${w.importer}, but could not be resolved`,
 };
 
 function relativeId(id: string) {
-  if (typeof process === 'undefined' || !/^(?:\/|(?:[A-Za-z]:)?[\\|/])/.test(id)) return id;
+  if (
+    typeof process === 'undefined' ||
+    !/^(?:\/|(?:[A-Za-z]:)?[\\|/])/.test(id)
+  ) {
+    return id;
+  }
   return relative(process.cwd(), id);
 }
 
 function defaultFormatter(w: RollupWarning) {
-  return w.loc ?
-    `${relativeId(w.loc.file)} (${w.loc.line}:${w.loc.column}) ${w.message!}` : w.message!;
+  return w.loc
+    ? `${relativeId(w.loc.file)} (${w.loc.line}:${w.loc.column}) ${w.message!}`
+    : w.message!;
 }
 
-const rollupWarningToDiagnostic = (codeCategories: CodeCategoryMap) =>
-  (warning: RollupWarning | string) => {
-    if (typeof warning === 'string') {
-      return {
-        category: DiagnosticCategory.Warning,
-        messageText: warning,
-      };
+const rollupWarningToDiagnostic = (codeCategories: CodeCategoryMap) => (
+  warning: RollupWarning | string,
+) => {
+  if (typeof warning === 'string') {
+    return {
+      category: DiagnosticCategory.Warning,
+      messageText: warning,
+    };
+  }
+
+  const { code } = warning;
+
+  let category = DiagnosticCategory.Warning;
+  if (code) {
+    const codeCategory = codeCategories[code];
+    if (codeCategory === false) {
+      // Suppress the diagnostic message
+      return;
     }
+    if (codeCategory !== undefined) category = codeCategory;
+  }
 
-    const { code } = warning;
+  let formatter = defaultFormatter;
+  if (code && messageFormatter[code]) formatter = messageFormatter[code];
 
-    let category = DiagnosticCategory.Warning;
-    if (code) {
-      const codeCategory = codeCategories[code];
-      if (codeCategory === false) {
-        // Suppress the diagnostic message
-        return;
-      }
-      if (codeCategory !== undefined) category = codeCategory;
-    }
+  let messageText: string | DiagnosticMessage[] = formatter(warning);
+  if (warning.frame) {
+    const context = {
+      messageText: warning.frame,
+      category: DiagnosticCategory.Message,
+    };
+    messageText = [{ messageText, category }, context];
+  }
 
-    let formatter = defaultFormatter;
-    if (code && messageFormatter[code]) formatter = messageFormatter[code];
-
-    let messageText: string | DiagnosticMessage[] = formatter(warning);
-    if (warning.frame) {
-      const context = {
-        messageText: warning.frame,
-        category: DiagnosticCategory.Message,
-      };
-      messageText = [{ messageText, category }, context];
-    }
-
-    return { messageText, category };
-  };
+  return { messageText, category };
+};
 
 export default function rollupWarningHandler({
   codeCategories = {} as CodeCategoryMap,

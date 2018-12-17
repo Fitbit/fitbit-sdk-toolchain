@@ -20,10 +20,7 @@ exports[`builds a table from all the available translations 1`] = `
 };"
 `;
 
-exports[`emits an empty module when no .po files are present 1`] = `
-"export default {
-};"
-`;
+exports[`throws if the default language is not found 1`] = `[Error: No translation file found for default language "it"]`;
 
 exports[`throws when a translation file has multiple msgstr values for the same msgid 1`] = `[Error: msgid "foo" in file "<base>/multiple-msgstr/en.po" has multiple msgstr values. This is not supported.]`;
 

@@ -1,5 +1,5 @@
 import { Plugin } from 'rollup';
-import { createFilter } from 'rollup-pluginutils';
+import { createFilter, Filter } from 'rollup-pluginutils';
 import ts from 'typescript';
 
 import LanguageServiceHost from './LanguageServiceHost';
@@ -10,25 +10,31 @@ import { default as tslib } from './tslib.const';
 import { Diagnostic } from '../../diagnostics';
 
 interface IOptions {
-  include: string | string[] | RegExp | RegExp[];
-  exclude: string | string[] | RegExp | RegExp[];
+  include: Filter;
+  exclude: Filter;
   tsconfig?: string;
   tsconfigOverride?: ts.CompilerOptions;
   onDiagnostic: (diagnostic: Diagnostic) => void;
 }
 
-const formatTSDiagMessage = (tsDiagnostic: { code: number, messageText: string }) =>
-  `TS${tsDiagnostic.code}: ${tsDiagnostic.messageText}`;
+const formatTSDiagMessage = (tsDiagnostic: {
+  code: number;
+  messageText: string;
+}) => `TS${tsDiagnostic.code}: ${tsDiagnostic.messageText}`;
 
 const generateMessage = (tsDiagnostic: ts.Diagnostic) => {
   if (typeof tsDiagnostic.messageText === 'string') {
     return formatTSDiagMessage({
       code: tsDiagnostic.code,
-      messageText: tsDiagnostic.messageText as string,
+      messageText: tsDiagnostic.messageText,
     });
   }
   const messages = [];
-  for (let tsChain = tsDiagnostic.messageText; tsChain.next; tsChain = tsChain.next) {
+  for (
+    let tsChain = tsDiagnostic.messageText;
+    tsChain.next;
+    tsChain = tsChain.next
+  ) {
     messages.push({
       messageText: formatTSDiagMessage(tsChain),
       category: tsChain.category,
@@ -64,9 +70,14 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
         diagnostic.file = {
           path: tsDiagnostic.file.fileName,
         };
-        if (tsDiagnostic.start !== undefined && tsDiagnostic.length !== undefined) {
+        if (
+          tsDiagnostic.start !== undefined &&
+          tsDiagnostic.length !== undefined
+        ) {
           diagnostic.file.position = {
-            start: tsDiagnostic.file.getLineAndCharacterOfPosition(tsDiagnostic.start),
+            start: tsDiagnostic.file.getLineAndCharacterOfPosition(
+              tsDiagnostic.start,
+            ),
             end: tsDiagnostic.file.getLineAndCharacterOfPosition(
               tsDiagnostic.start + tsDiagnostic.length,
             ),
@@ -109,7 +120,9 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
       );
 
       if (result.resolvedModule && result.resolvedModule.resolvedFileName) {
-        if (result.resolvedModule.resolvedFileName.endsWith('.d.ts')) return null;
+        if (result.resolvedModule.resolvedFileName.endsWith('.d.ts')) {
+          return null;
+        }
         return result.resolvedModule.resolvedFileName;
       }
 
@@ -144,8 +157,8 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
       if (output.emitSkipped) this.error(`Failed to compile ${id}`);
 
       return {
-        code: output.outputFiles.filter(e => e.name.endsWith('.js'))[0].text,
-        map: output.outputFiles.filter(e => e.name.endsWith('.map'))[0].text,
+        code: output.outputFiles.filter((e) => e.name.endsWith('.js'))[0].text,
+        map: output.outputFiles.filter((e) => e.name.endsWith('.map'))[0].text,
       };
     },
   };

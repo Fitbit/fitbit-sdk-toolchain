@@ -19,8 +19,12 @@ import compile from './compile';
 import compileTranslations from './compileTranslations';
 import { makeDeviceManifest, makeCompanionManifest } from './componentManifest';
 import componentTargets, { ComponentType } from './componentTargets';
-import convertImageToTXI, { ConvertImageToTXIOptions, TXIOutputFormat } from './convertImageToTXI';
+import convertImageToTXI, {
+  ConvertImageToTXIOptions,
+  TXIOutputFormat,
+} from './convertImageToTXI';
 import { errataPrimaryExpressionInSwitch } from './errataWorkarounds';
+import eventsIntercept from './util/eventsIntercept';
 import gulpMagicString from './gulpMagicString';
 import gulpSetProperty from './gulpSetProperty';
 import {
@@ -34,7 +38,10 @@ import filterResourceTag from './filterResourceTag';
 import findEntryPoint from './findEntryPoint';
 import nativeComponents from './nativeComponents';
 import pluginError from './util/pluginError';
-import ProjectConfiguration, { normalizeProjectConfig, validate } from './ProjectConfiguration';
+import ProjectConfiguration, {
+  normalizeProjectConfig,
+  validate,
+} from './ProjectConfiguration';
 import * as resources from './resources';
 import sdkVersion from './sdkVersion';
 import validateIcon from './validateIcon';
@@ -53,8 +60,31 @@ export function generateBuildId() {
   })}`;
 }
 
-function addDiagnosticTarget(target: DiagnosticTarget, onDiagnostic: DiagnosticHandler) {
+function addDiagnosticTarget(
+  target: DiagnosticTarget,
+  onDiagnostic: DiagnosticHandler,
+) {
   return (diagnostic: Diagnostic) => onDiagnostic({ target, ...diagnostic });
+}
+
+function addErrorTarget(
+  target: DiagnosticTarget,
+  fn: () => NodeJS.ReadableStream,
+): NodeJS.ReadableStream {
+  function wrap(err: any) {
+    if (BuildError.is(err) || pluginError.isPluginError(err)) {
+      (err as any).target = target;
+    }
+    return err;
+  }
+
+  try {
+    const buildStream = eventsIntercept(fn());
+    buildStream.intercept('error', (err, done) => done(null, wrap(err)));
+    return buildStream;
+  } catch (ex) {
+    throw wrap(ex);
+  }
 }
 
 function lazyObjectReadable(fn: () => Readable) {
@@ -66,21 +96,24 @@ export function loadProjectConfig({
   fileName = 'package.json',
 }) {
   try {
-    const config = normalizeProjectConfig(JSON.parse(
-      fs.readFileSync(fileName, 'utf-8'),
-    ));
+    const config = normalizeProjectConfig(
+      JSON.parse(fs.readFileSync(fileName, 'utf-8')),
+    );
     const diagnostics = validate(config);
-    diagnostics.diagnostics.forEach(
-      diagnostic => onDiagnostic({ file: { path: fileName }, ...diagnostic }),
+    diagnostics.diagnostics.forEach((diagnostic) =>
+      onDiagnostic({ file: { path: fileName }, ...diagnostic }),
     );
 
-    if (diagnostics.fatalError) throw new Error('Project configuration is invalid');
+    if (diagnostics.fatalError) {
+      throw new Error('Project configuration is invalid');
+    }
 
     if (config.enableProposedAPI) {
       onDiagnostic({
         category: DiagnosticCategory.Warning,
         // tslint:disable-next-line:max-line-length
-        messageText: 'Targeting proposed API may cause your app to behave unexpectedly. Use only when needed for development or QA.',
+        messageText:
+          'Targeting proposed API may cause your app to behave unexpectedly. Use only when needed for development or QA.',
       });
     }
 
@@ -95,20 +128,29 @@ export function buildComponent({
   component,
   onDiagnostic = logDiagnosticToConsole,
 }: {
-  projectConfig: ProjectConfiguration,
-  component: ComponentType,
-  onDiagnostic?: DiagnosticHandler,
+  projectConfig: ProjectConfiguration;
+  component: ComponentType;
+  onDiagnostic?: DiagnosticHandler;
 }) {
   const { inputs, output, notFoundIsFatal } = componentTargets[component];
-  const entryPoint = findEntryPoint(
-    inputs,
-    { onDiagnostic, component, notFoundIsFatal },
-  );
-  if (!entryPoint) return;
-  return lazyObjectReadable(() => compile(component, entryPoint, output, {
+
+  const entryPoint = findEntryPoint(inputs, {
     onDiagnostic,
-    allowUnknownExternals: projectConfig.enableProposedAPI,
-  }));
+    component,
+    notFoundIsFatal,
+  });
+  if (!entryPoint) return;
+
+  return lazyObjectReadable(() =>
+    compile({
+      component,
+      output,
+      onDiagnostic,
+      input: entryPoint,
+      allowUnknownExternals: projectConfig.enableProposedAPI,
+      defaultLanguage: projectConfig.defaultLanguage,
+    }),
+  );
 }
 
 export function buildDeviceResources(
@@ -117,7 +159,9 @@ export function buildDeviceResources(
   onDiagnostic = logDiagnosticToConsole,
 ) {
   const convertImageToTXIOptions: ConvertImageToTXIOptions = {};
-  if (sdkVersion().major >= 2) convertImageToTXIOptions.rgbaOutputFormat = TXIOutputFormat.RGBA6666;
+  if (sdkVersion().major >= 2) {
+    convertImageToTXIOptions.rgbaOutputFormat = TXIOutputFormat.RGBA6666;
+  }
 
   return new pumpify.obj(
     filterResourceTag(resourceFilterTag),
@@ -132,9 +176,9 @@ export function buildDeviceComponents({
   buildId,
   onDiagnostic = logDiagnosticToConsole,
 }: {
-  projectConfig: ProjectConfiguration,
-  buildId: string,
-  onDiagnostic?: DiagnosticHandler,
+  projectConfig: ProjectConfiguration;
+  buildId: string;
+  onDiagnostic?: DiagnosticHandler;
 }) {
   const deviceJSPipeline: Stream[] = [
     // TODO: remove is-defined assertion ('!')
@@ -146,9 +190,7 @@ export function buildDeviceComponents({
   ];
 
   if (sdkVersion().major < 3) {
-    deviceJSPipeline.push(
-      gulpMagicString(errataPrimaryExpressionInSwitch),
-    );
+    deviceJSPipeline.push(gulpMagicString(errataPrimaryExpressionInSwitch));
   }
 
   const processedJS = new playbackStream({ objectMode: true });
@@ -164,53 +206,61 @@ export function buildDeviceComponents({
       dropStream.obj(),
     ),
 
-    ...projectConfig.buildTargets.map(family => lazyObjectReadable(() => {
-      const { platform, displayName } = buildTargets[family];
-      onDiagnostic({
-        messageText: `Building app for ${displayName}`,
-        category: DiagnosticCategory.Message,
-      });
+    ...projectConfig.buildTargets.map((family) =>
+      lazyObjectReadable(() => {
+        const { platform, displayName } = buildTargets[family];
+        onDiagnostic({
+          messageText: `Building app for ${displayName}`,
+          category: DiagnosticCategory.Message,
+        });
 
-      const sourceMap = collectComponentSourceMaps();
+        const sourceMap = collectComponentSourceMaps();
         // Split so that JS doesn't pass through resource filtering
-      return new pumpify.obj(
-        mergeStream(
-          new pumpify.obj(
-            processedJS.newReadableSide({ objectMode: true }),
-            sourceMap.collector(ComponentType.DEVICE, family),
+        return new pumpify.obj(
+          mergeStream(
+            new pumpify.obj(
+              processedJS.newReadableSide({ objectMode: true }),
+              sourceMap.collector(ComponentType.DEVICE, family),
+            ),
+            new pumpify.obj(
+              // Things can start glitching out if multiple vinylFS.src()
+              // streams with the same glob pattern are in use
+              // concurrently. (IPD-102519)
+              // We're serializing the execution of the pipelines, so
+              // there should not be any opportunity for glitches as only
+              // one vinylFS stream is active at a time. Wrapping the
+              // vinylFS stream in a playbackStream would be safer, but
+              // would buffer all the resources into memory at once with
+              // no backpressure. We like our users and don't want to eat
+              // all their RAM, so we just have to be careful not to
+              // introduce a regression when modifying this code.
+              vinylFS.src('./resources/**', { base: '.' }),
+              buildDeviceResources(
+                projectConfig,
+                buildTargets[family],
+                onDiagnostic,
+              ),
+            ),
+            new pumpify.obj(
+              vinylFS.src(componentTargets.device.translationsGlob, {
+                base: '.',
+              }),
+              compileTranslations(projectConfig.defaultLanguage),
+            ),
           ),
-          new pumpify.obj(
-            // Things can start glitching out if multiple vinylFS.src()
-            // streams with the same glob pattern are in use
-            // concurrently. (IPD-102519)
-            // We're serializing the execution of the pipelines, so
-            // there should not be any opportunity for glitches as only
-            // one vinylFS stream is active at a time. Wrapping the
-            // vinylFS stream in a playbackStream would be safer, but
-            // would buffer all the resources into memory at once with
-            // no backpressure. We like our users and don't want to eat
-            // all their RAM, so we just have to be careful not to
-            // introduce a regression when modifying this code.
-            vinylFS.src('./resources/**', { base: '.' }),
-            buildDeviceResources(projectConfig, buildTargets[family], onDiagnostic),
-          ),
-          new pumpify.obj(
-            vinylFS.src('./app/i18n/*.po', { base: '.' }),
-            compileTranslations(),
-          ),
-        ),
-        makeDeviceManifest({ projectConfig, buildId }),
-        zip(`device-${family}.zip`, { compress: sdkVersion().major >= 3 }),
-        gulpSetProperty({
-          componentBundle: {
-            family,
-            platform,
-            type: 'device',
-          },
-        }),
-        sourceMap.emitter,
-      );
-    })),
+          makeDeviceManifest({ projectConfig, buildId }),
+          zip(`device-${family}.zip`, { compress: sdkVersion().major >= 3 }),
+          gulpSetProperty({
+            componentBundle: {
+              family,
+              platform,
+              type: 'device',
+            },
+          }),
+          sourceMap.emitter,
+        );
+      }),
+    ),
   ]);
 }
 
@@ -219,9 +269,9 @@ export function buildCompanion({
   buildId,
   onDiagnostic = logDiagnosticToConsole,
 }: {
-  projectConfig: ProjectConfiguration,
-  buildId: string,
-  onDiagnostic?: DiagnosticHandler,
+  projectConfig: ProjectConfiguration;
+  buildId: string;
+  onDiagnostic?: DiagnosticHandler;
 }) {
   const sourceMaps = collectComponentSourceMaps();
 
@@ -231,28 +281,33 @@ export function buildCompanion({
     [ComponentType.DEVICE]: DiagnosticTarget.App,
   };
 
-  const [companion, settings] = [ComponentType.COMPANION, ComponentType.SETTINGS]
-    .map((componentType) => {
-      const targetedDiagnostic = addDiagnosticTarget(
-        diagnosticTargets[componentType],
-        onDiagnostic,
-      );
-      const component = buildComponent({
-        projectConfig,
-        component: componentType,
-        onDiagnostic: targetedDiagnostic,
-      });
-      if (component) {
-        return lazyObjectReadable(() => {
-          targetedDiagnostic({
-            category: DiagnosticCategory.Message,
-            messageText: `Building ${diagnosticTargets[componentType]}`,
-          });
-          return new pumpify.obj(component, sourceMaps.collector(componentType));
-        });
-      }
-      return component;
+  const [companion, settings] = [
+    ComponentType.COMPANION,
+    ComponentType.SETTINGS,
+  ].map((componentType) => {
+    const targetedDiagnostic = addDiagnosticTarget(
+      diagnosticTargets[componentType],
+      onDiagnostic,
+    );
+    const component = buildComponent({
+      projectConfig,
+      component: componentType,
+      onDiagnostic: targetedDiagnostic,
     });
+    if (component) {
+      return lazyObjectReadable(() => {
+        targetedDiagnostic({
+          category: DiagnosticCategory.Message,
+          messageText: `Building ${diagnosticTargets[componentType]}`,
+        });
+        return new pumpify.obj(
+          addErrorTarget(diagnosticTargets[componentType], () => component),
+          sourceMaps.collector(componentType),
+        );
+      });
+    }
+    return component;
+  });
 
   if (settings && !companion) {
     throw new BuildError(
@@ -260,23 +315,27 @@ export function buildCompanion({
     );
   }
 
-  const components = [companion, settings]
-    .filter((component): component is pumpify => component !== undefined);
+  const components = [companion, settings].filter(
+    (component): component is pumpify => component !== undefined,
+  );
   if (components.length === 0) return;
 
-  return lazyObjectReadable(() => new pumpify.obj(
-    multistream.obj(components),
-    makeCompanionManifest({
-      projectConfig,
-      buildId,
-      hasSettings: !!settings,
-    }),
-    zip('companion.zip'),
-    gulpSetProperty({
-      componentBundle: { type: 'companion' },
-    }),
-    sourceMaps.emitter,
-  ));
+  return lazyObjectReadable(
+    () =>
+      new pumpify.obj(
+        multistream.obj(components),
+        makeCompanionManifest({
+          projectConfig,
+          buildId,
+          hasSettings: !!settings,
+        }),
+        zip('companion.zip'),
+        gulpSetProperty({
+          componentBundle: { type: 'companion' },
+        }),
+        sourceMaps.emitter,
+      ),
+  );
 }
 
 export function buildAppPackage({
@@ -285,21 +344,25 @@ export function buildAppPackage({
   existingDeviceComponents,
   onDiagnostic = logDiagnosticToConsole,
 }: {
-  projectConfig: ProjectConfiguration,
-  buildId: string,
-  existingDeviceComponents?: Readable,
-  onDiagnostic?: DiagnosticHandler,
+  projectConfig: ProjectConfiguration;
+  buildId: string;
+  existingDeviceComponents?: Readable;
+  onDiagnostic?: DiagnosticHandler;
 }) {
   const components = [];
 
   if (existingDeviceComponents) {
     components.push(existingDeviceComponents);
   } else {
-    components.push(buildDeviceComponents({
-      projectConfig,
-      buildId,
-      onDiagnostic: addDiagnosticTarget(DiagnosticTarget.App, onDiagnostic),
-    }));
+    components.push(
+      addErrorTarget(DiagnosticTarget.App, () =>
+        buildDeviceComponents({
+          projectConfig,
+          buildId,
+          onDiagnostic: addDiagnosticTarget(DiagnosticTarget.App, onDiagnostic),
+        }),
+      ),
+    );
   }
 
   const companion = buildCompanion({
@@ -324,8 +387,8 @@ export function buildProject({
   nativeDeviceComponentPaths = [],
   onDiagnostic = logDiagnosticToConsole,
 }: {
-  nativeDeviceComponentPaths?: string[],
-  onDiagnostic?: DiagnosticHandler,
+  nativeDeviceComponentPaths?: string[];
+  onDiagnostic?: DiagnosticHandler;
 }) {
   let buildId: string;
   let existingDeviceComponents: Readable | undefined;
@@ -341,13 +404,17 @@ export function buildProject({
     buildId = generateBuildId();
   }
 
-  return buildAppPackage({ projectConfig, buildId, onDiagnostic, existingDeviceComponents })
-    .on('finish', () => {
-      onDiagnostic({
-        messageText: `App UUID: ${projectConfig.appUUID}, BuildID: ${buildId}`,
-        category: DiagnosticCategory.Message,
-      });
+  return buildAppPackage({
+    projectConfig,
+    buildId,
+    onDiagnostic,
+    existingDeviceComponents,
+  }).on('finish', () => {
+    onDiagnostic({
+      messageText: `App UUID: ${projectConfig.appUUID}, BuildID: ${buildId}`,
+      category: DiagnosticCategory.Message,
     });
+  });
 }
 
 /**
@@ -361,9 +428,9 @@ export function build({
   onDiagnostic = logDiagnosticToConsole,
   nativeDeviceComponentPaths,
 }: {
-  dest?: Stream,
-  nativeDeviceComponentPaths?: string[],
-  onDiagnostic?: DiagnosticHandler,
+  dest?: Stream;
+  nativeDeviceComponentPaths?: string[];
+  onDiagnostic?: DiagnosticHandler;
 } = {}) {
   return new Promise<void>((resolve, reject) => {
     new pumpify.obj(

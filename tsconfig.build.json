@@ -1,10 +1,7 @@
 {
   "extends": "./tsconfig.json",
-  "files": [
-    "src/cli.ts",
-    "src/newProject.ts",
-  ],
+  "files": ["src/cli.ts", "src/newProject.ts"],
   "compilerOptions": {
-    "declaration": true,
+    "declaration": true
   }
 }
