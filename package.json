@@ -45,7 +45,7 @@
     "@types/vinyl-buffer": "^1.0.0",
     "@types/vinyl-fs": "^2.4.8",
     "@types/yargs": "^12.0.1",
-    "concat-stream": "^1.6.2",
+    "concat-stream": "^2.0.0",
     "depcheck": "^0.6.9",
     "event-stream": "^4.0.1",
     "husky": "^1.2.1",
