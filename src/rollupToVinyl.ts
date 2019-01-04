@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { posix, resolve } from 'path';
 import { Readable } from 'stream';
 
 import PluginError from 'plugin-error';
@@ -10,35 +10,60 @@ interface VinylPluginError {
   columnNumber?: number;
 }
 
+function isEmittedAsset(
+  chunkOrAsset: rollup.OutputChunk | rollup.OutputAsset,
+): chunkOrAsset is rollup.OutputAsset {
+  return (chunkOrAsset as rollup.OutputAsset).isAsset;
+}
+
 export default function rollupToVinyl(
-  outputPath: string,
-  inputOptions: rollup.RollupFileOptions,
+  outputDir: string,
+  inputOptions: rollup.RollupOptions,
   outputOptions: rollup.OutputOptions,
 ) {
   const stream = new Readable({ objectMode: true });
   stream._read = () => {};
 
+  function emitAsset({ fileName, source }: rollup.OutputAsset) {
+    stream.push(
+      new Vinyl({
+        contents: Buffer.isBuffer(source)
+          ? source
+          : Buffer.from(source, 'utf8'),
+        path: resolve(process.cwd(), outputDir, fileName),
+      }),
+    );
+  }
+
+  function emitChunk({ code, fileName, map, isEntry }: rollup.OutputChunk) {
+    if (map) {
+      // Rollup produces bad sourcemaps, this package fixes them up.
+      // We've tried taking it out, and source maps have broken each
+      // time. NO TOUCHING!
+      map.mappings = JSON.parse(sourceMapCompactor(map)).mappings;
+
+      // Rollup only writes the basename to the file property
+      map.file = posix.join(outputDir, fileName);
+    }
+    stream.push(
+      new Vinyl({
+        isEntryPoint: isEntry,
+        contents: Buffer.from(code, 'utf8'),
+        path: resolve(process.cwd(), outputDir, fileName),
+        sourceMap: map,
+      }),
+    );
+  }
+
   rollup
     .rollup(inputOptions)
     .then((bundle) => {
       stream.emit('bundle', bundle);
-      return bundle.generate(outputOptions).then(({ code, map }) => {
-        if (map) {
-          // Rollup produces bad sourcemaps, this package fixes them up.
-          // We've tried taking it out, and source maps have broken each
-          // time. NO TOUCHING!
-          map.mappings = JSON.parse(sourceMapCompactor(map)).mappings;
-
-          // Rollup only writes the basename to the file property
-          map.file = outputPath;
+      return bundle.generate(outputOptions).then(({ output }) => {
+        for (const chunkOrAsset of output) {
+          if (isEmittedAsset(chunkOrAsset)) emitAsset(chunkOrAsset);
+          else emitChunk(chunkOrAsset);
         }
-        stream.push(
-          new Vinyl({
-            contents: Buffer.from(code, 'utf8'),
-            path: resolve(process.cwd(), outputPath),
-            sourceMap: map,
-          }),
-        );
         stream.push(null);
       });
     })

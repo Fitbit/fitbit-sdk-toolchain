@@ -37,9 +37,9 @@ function relativeId(id: string) {
 }
 
 function defaultFormatter(w: RollupWarning) {
-  return w.loc
-    ? `${relativeId(w.loc.file)} (${w.loc.line}:${w.loc.column}) ${w.message!}`
-    : w.message!;
+  return w.loc && w.loc.file
+    ? `${relativeId(w.loc.file)} (${w.loc.line}:${w.loc.column}) ${w.message}`
+    : w.message;
 }
 
 const rollupWarningToDiagnostic = (codeCategories: CodeCategoryMap) => (

@@ -15,7 +15,7 @@ export default function resourceImports(options = {}): Plugin {
     name: 'resourceImports',
     load(id) {
       const mime = mimeTypes[extname(id)];
-      if (!mime) return undefined;
+      if (!mime) return null;
 
       return readFile(id).then(
         (file) =>

@@ -1,12 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`builds a companion manifest 1`] = `
+exports[`emits an error if no companion entry point is present 1`] = `
+PluginError {
+  "message": "No entry point was generated for companion component",
+  "name": "Error",
+  "plugin": "componentManifest",
+}
+`;
+
+exports[`emits an error if no device entry point is present 1`] = `
+PluginError {
+  "message": "No entry point was generated for device component",
+  "name": "Error",
+  "plugin": "componentManifest",
+}
+`;
+
+exports[`when there is a companion entry point present builds a companion manifest 1`] = `
 Object {
   "apiVersion": "1.0.0",
   "buildId": "0x0f75775f470c1585",
   "bundleDate": "2018-06-27T00:00:00.000Z",
   "companion": Object {
-    "main": "companion.js",
+    "main": "companion/index.js",
   },
   "manifestVersion": 2,
   "name": "My App",
@@ -15,25 +31,25 @@ Object {
 }
 `;
 
-exports[`builds a companion manifest with settings 1`] = `
+exports[`when there is a companion entry point present when there is a settings entry point present builds a companion manifest with settings 1`] = `
 Object {
   "apiVersion": "1.0.0",
   "buildId": "0x0f75775f470c1585",
   "bundleDate": "2018-06-27T00:00:00.000Z",
   "companion": Object {
-    "main": "companion.js",
+    "main": "companion/index.js",
   },
   "manifestVersion": 2,
   "name": "My App",
   "requestedPermissions": Array [],
   "settings": Object {
-    "main": "settings.js",
+    "main": "settings/index.js",
   },
   "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
 }
 `;
 
-exports[`builds a device manifest for a clock 1`] = `
+exports[`when there is a device entry point present builds a device manifest for a clock 1`] = `
 Object {
   "apiVersion": "1.0.0",
   "appManifestVersion": 1,
@@ -48,7 +64,7 @@ Object {
       "name": "Mon application",
     },
   },
-  "main": "app/index.js",
+  "main": "device/index.js",
   "name": "My App",
   "requestedPermissions": Array [],
   "svgMain": "resources/index.gui",
@@ -57,7 +73,7 @@ Object {
 }
 `;
 
-exports[`builds a device manifest for an app 1`] = `
+exports[`when there is a device entry point present builds a device manifest for an app 1`] = `
 Object {
   "apiVersion": "1.0.0",
   "appManifestVersion": 1,
@@ -73,7 +89,7 @@ Object {
     },
   },
   "iconFile": "resources/icon.png",
-  "main": "app/index.js",
+  "main": "device/index.js",
   "name": "My App",
   "requestedPermissions": Array [],
   "svgMain": "resources/index.gui",
@@ -83,11 +99,11 @@ Object {
 }
 `;
 
-exports[`when there are compiled language files ensures the default language en is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"app/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"i18n\\":{\\"en\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr\\":{\\"name\\":\\"Mon application\\"},\\"es\\":{\\"resources\\":\\"spanish/language\\"}},\\"apiVersion\\":\\"1.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[]}"`;
+exports[`when there is a device entry point present when there are compiled language files ensures the default language en is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"apiVersion\\":\\"1.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"i18n\\":{\\"en\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr\\":{\\"name\\":\\"Mon application\\"},\\"es\\":{\\"resources\\":\\"spanish/language\\"}}}"`;
 
-exports[`when there are compiled language files ensures the default language es is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"app/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"i18n\\":{\\"es\\":{\\"resources\\":\\"spanish/language\\"},\\"en\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr\\":{\\"name\\":\\"Mon application\\"}},\\"apiVersion\\":\\"1.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[]}"`;
+exports[`when there is a device entry point present when there are compiled language files ensures the default language es is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"apiVersion\\":\\"1.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"i18n\\":{\\"es\\":{\\"resources\\":\\"spanish/language\\"},\\"en\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr\\":{\\"name\\":\\"Mon application\\"}}}"`;
 
-exports[`when there are compiled language files sets the i18n[lang].resources key for language files that pass through 1`] = `
+exports[`when there is a device entry point present when there are compiled language files sets the i18n[lang].resources key for language files that pass through 1`] = `
 Object {
   "apiVersion": "1.0.0",
   "appManifestVersion": 1,
@@ -106,7 +122,7 @@ Object {
       "name": "Mon application",
     },
   },
-  "main": "app/index.js",
+  "main": "device/index.js",
   "name": "My App",
   "requestedPermissions": Array [],
   "svgMain": "resources/index.gui",

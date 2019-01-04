@@ -132,7 +132,9 @@ export function buildComponent({
   component: ComponentType;
   onDiagnostic?: DiagnosticHandler;
 }) {
-  const { inputs, output, notFoundIsFatal } = componentTargets[component];
+  const { inputs, notFoundIsFatal, allowChunking } = componentTargets[
+    component
+  ];
 
   const entryPoint = findEntryPoint(inputs, {
     onDiagnostic,
@@ -141,15 +143,21 @@ export function buildComponent({
   });
   if (!entryPoint) return;
 
-  return lazyObjectReadable(() =>
-    compile({
-      component,
-      output,
-      onDiagnostic,
-      input: entryPoint,
-      allowUnknownExternals: projectConfig.enableProposedAPI,
-      defaultLanguage: projectConfig.defaultLanguage,
-    }),
+  return lazyObjectReadable(
+    () =>
+      new pumpify.obj(
+        compile({
+          component,
+          onDiagnostic,
+          entryPoint,
+          allowChunking,
+          allowUnknownExternals: projectConfig.enableProposedAPI,
+          defaultLanguage: projectConfig.defaultLanguage,
+        }),
+        gulpSetProperty({
+          componentType: component,
+        }),
+      ),
   );
 }
 

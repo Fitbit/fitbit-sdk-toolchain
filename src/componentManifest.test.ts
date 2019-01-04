@@ -1,9 +1,10 @@
-import { PassThrough } from 'stream';
+import { Duplex, Readable } from 'stream';
 
 import { advanceTo } from 'jest-date-mock';
 import Vinyl from 'vinyl';
 
 import { makeDeviceManifest, makeCompanionManifest } from './componentManifest';
+import { ComponentType } from './componentTargets';
 import ProjectConfiguration, {
   AppProjectConfiguration,
   AppType,
@@ -14,6 +15,7 @@ import { apiVersions } from './sdkVersion';
 import getFileFromStream from './testUtils/getFileFromStream';
 import getJSONFileFromStream from './testUtils/getJSONFileFromStream';
 import getVinylContents from './testUtils/getVinylContents';
+import makeReadStream from './testUtils/makeReadStream';
 
 jest.mock('./packageVersion.const');
 
@@ -38,144 +40,153 @@ const makeAppProjectConfig = (): AppProjectConfiguration => ({
   iconFile: 'resources/icon.png',
 });
 
-function expectDeviceManifest(
-  projectConfig: ProjectConfiguration = makeClockfaceProjectConfig(),
-) {
-  const manifest = makeDeviceManifest({
-    buildId,
-    projectConfig,
-  });
-  manifest.end();
+let buildStream: Readable;
 
-  return expect(getJSONFileFromStream(manifest)).resolves;
+function addBuildFile(path: string, content: string | Buffer, props: object) {
+  buildStream.push(
+    new Vinyl({
+      path,
+      contents: Buffer.isBuffer(content) ? content : Buffer.from(content),
+      ...props,
+    }),
+  );
 }
 
-function expectCompanionManifest(hasSettings = false) {
-  return expect(
-    getJSONFileFromStream(
-      makeCompanionManifest({
-        buildId,
-        hasSettings,
-        projectConfig: makeClockfaceProjectConfig(),
-      }),
-    ),
-  ).resolves;
+function expectManifestJSON(stream: Duplex) {
+  return expect(getJSONFileFromStream(stream, 'manifest.json'));
+}
+
+function makeDeviceManifestStream(
+  projectConfig: ProjectConfiguration = makeClockfaceProjectConfig(),
+) {
+  buildStream.push(null);
+  return buildStream.pipe(
+    makeDeviceManifest({
+      buildId,
+      projectConfig,
+    }),
+  );
+}
+
+function makeCompanionManifestStream(
+  hasSettings = false,
+  projectConfig: ProjectConfiguration = makeClockfaceProjectConfig(),
+) {
+  buildStream.push(null);
+  return buildStream.pipe(
+    makeCompanionManifest({
+      buildId,
+      projectConfig,
+      hasSettings,
+    }),
+  );
 }
 
 beforeEach(() => {
   advanceTo(new Date(Date.UTC(2018, 5, 27, 0, 0, 0)));
+  buildStream = makeReadStream();
 });
 
-it('builds a device manifest for a clock', () =>
-  expectDeviceManifest().toMatchSnapshot());
+it('emits an error if no device entry point is present', () =>
+  expectManifestJSON(makeDeviceManifestStream()).rejects.toMatchSnapshot());
 
-it('builds a device manifest for an app', () =>
-  expectDeviceManifest(makeAppProjectConfig()).toMatchSnapshot());
-
-it('builds a companion manifest', () =>
-  expectCompanionManifest().toMatchSnapshot());
-
-it('builds a companion manifest with settings', () =>
-  expectCompanionManifest(true).toMatchSnapshot());
-
-it('sets apiVersion in app manifest', () =>
-  expectDeviceManifest().toHaveProperty(
-    'apiVersion',
-    apiVersions({}).deviceApi,
-  ));
-
-it('sets apiVersion in companion manifest', () =>
-  expectCompanionManifest().toHaveProperty(
-    'apiVersion',
-    apiVersions({}).companionApi,
-  ));
-
-describe('when there are compiled language files', () => {
-  let sources: PassThrough;
-
+describe('when there is a device entry point present', () => {
   beforeEach(() => {
-    sources = new PassThrough({ objectMode: true });
-
-    sources.write(
-      new Vinyl({
-        path: 'lang/english',
-        translationLanguage: 'en',
-        contents: Buffer.from('foo'),
-      }),
-    );
-
-    sources.write(
-      new Vinyl({
-        path: 'app/index.js',
-        contents: Buffer.from('foo'),
-      }),
-    );
-
-    sources.write(
-      new Vinyl({
-        path: 'spanish/language',
-        translationLanguage: 'es',
-        contents: Buffer.from('foo'),
-      }),
-    );
-
-    sources.end();
+    addBuildFile('device/index.js', 'foo', { isEntryPoint: true });
   });
 
-  it('sets the i18n[lang].resources key for language files that pass through', () => {
-    return expect(
-      getJSONFileFromStream(
-        sources.pipe(
-          makeDeviceManifest({
-            buildId,
-            projectConfig: makeClockfaceProjectConfig(),
-          }),
-        ),
-        'manifest.json',
-      ),
-    ).resolves.toMatchSnapshot();
+  it('builds a device manifest for a clock', () =>
+    expectManifestJSON(makeDeviceManifestStream()).resolves.toMatchSnapshot());
+
+  it('builds a device manifest for an app', () =>
+    expectManifestJSON(
+      makeDeviceManifestStream(makeAppProjectConfig()),
+    ).resolves.toMatchSnapshot());
+
+  it('sets apiVersion in app manifest', () =>
+    expectManifestJSON(makeDeviceManifestStream()).resolves.toHaveProperty(
+      'apiVersion',
+      apiVersions({}).deviceApi,
+    ));
+
+  describe('when there are compiled language files', () => {
+    beforeEach(() => {
+      addBuildFile('lang/english', 'foo', { translationLanguage: 'en' });
+      addBuildFile('spanish/language', 'foo', { translationLanguage: 'es' });
+    });
+
+    it('sets the i18n[lang].resources key for language files that pass through', () =>
+      expectManifestJSON(
+        makeDeviceManifestStream(),
+      ).resolves.toMatchSnapshot());
+
+    it.each(['es', 'en'])(
+      'ensures the default language %s is the first key in the i18n object',
+      (defaultLanguage) => {
+        buildStream.push(null);
+        const manifest = makeDeviceManifestStream({
+          ...makeClockfaceProjectConfig(),
+          defaultLanguage,
+        });
+
+        return expect(
+          getFileFromStream(manifest, 'manifest.json').then(getVinylContents),
+        ).resolves.toMatchSnapshot();
+      },
+    );
+
+    it('passes all files through', (done) => {
+      const files: string[] = [];
+
+      makeDeviceManifestStream()
+        .on('error', done.fail)
+        .on('data', (file: Vinyl) => files.push(file.relative))
+        .on('end', () => {
+          expect(files).toEqual([
+            'device/index.js',
+            'lang/english',
+            'spanish/language',
+            'manifest.json',
+          ]);
+          done();
+        });
+    });
+  });
+});
+
+it('emits an error if no companion entry point is present', () =>
+  expectManifestJSON(makeCompanionManifestStream()).rejects.toMatchSnapshot());
+
+describe('when there is a companion entry point present', () => {
+  beforeEach(() => {
+    addBuildFile('companion/index.js', 'foo', {
+      isEntryPoint: true,
+      componentType: ComponentType.COMPANION,
+    });
   });
 
-  it.each(['es', 'en'])(
-    'ensures the default language %s is the first key in the i18n object',
-    (defaultLanguage) => {
-      return expect(
-        getFileFromStream(
-          sources.pipe(
-            makeDeviceManifest({
-              buildId,
-              projectConfig: {
-                ...makeClockfaceProjectConfig(),
-                defaultLanguage,
-              },
-            }),
-          ),
-          'manifest.json',
-        ).then(getVinylContents),
-      ).resolves.toMatchSnapshot();
-    },
-  );
+  it('builds a companion manifest', () =>
+    expectManifestJSON(
+      makeCompanionManifestStream(),
+    ).resolves.toMatchSnapshot());
 
-  it('passes all files through', (done) => {
-    const files: string[] = [];
+  it('sets apiVersion in companion manifest', () =>
+    expectManifestJSON(makeCompanionManifestStream()).resolves.toHaveProperty(
+      'apiVersion',
+      apiVersions({}).companionApi,
+    ));
 
-    sources
-      .pipe(
-        makeDeviceManifest({
-          buildId,
-          projectConfig: makeClockfaceProjectConfig(),
-        }),
-      )
-      .on('error', done.fail)
-      .on('data', (file: Vinyl) => files.push(file.relative))
-      .on('end', () => {
-        expect(files).toEqual([
-          'lang/english',
-          'app/index.js',
-          'spanish/language',
-          'manifest.json',
-        ]);
-        done();
+  describe('when there is a settings entry point present', () => {
+    beforeEach(() => {
+      addBuildFile('settings/index.js', 'foo', {
+        isEntryPoint: true,
+        componentType: ComponentType.SETTINGS,
       });
+    });
+
+    it('builds a companion manifest with settings', () =>
+      expectManifestJSON(
+        makeCompanionManifestStream(true),
+      ).resolves.toMatchSnapshot());
   });
 });

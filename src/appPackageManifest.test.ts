@@ -10,6 +10,7 @@ import ProjectConfiguration, {
 } from './ProjectConfiguration';
 
 import getJSONFileFromStream from './testUtils/getJSONFileFromStream';
+import makeReadStream from './testUtils/makeReadStream';
 
 jest.mock('./packageVersion.const');
 
@@ -26,12 +27,6 @@ const makeProjectConfig = (): ClockProjectConfiguration => ({
   requestedPermissions: [],
   defaultLanguage: 'en-US',
 });
-
-function makeReadStream() {
-  const stream = new Readable({ objectMode: true });
-  stream._read = () => {};
-  return stream;
-}
 
 function expectPackageManifest(
   stream: Readable,

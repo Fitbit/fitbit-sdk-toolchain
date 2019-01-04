@@ -144,7 +144,7 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
        * the user happens to use, we resolve that module ourselves.
        */
       if (id === tslib.sentinel) return tslib.source;
-      return undefined;
+      return null;
     },
 
     transform(code, id) {
