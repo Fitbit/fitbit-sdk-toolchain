@@ -93,9 +93,26 @@ export function makeDeviceManifest({
         locales[lang].resources = normalizeToPOSIX(file.relative);
       }
 
-      const isEntryPoint: boolean | undefined = file.isEntryPoint;
-      if (isEntryPoint) {
-        entryPoint = file.relative;
+      const componentType = file.componentType;
+      if (file.isEntryPoint) {
+        if (componentType === ComponentType.DEVICE) {
+          if (entryPoint) {
+            return next(
+              new PluginError(
+                PLUGIN_NAME,
+                'Multiple entry points were generated for device, only one is allowed',
+              ),
+            );
+          }
+          entryPoint = file.relative;
+        } else {
+          return next(
+            new PluginError(
+              PLUGIN_NAME,
+              `Entry point for unrecognised component found: ${componentType}`,
+            ),
+          );
+        }
       }
 
       next(undefined, file);
@@ -170,11 +187,35 @@ export function makeCompanionManifest({
       const componentType = file.componentType;
 
       const isEntryPoint: boolean | undefined = file.isEntryPoint;
-      if (isEntryPoint && componentType === ComponentType.COMPANION) {
-        companionEntryPoint = file.relative;
-      }
-      if (isEntryPoint && componentType === ComponentType.SETTINGS) {
-        settingsEntryPoint = file.relative;
+      if (isEntryPoint) {
+        if (componentType === ComponentType.COMPANION) {
+          if (companionEntryPoint) {
+            return next(
+              new PluginError(
+                PLUGIN_NAME,
+                'Multiple entry points were generated for companion, only one is allowed',
+              ),
+            );
+          }
+          companionEntryPoint = file.relative;
+        } else if (componentType === ComponentType.SETTINGS) {
+          if (settingsEntryPoint) {
+            return next(
+              new PluginError(
+                PLUGIN_NAME,
+                'Multiple entry points were generated for settings, only one is allowed',
+              ),
+            );
+          }
+          settingsEntryPoint = file.relative;
+        } else {
+          return next(
+            new PluginError(
+              PLUGIN_NAME,
+              `Entry point for unrecognised component found: ${componentType}`,
+            ),
+          );
+        }
       }
 
       next(undefined, file);
@@ -201,6 +242,14 @@ export function makeCompanionManifest({
       };
 
       if (hasSettings) {
+        if (!settingsEntryPoint) {
+          return done(
+            new PluginError(
+              PLUGIN_NAME,
+              'No entry point was generated for settings component',
+            ),
+          );
+        }
         manifest.settings = { main: settingsEntryPoint };
       }
 

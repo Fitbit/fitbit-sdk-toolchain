@@ -1,5 +1,45 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`emits an error if an unrecognised entry point is present when expecting a companion/settings entry point 1`] = `
+PluginError {
+  "message": "Entry point for unrecognised component found: toaster",
+  "name": "Error",
+  "plugin": "componentManifest",
+}
+`;
+
+exports[`emits an error if an unrecognised entry point is present when expecting a device entry point 1`] = `
+PluginError {
+  "message": "Entry point for unrecognised component found: toaster",
+  "name": "Error",
+  "plugin": "componentManifest",
+}
+`;
+
+exports[`emits an error if multiple companion entry points are present 1`] = `
+PluginError {
+  "message": "Multiple entry points were generated for companion, only one is allowed",
+  "name": "Error",
+  "plugin": "componentManifest",
+}
+`;
+
+exports[`emits an error if multiple device entry points are present 1`] = `
+PluginError {
+  "message": "Multiple entry points were generated for device, only one is allowed",
+  "name": "Error",
+  "plugin": "componentManifest",
+}
+`;
+
+exports[`emits an error if multiple settings entry points are present 1`] = `
+PluginError {
+  "message": "Multiple entry points were generated for settings, only one is allowed",
+  "name": "Error",
+  "plugin": "componentManifest",
+}
+`;
+
 exports[`emits an error if no companion entry point is present 1`] = `
 PluginError {
   "message": "No entry point was generated for companion component",
@@ -28,6 +68,14 @@ Object {
   "name": "My App",
   "requestedPermissions": Array [],
   "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+}
+`;
+
+exports[`when there is a companion entry point present emits an error if project has settings but no settings entry point 1`] = `
+PluginError {
+  "message": "No entry point was generated for settings component",
+  "name": "Error",
+  "plugin": "componentManifest",
 }
 `;
 

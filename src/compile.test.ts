@@ -40,7 +40,7 @@ function testResourcePath(...paths: string[]) {
 function compileFile(
   filename: string,
   {
-    allowChunking = false,
+    allowCodeSplitting = false,
     allowUnknownExternals = undefined as boolean | undefined,
     component = ComponentType.COMPANION,
   } = {},
@@ -48,7 +48,7 @@ function compileFile(
   return getFileFromStream(
     compile({
       component,
-      allowChunking,
+      allowCodeSplitting,
       allowUnknownExternals,
       entryPoint: testResourcePath(filename),
       onDiagnostic: mockDiagnosticHandler,

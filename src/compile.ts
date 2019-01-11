@@ -47,7 +47,7 @@ export default function compile({
   component,
   entryPoint,
   defaultLanguage,
-  allowChunking,
+  allowCodeSplitting,
   allowUnknownExternals = false,
   onDiagnostic = logDiagnosticToConsole,
 }: {
@@ -55,7 +55,7 @@ export default function compile({
   entryPoint: string;
   defaultLanguage: string;
   allowUnknownExternals?: boolean;
-  allowChunking: boolean;
+  allowCodeSplitting: boolean;
   onDiagnostic?: DiagnosticHandler;
 }) {
   const ecma =
@@ -113,7 +113,7 @@ export default function compile({
             ? { UNRESOLVED_IMPORT: DiagnosticCategory.Warning }
             : undefined,
         }),
-        inlineDynamicImports: !(allowChunking && sdkVersion().major >= 3),
+        inlineDynamicImports: !(allowCodeSplitting && sdkVersion().major >= 3),
       },
       {
         format: 'cjs',

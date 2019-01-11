@@ -90,9 +90,36 @@ beforeEach(() => {
 it('emits an error if no device entry point is present', () =>
   expectManifestJSON(makeDeviceManifestStream()).rejects.toMatchSnapshot());
 
+it('emits an error if multiple device entry points are present', () => {
+  addBuildFile('device/index_A.js', 'foo', {
+    isEntryPoint: true,
+    componentType: ComponentType.DEVICE,
+  });
+  addBuildFile('device/index_B.js', 'foo', {
+    isEntryPoint: true,
+    componentType: ComponentType.DEVICE,
+  });
+  return expectManifestJSON(
+    makeDeviceManifestStream(),
+  ).rejects.toMatchSnapshot();
+});
+
+it('emits an error if an unrecognised entry point is present when expecting a device entry point', () => {
+  addBuildFile('toaster/index.js', 'foo', {
+    isEntryPoint: true,
+    componentType: 'toaster',
+  });
+  return expectManifestJSON(
+    makeDeviceManifestStream(),
+  ).rejects.toMatchSnapshot();
+});
+
 describe('when there is a device entry point present', () => {
   beforeEach(() => {
-    addBuildFile('device/index.js', 'foo', { isEntryPoint: true });
+    addBuildFile('device/index.js', 'foo', {
+      isEntryPoint: true,
+      componentType: ComponentType.DEVICE,
+    });
   });
 
   it('builds a device manifest for a clock', () =>
@@ -157,6 +184,48 @@ describe('when there is a device entry point present', () => {
 it('emits an error if no companion entry point is present', () =>
   expectManifestJSON(makeCompanionManifestStream()).rejects.toMatchSnapshot());
 
+it('emits an error if multiple companion entry points are present', () => {
+  addBuildFile('companion/index_A.js', 'foo', {
+    isEntryPoint: true,
+    componentType: ComponentType.COMPANION,
+  });
+  addBuildFile('companion/index_B.js', 'foo', {
+    isEntryPoint: true,
+    componentType: ComponentType.COMPANION,
+  });
+  return expectManifestJSON(
+    makeCompanionManifestStream(),
+  ).rejects.toMatchSnapshot();
+});
+
+it('emits an error if multiple settings entry points are present', () => {
+  addBuildFile('companion/index.js', 'foo', {
+    isEntryPoint: true,
+    componentType: ComponentType.COMPANION,
+  });
+  addBuildFile('settings/index_A.js', 'foo', {
+    isEntryPoint: true,
+    componentType: ComponentType.SETTINGS,
+  });
+  addBuildFile('settings/index_B.js', 'foo', {
+    isEntryPoint: true,
+    componentType: ComponentType.SETTINGS,
+  });
+  return expectManifestJSON(
+    makeCompanionManifestStream(),
+  ).rejects.toMatchSnapshot();
+});
+
+it('emits an error if an unrecognised entry point is present when expecting a companion/settings entry point', () => {
+  addBuildFile('toaster/index.js', 'foo', {
+    isEntryPoint: true,
+    componentType: 'toaster',
+  });
+  return expectManifestJSON(
+    makeCompanionManifestStream(),
+  ).rejects.toMatchSnapshot();
+});
+
 describe('when there is a companion entry point present', () => {
   beforeEach(() => {
     addBuildFile('companion/index.js', 'foo', {
@@ -175,6 +244,11 @@ describe('when there is a companion entry point present', () => {
       'apiVersion',
       apiVersions({}).companionApi,
     ));
+
+  it('emits an error if project has settings but no settings entry point', () =>
+    expectManifestJSON(
+      makeCompanionManifestStream(true),
+    ).rejects.toMatchSnapshot());
 
   describe('when there is a settings entry point present', () => {
     beforeEach(() => {

@@ -132,7 +132,7 @@ export function buildComponent({
   component: ComponentType;
   onDiagnostic?: DiagnosticHandler;
 }) {
-  const { inputs, notFoundIsFatal, allowChunking } = componentTargets[
+  const { inputs, notFoundIsFatal, allowCodeSplitting } = componentTargets[
     component
   ];
 
@@ -150,7 +150,7 @@ export function buildComponent({
           component,
           onDiagnostic,
           entryPoint,
-          allowChunking,
+          allowCodeSplitting,
           allowUnknownExternals: projectConfig.enableProposedAPI,
           defaultLanguage: projectConfig.defaultLanguage,
         }),
