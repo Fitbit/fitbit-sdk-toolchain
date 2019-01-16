@@ -1,5 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`emits an error if a companion entry point is present when expecting a device entry point 1`] = `
+PluginError {
+  "message": "Entry point for unrecognised component found: companion",
+  "name": "Error",
+  "plugin": "componentManifest",
+}
+`;
+
+exports[`emits an error if a device entry point is present when expecting a companion/settings entry point 1`] = `
+PluginError {
+  "message": "Entry point for unrecognised component found: device",
+  "name": "Error",
+  "plugin": "componentManifest",
+}
+`;
+
 exports[`emits an error if an unrecognised entry point is present when expecting a companion/settings entry point 1`] = `
 PluginError {
   "message": "Entry point for unrecognised component found: toaster",

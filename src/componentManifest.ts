@@ -93,9 +93,8 @@ export function makeDeviceManifest({
         locales[lang].resources = normalizeToPOSIX(file.relative);
       }
 
-      const componentType = file.componentType;
       if (file.isEntryPoint) {
-        if (componentType === ComponentType.DEVICE) {
+        if (file.componentType === ComponentType.DEVICE) {
           if (entryPoint) {
             return next(
               new PluginError(
@@ -109,7 +108,9 @@ export function makeDeviceManifest({
           return next(
             new PluginError(
               PLUGIN_NAME,
-              `Entry point for unrecognised component found: ${componentType}`,
+              `Entry point for unrecognised component found: ${
+                file.componentType
+              }`,
             ),
           );
         }
@@ -184,11 +185,9 @@ export function makeCompanionManifest({
     objectMode: true,
 
     transform(file: Vinyl, _, next) {
-      const componentType = file.componentType;
-
       const isEntryPoint: boolean | undefined = file.isEntryPoint;
       if (isEntryPoint) {
-        if (componentType === ComponentType.COMPANION) {
+        if (file.componentType === ComponentType.COMPANION) {
           if (companionEntryPoint) {
             return next(
               new PluginError(
@@ -198,7 +197,7 @@ export function makeCompanionManifest({
             );
           }
           companionEntryPoint = file.relative;
-        } else if (componentType === ComponentType.SETTINGS) {
+        } else if (file.componentType === ComponentType.SETTINGS) {
           if (settingsEntryPoint) {
             return next(
               new PluginError(
@@ -212,7 +211,9 @@ export function makeCompanionManifest({
           return next(
             new PluginError(
               PLUGIN_NAME,
-              `Entry point for unrecognised component found: ${componentType}`,
+              `Entry point for unrecognised component found: ${
+                file.componentType
+              }`,
             ),
           );
         }

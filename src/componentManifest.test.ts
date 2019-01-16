@@ -114,6 +114,16 @@ it('emits an error if an unrecognised entry point is present when expecting a de
   ).rejects.toMatchSnapshot();
 });
 
+it('emits an error if a companion entry point is present when expecting a device entry point', () => {
+  addBuildFile('toaster/index.js', 'foo', {
+    isEntryPoint: true,
+    componentType: ComponentType.COMPANION,
+  });
+  return expectManifestJSON(
+    makeDeviceManifestStream(),
+  ).rejects.toMatchSnapshot();
+});
+
 describe('when there is a device entry point present', () => {
   beforeEach(() => {
     addBuildFile('device/index.js', 'foo', {
@@ -220,6 +230,16 @@ it('emits an error if an unrecognised entry point is present when expecting a co
   addBuildFile('toaster/index.js', 'foo', {
     isEntryPoint: true,
     componentType: 'toaster',
+  });
+  return expectManifestJSON(
+    makeCompanionManifestStream(),
+  ).rejects.toMatchSnapshot();
+});
+
+it('emits an error if a device entry point is present when expecting a companion/settings entry point', () => {
+  addBuildFile('toaster/index.js', 'foo', {
+    isEntryPoint: true,
+    componentType: ComponentType.DEVICE,
   });
   return expectManifestJSON(
     makeCompanionManifestStream(),

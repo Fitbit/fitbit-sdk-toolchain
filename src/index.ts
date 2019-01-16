@@ -132,9 +132,7 @@ export function buildComponent({
   component: ComponentType;
   onDiagnostic?: DiagnosticHandler;
 }) {
-  const { inputs, notFoundIsFatal, allowCodeSplitting } = componentTargets[
-    component
-  ];
+  const { inputs, notFoundIsFatal } = componentTargets[component];
 
   const entryPoint = findEntryPoint(inputs, {
     onDiagnostic,
@@ -150,7 +148,6 @@ export function buildComponent({
           component,
           onDiagnostic,
           entryPoint,
-          allowCodeSplitting,
           allowUnknownExternals: projectConfig.enableProposedAPI,
           defaultLanguage: projectConfig.defaultLanguage,
         }),
