@@ -48,8 +48,7 @@ function compileFile(
     compile({
       component,
       allowUnknownExternals,
-      input: testResourcePath(filename),
-      output: 'output.js',
+      entryPoint: testResourcePath(filename),
       onDiagnostic: mockDiagnosticHandler,
       defaultLanguage: 'en-US',
     }),

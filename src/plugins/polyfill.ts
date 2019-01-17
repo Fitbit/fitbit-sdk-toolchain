@@ -16,7 +16,7 @@ export default function polyfill(modules: {
     },
 
     load(id) {
-      if (id[0] !== '\0') return;
+      if (id[0] !== '\0') return null;
       const code = modules[id.slice(1)];
       if (code === undefined) return null;
       return typeof code === 'function' ? code() : code;

@@ -45,15 +45,13 @@ function pluginIf(condition: boolean, plugin: () => rollup.Plugin) {
 
 export default function compile({
   component,
-  input,
-  output,
+  entryPoint,
   defaultLanguage,
   allowUnknownExternals = false,
   onDiagnostic = logDiagnosticToConsole,
 }: {
   component: ComponentType;
-  input: string;
-  output: string;
+  entryPoint: string;
   defaultLanguage: string;
   allowUnknownExternals?: boolean;
   onDiagnostic?: DiagnosticHandler;
@@ -63,9 +61,9 @@ export default function compile({
   const { translationsGlob } = componentTargets[component];
   return new pumpify.obj([
     rollupToVinyl(
-      output,
+      component,
       {
-        input,
+        input: entryPoint,
         external: externals[component],
         plugins: [
           typescript({
@@ -96,6 +94,7 @@ export default function compile({
                 // Also makes this work correctly in a browser environment
                 require('@babel/plugin-transform-block-scoped-functions'),
                 require('@babel/plugin-transform-block-scoping'),
+                require('@babel/plugin-syntax-dynamic-import'),
               ],
               compact: false,
               babelrc: false,
@@ -112,6 +111,7 @@ export default function compile({
             ? { UNRESOLVED_IMPORT: DiagnosticCategory.Warning }
             : undefined,
         }),
+        inlineDynamicImports: true,
       },
       {
         format: 'cjs',

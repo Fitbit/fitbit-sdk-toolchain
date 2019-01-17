@@ -1,16 +1,23 @@
 import { Transform } from 'stream';
 
-import gulpFile from 'gulp-file';
+import PluginError from 'plugin-error';
 import Vinyl from 'vinyl';
 
-import componentTargets from './componentTargets';
+import { ComponentType } from './componentTargets';
 import { normalizeToPOSIX } from './pathUtils';
 import ProjectConfiguration, { AppType } from './ProjectConfiguration';
 import * as resources from './resources';
 import { apiVersions } from './sdkVersion';
 
+const PLUGIN_NAME = 'componentManifest';
 const manifestPath = 'manifest.json';
 
+interface Locales {
+  [locale: string]: {
+    name?: string;
+    resources?: string;
+  };
+}
 interface ComponentManifest {
   apiVersion: string;
   buildId: string;
@@ -28,12 +35,7 @@ interface DeviceManifest extends ComponentManifest {
   // fail if the AppType enum changes such that it becomes incompatible
   // with what the device expects.
   appType: 'app' | 'clockface';
-  i18n: {
-    [locale: string]: {
-      name?: string;
-      resources?: string;
-    };
-  };
+  i18n: Locales;
   iconFile?: string;
   main: string;
   svgMain: string;
@@ -77,24 +79,8 @@ export function makeDeviceManifest({
   projectConfig: ProjectConfiguration;
   buildId: string;
 }) {
-  const manifest: DeviceManifest = {
-    appManifestVersion: 1,
-    main: componentTargets.device.output,
-    svgMain: resources.svgMain,
-    svgWidgets: resources.svgWidgets,
-    appType: projectConfig.appType,
-    i18n: projectConfig.i18n,
-    ...makeCommonManifest({
-      projectConfig,
-      buildId,
-      apiVersion: apiVersions(projectConfig).deviceApi,
-    }),
-  };
-
-  if (projectConfig.appType !== AppType.CLOCKFACE) {
-    manifest.iconFile = projectConfig.iconFile;
-    manifest.wipeColor = projectConfig.wipeColor;
-  }
+  const locales: Locales = projectConfig.i18n;
+  let entryPoint: string | undefined;
 
   return new Transform({
     objectMode: true,
@@ -103,8 +89,31 @@ export function makeDeviceManifest({
       const lang: string | undefined = file.translationLanguage;
 
       if (lang) {
-        if (manifest.i18n[lang] === undefined) manifest.i18n[lang] = {};
-        manifest.i18n[lang].resources = normalizeToPOSIX(file.relative);
+        if (locales[lang] === undefined) locales[lang] = {};
+        locales[lang].resources = normalizeToPOSIX(file.relative);
+      }
+
+      if (file.isEntryPoint) {
+        if (file.componentType === ComponentType.DEVICE) {
+          if (entryPoint) {
+            return next(
+              new PluginError(
+                PLUGIN_NAME,
+                'Multiple entry points were generated for device, only one is allowed',
+              ),
+            );
+          }
+          entryPoint = file.relative;
+        } else {
+          return next(
+            new PluginError(
+              PLUGIN_NAME,
+              `Entry point for unrecognised component found: ${
+                file.componentType
+              }`,
+            ),
+          );
+        }
       }
 
       next(undefined, file);
@@ -115,10 +124,36 @@ export function makeDeviceManifest({
       const {
         [projectConfig.defaultLanguage]: defaultLanguage,
         ...otherLocales
-      } = manifest.i18n;
-      manifest.i18n = {
-        [projectConfig.defaultLanguage]: defaultLanguage,
-        ...otherLocales,
+      } = locales;
+
+      if (!entryPoint) {
+        return done(
+          new PluginError(
+            PLUGIN_NAME,
+            'No entry point was generated for device component',
+          ),
+        );
+      }
+
+      const manifest: DeviceManifest = {
+        appManifestVersion: 1,
+        main: entryPoint,
+        svgMain: resources.svgMain,
+        svgWidgets: resources.svgWidgets,
+        appType: projectConfig.appType,
+        ...makeCommonManifest({
+          projectConfig,
+          buildId,
+          apiVersion: apiVersions(projectConfig).deviceApi,
+        }),
+        i18n: {
+          [projectConfig.defaultLanguage]: defaultLanguage,
+          ...otherLocales,
+        },
+        ...(projectConfig.appType !== AppType.CLOCKFACE && {
+          iconFile: projectConfig.iconFile,
+          wipeColor: projectConfig.wipeColor,
+        }),
       };
 
       done(
@@ -143,18 +178,91 @@ export function makeCompanionManifest({
   hasSettings: boolean;
   buildId: string;
 }) {
-  const manifest: CompanionManifest = {
-    manifestVersion: 2,
-    companion: { main: componentTargets.companion.output },
-    ...makeCommonManifest({
-      projectConfig,
-      buildId,
-      apiVersion: apiVersions(projectConfig).companionApi,
-    }),
-  };
+  let companionEntryPoint: string;
+  let settingsEntryPoint: string;
 
-  if (hasSettings) {
-    manifest.settings = { main: componentTargets.settings.output };
-  }
-  return gulpFile(manifestPath, JSON.stringify(manifest));
+  return new Transform({
+    objectMode: true,
+
+    transform(file: Vinyl, _, next) {
+      const isEntryPoint: boolean | undefined = file.isEntryPoint;
+      if (isEntryPoint) {
+        if (file.componentType === ComponentType.COMPANION) {
+          if (companionEntryPoint) {
+            return next(
+              new PluginError(
+                PLUGIN_NAME,
+                'Multiple entry points were generated for companion, only one is allowed',
+              ),
+            );
+          }
+          companionEntryPoint = file.relative;
+        } else if (file.componentType === ComponentType.SETTINGS) {
+          if (settingsEntryPoint) {
+            return next(
+              new PluginError(
+                PLUGIN_NAME,
+                'Multiple entry points were generated for settings, only one is allowed',
+              ),
+            );
+          }
+          settingsEntryPoint = file.relative;
+        } else {
+          return next(
+            new PluginError(
+              PLUGIN_NAME,
+              `Entry point for unrecognised component found: ${
+                file.componentType
+              }`,
+            ),
+          );
+        }
+      }
+
+      next(undefined, file);
+    },
+
+    flush(done) {
+      if (!companionEntryPoint) {
+        return done(
+          new PluginError(
+            PLUGIN_NAME,
+            'No entry point was generated for companion component',
+          ),
+        );
+      }
+
+      const manifest: CompanionManifest = {
+        manifestVersion: 2,
+        companion: { main: companionEntryPoint },
+        ...makeCommonManifest({
+          projectConfig,
+          buildId,
+          apiVersion: apiVersions(projectConfig).companionApi,
+        }),
+      };
+
+      if (hasSettings) {
+        if (!settingsEntryPoint) {
+          return done(
+            new PluginError(
+              PLUGIN_NAME,
+              'No entry point was generated for settings component',
+            ),
+          );
+        }
+        manifest.settings = { main: settingsEntryPoint };
+      }
+
+      done(
+        undefined,
+        new Vinyl({
+          cwd: '',
+          base: undefined,
+          path: manifestPath,
+          contents: Buffer.from(JSON.stringify(manifest)),
+        }),
+      );
+    },
+  });
 }
