@@ -30,6 +30,8 @@ export interface BaseProjectConfiguration {
   // We don't want to accidentally serialize `enableProposedAPI: false`
   // out to users' package.json files.
   enableProposedAPI?: true;
+  storageGroup?: string;
+  developerID?: string;
 }
 
 export interface AppProjectConfiguration extends BaseProjectConfiguration {
@@ -104,6 +106,14 @@ const permissionTypes = [
     description: 'Application may track an exercise.',
     sdkVersion: '>=3.0.0',
   },
+  {
+    key: 'access_app_cluster_storage',
+    name: 'App Cluster Storage',
+    description:
+      'Application may access storage shared by other applications from the same developer.',
+    // TODO: change this to the real versison
+    sdkVersion: '>=999.0.0',
+  },
 ];
 
 const restrictedPermissionTypes = [
@@ -125,13 +135,14 @@ const restrictedPermissionTypes = [
   },
 ];
 
-function getAllPermissionTypes() {
+function getAllPermissionTypes(enableProposedAPI: boolean) {
   return [
     ...restrictedPermissionTypes,
     ...permissionTypes.filter(
       (permission) =>
         !permission.sdkVersion ||
-        semver.satisfies(sdkVersion(), permission.sdkVersion),
+        semver.satisfies(sdkVersion(), permission.sdkVersion) ||
+        enableProposedAPI,
     ),
   ];
 }
@@ -279,11 +290,14 @@ export function validateWipeColor(config: ProjectConfiguration) {
 }
 
 export function validateRequestedPermissions({
+  enableProposedAPI,
   requestedPermissions,
 }: ProjectConfiguration) {
   return constrainedSetDiagnostics({
     actualValues: requestedPermissions,
-    knownValues: getAllPermissionTypes().map((permission) => permission.key),
+    knownValues: getAllPermissionTypes(!!enableProposedAPI).map(
+      (permission) => permission.key,
+    ),
     valueTypeNoun: 'requested permissions',
     notFoundIsFatal: false,
   });
@@ -376,6 +390,32 @@ export function validateDefaultLanguage(config: ProjectConfiguration) {
   return diagnostics;
 }
 
+export function validateStorageGroup(config: ProjectConfiguration) {
+  const diagnostics = new DiagnosticList();
+  const permissionKey = 'access_app_cluster_storage';
+  if (
+    config.requestedPermissions.includes(permissionKey) &&
+    getAllPermissionTypes(!!config.enableProposedAPI)
+      .map((permission) => permission.key)
+      .includes(permissionKey)
+  ) {
+    if (!config.storageGroup) {
+      diagnostics.pushFatalError(
+        `Storage group must be set when the App Cluster Storage permission is requested`,
+      );
+    }
+
+    if (!config.developerID) {
+      diagnostics.pushFatalError(
+        `Developer ID must be set when the App Cluster Storage permission is requested`,
+      );
+    } else if (!isUUID(String(config.developerID))) {
+      diagnostics.pushFatalError('Developer ID must be a valid UUID');
+    }
+  }
+  return diagnostics;
+}
+
 export function validate(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
   [
@@ -388,6 +428,7 @@ export function validate(config: ProjectConfiguration) {
     validateSupportedLocales,
     validateLocaleDisplayNames,
     validateDefaultLanguage,
+    validateStorageGroup,
   ].forEach((validator) => diagnostics.extend(validator(config)));
   return diagnostics;
 }

@@ -51,6 +51,8 @@ interface CompanionManifest extends ComponentManifest {
   settings?: {
     main: string;
   };
+  appClusters?: string[];
+  developerProfileId?: string;
 }
 
 function makeCommonManifest({
@@ -252,6 +254,14 @@ export function makeCompanionManifest({
           );
         }
         manifest.settings = { main: settingsEntryPoint };
+      }
+
+      if (projectConfig.storageGroup) {
+        manifest.appClusters = [projectConfig.storageGroup];
+      }
+
+      if (projectConfig.developerID) {
+        manifest.developerProfileId = projectConfig.developerID;
       }
 
       done(

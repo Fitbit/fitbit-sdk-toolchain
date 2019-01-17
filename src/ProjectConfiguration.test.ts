@@ -406,3 +406,51 @@ it('validates the default language is a valid language tag', () => {
     }),
   );
 });
+
+it('validates storage group is defined if app cluster storage permission is requested', () => {
+  const configFile: any = {
+    requestedPermissions: ['access_app_cluster_storage'],
+    developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
+  };
+  // TODO: fixme with real version
+  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText:
+        'Storage group must be set when the App Cluster Storage permission is requested',
+    }),
+  );
+});
+
+it('validates developer ID is defined if app cluster storage permission is requested', () => {
+  const configFile: any = {
+    requestedPermissions: ['access_app_cluster_storage'],
+    storageGroup: 'some_storage_group',
+  };
+  // TODO: fixme with real version
+  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText:
+        'Developer ID must be set when the App Cluster Storage permission is requested',
+    }),
+  );
+});
+
+it('validates developer ID is a valid UUID if app cluster storage permission is requested', () => {
+  const configFile: any = {
+    requestedPermissions: ['access_app_cluster_storage'],
+    storageGroup: 'some_storage_group',
+    developerID: 'definitely_not_a_uuid',
+  };
+  // TODO: fixme with real version
+  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText: 'Developer ID must be a valid UUID',
+    }),
+  );
+});
