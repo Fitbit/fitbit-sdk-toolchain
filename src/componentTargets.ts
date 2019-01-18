@@ -1,5 +1,6 @@
 interface ComponentTarget {
   inputs: string[];
+  outputDir?: string;
   notFoundIsFatal: boolean;
   translationsGlob: string;
 }
@@ -13,6 +14,7 @@ export enum ComponentType {
 const componentTarget: { [component in ComponentType]: ComponentTarget } = {
   [ComponentType.DEVICE]: {
     inputs: ['app/index.ts', 'app/index.js'],
+    outputDir: 'app',
     notFoundIsFatal: true,
     translationsGlob: 'app/i18n/*.po',
   },
