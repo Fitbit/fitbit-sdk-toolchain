@@ -42,16 +42,20 @@ function compileFile(
   {
     allowUnknownExternals = undefined as boolean | undefined,
     component = ComponentType.COMPANION,
+    outputDir = undefined as string | undefined,
   } = {},
+  expectFilename?: string,
 ) {
   return getFileFromStream(
     compile({
       component,
       allowUnknownExternals,
+      outputDir,
       entryPoint: testResourcePath(filename),
       onDiagnostic: mockDiagnosticHandler,
       defaultLanguage: 'en-US',
     }),
+    expectFilename,
   );
 }
 
@@ -68,6 +72,15 @@ it.each([
     compileFile(filename).then(getVinylContents),
   ).resolves.toMatchSnapshot(),
 );
+
+it('emits files in a specified output directory', () =>
+  expect(
+    compileFile(
+      'basic.js',
+      { outputDir: 'some_directory' },
+      'some_directory/basic.js',
+    ),
+  ).resolves.toBeDefined());
 
 // Just check build is successful
 it.each([['importing a package', 'importPackage.js']])(
