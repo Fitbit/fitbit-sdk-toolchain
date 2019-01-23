@@ -51,6 +51,7 @@ const device = internalsFilter(
 
 const companion = internalsFilter(
   [
+    'app-cluster-storage',
     'companion',
     'external-app',
     'image',

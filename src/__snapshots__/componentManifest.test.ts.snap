@@ -95,6 +95,25 @@ PluginError {
 }
 `;
 
+exports[`when there is a companion entry point present sets app cluster storage related fields if configured 1`] = `
+Object {
+  "apiVersion": "1.0.0",
+  "appClusters": Array [
+    "a.storage.group",
+  ],
+  "buildId": "0x0f75775f470c1585",
+  "bundleDate": "2018-06-27T00:00:00.000Z",
+  "companion": Object {
+    "main": "companion/index.js",
+  },
+  "developerProfileId": "f00df00d-f00d-f00d-f00d-f00df00df00d",
+  "manifestVersion": 2,
+  "name": "My App",
+  "requestedPermissions": Array [],
+  "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+}
+`;
+
 exports[`when there is a companion entry point present when there is a settings entry point present builds a companion manifest with settings 1`] = `
 Object {
   "apiVersion": "1.0.0",

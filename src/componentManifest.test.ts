@@ -265,6 +265,15 @@ describe('when there is a companion entry point present', () => {
       apiVersions({}).companionApi,
     ));
 
+  it('sets app cluster storage related fields if configured', () =>
+    expectManifestJSON(
+      makeCompanionManifestStream(false, {
+        ...makeClockfaceProjectConfig(),
+        developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
+        appClusterID: 'a.storage.group',
+      }),
+    ).resolves.toMatchSnapshot());
+
   it('emits an error if project has settings but no settings entry point', () =>
     expectManifestJSON(
       makeCompanionManifestStream(true),

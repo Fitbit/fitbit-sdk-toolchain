@@ -406,3 +406,105 @@ it('validates the default language is a valid language tag', () => {
     }),
   );
 });
+
+it('validates app cluster ID is defined if app cluster storage permission is requested', () => {
+  const configFile: any = {
+    requestedPermissions: ['access_app_cluster_storage'],
+    developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
+  };
+  // TODO: fixme with real version
+  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText:
+        'App Cluster ID must be set when the App Cluster Storage permission is requested',
+    }),
+  );
+});
+
+it.each([
+  ['an empty string', ''],
+  [
+    'more than 64 characters long',
+    '00000000000000000000000000000000000000000000000000000000000000000',
+  ],
+])('validates app cluster ID is not %s', (_, appClusterID) => {
+  const configFile: any = {
+    appClusterID,
+    requestedPermissions: ['access_app_cluster_storage'],
+    developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
+  };
+  // TODO: fixme with real version
+  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText: 'App Cluster ID must be between 1-64 characters',
+    }),
+  );
+});
+
+it('validates app cluster ID is of correct format', () => {
+  const configFile: any = {
+    requestedPermissions: ['access_app_cluster_storage'],
+    developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
+    appClusterID: 'foo_bar',
+  };
+  // TODO: fixme with real version
+  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText:
+        'App Cluster ID may only contain alphanumeric characters separated by periods, eg: my.app.123',
+    }),
+  );
+});
+
+it('validates developer ID is defined if app cluster storage permission is requested', () => {
+  const configFile: any = {
+    requestedPermissions: ['access_app_cluster_storage'],
+    appClusterID: 'abc.123',
+  };
+  // TODO: fixme with real version
+  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText:
+        'Developer ID must be set when the App Cluster Storage permission is requested',
+    }),
+  );
+});
+
+it('validates developer ID is a valid UUID if app cluster storage permission is requested', () => {
+  const configFile: any = {
+    requestedPermissions: ['access_app_cluster_storage'],
+    appClusterID: '123',
+    developerID: 'definitely_not_a_uuid',
+  };
+  // TODO: fixme with real version
+  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText: 'Developer ID must be a valid UUID',
+    }),
+  );
+});
+
+it('validates app cluster storage permission is requested if app cluster ID is set', () => {
+  const configFile: any = {
+    appClusterID: 'abc',
+  };
+  // TODO: fixme with real version
+  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText:
+        'App Cluster Storage permission must be requested to set App Cluster ID and Developer ID fields',
+    }),
+  );
+});

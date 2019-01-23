@@ -30,6 +30,8 @@ export interface BaseProjectConfiguration {
   // We don't want to accidentally serialize `enableProposedAPI: false`
   // out to users' package.json files.
   enableProposedAPI?: true;
+  appClusterID?: string;
+  developerID?: string;
 }
 
 export interface AppProjectConfiguration extends BaseProjectConfiguration {
@@ -61,77 +63,100 @@ export const LOCALES = Object.freeze({
   'zh-tw': 'Chinese (T)',
 });
 
+enum Permission {
+  ACCESS_ACTIVITY = 'access_activity',
+  ACCESS_APP_CLUSTER_STORAGE = 'access_app_cluster_storage',
+  ACCESS_EXERCISE = 'access_exercise',
+  ACCESS_HEART_RATE = 'access_heart_rate',
+  ACCESS_INTERNET = 'access_internet',
+  ACCESS_LOCATION = 'access_location',
+  ACCESS_SECURE_EXCHANGE = 'access_secure_exchange',
+  ACCESS_USER_PROFILE = 'access_user_profile',
+  FITBIT_TOKEN = 'fitbit_token',
+  RUN_BACKGROUND = 'run_background',
+  EXTERNAL_APP_COMMUNICATION = 'external_app_communication',
+}
+
 const permissionTypes = [
   {
-    key: 'access_activity',
+    key: Permission.ACCESS_ACTIVITY,
     name: 'Activity',
     // tslint:disable-next-line:max-line-length
     description:
       'Read user activities for today (distance, calories, steps, elevation and active minutes), and daily goals.',
   },
   {
-    key: 'access_user_profile',
+    key: Permission.ACCESS_USER_PROFILE,
     name: 'User Profile',
     // tslint:disable-next-line:max-line-length
     description:
       'Read non-identifiable personal information (gender, age, height, weight, resting HR, basal metabolic rate, stride, HR zones).',
   },
   {
-    key: 'access_heart_rate',
+    key: Permission.ACCESS_HEART_RATE,
     name: 'Heart Rate',
     description: 'Application may read the heart-rate sensor in real-time.',
   },
   {
-    key: 'access_location',
+    key: Permission.ACCESS_LOCATION,
     name: 'Location',
     description: 'Application and companion may use GPS.',
   },
   {
-    key: 'access_internet',
+    key: Permission.ACCESS_INTERNET,
     name: 'Internet',
     description:
       'Companion may communicate with the Internet using your phone data connection.',
   },
   {
-    key: 'run_background',
+    key: Permission.RUN_BACKGROUND,
     name: 'Run in background',
     description:
       'Companion may run even when the application is not actively in use.',
   },
   {
-    key: 'access_exercise',
+    key: Permission.ACCESS_EXERCISE,
     name: 'Exercise Tracking',
     description: 'Application may track an exercise.',
     sdkVersion: '>=3.0.0',
+  },
+  {
+    key: Permission.ACCESS_APP_CLUSTER_STORAGE,
+    name: 'App Cluster Storage',
+    description:
+      'Application may access storage shared by other applications from the same developer.',
+    // TODO: change this to the real versison
+    sdkVersion: '>=999.0.0',
   },
 ];
 
 const restrictedPermissionTypes = [
   {
-    key: 'fitbit_token',
+    key: Permission.FITBIT_TOKEN,
     name: '[Restricted] Fitbit Token',
     description: 'Access Fitbit API token.',
   },
   {
-    key: 'external_app_communication',
+    key: Permission.EXTERNAL_APP_COMMUNICATION,
     name: '[Restricted] External Application Communication',
     description:
       'Allows communication between external mobile applications and companion.',
   },
   {
-    key: 'access_secure_exchange',
+    key: Permission.ACCESS_SECURE_EXCHANGE,
     name: '[Restricted] Secure Exchange',
     description: 'Allows securing any data and verifying that data was secured',
   },
 ];
 
-function getAllPermissionTypes() {
+function getAllPermissionTypes(enableProposedAPI: boolean) {
   return [
     ...restrictedPermissionTypes,
     ...permissionTypes.filter(
       (permission) =>
         !permission.sdkVersion ||
-        semver.satisfies(sdkVersion(), permission.sdkVersion),
+        semver.satisfies(sdkVersion(), permission.sdkVersion) ||
+        enableProposedAPI,
     ),
   ];
 }
@@ -279,11 +304,14 @@ export function validateWipeColor(config: ProjectConfiguration) {
 }
 
 export function validateRequestedPermissions({
+  enableProposedAPI,
   requestedPermissions,
 }: ProjectConfiguration) {
   return constrainedSetDiagnostics({
     actualValues: requestedPermissions,
-    knownValues: getAllPermissionTypes().map((permission) => permission.key),
+    knownValues: getAllPermissionTypes(!!enableProposedAPI).map(
+      (permission) => permission.key,
+    ),
     valueTypeNoun: 'requested permissions',
     notFoundIsFatal: false,
   });
@@ -376,6 +404,55 @@ export function validateDefaultLanguage(config: ProjectConfiguration) {
   return diagnostics;
 }
 
+export function validateStorageGroup(config: ProjectConfiguration) {
+  const diagnostics = new DiagnosticList();
+
+  const hasRequestedPermission = getAllPermissionTypes(
+    !!config.enableProposedAPI,
+  )
+    .map((permission) => permission.key)
+    .filter((permission) =>
+      (config.requestedPermissions || []).includes(permission),
+    )
+    .includes(Permission.ACCESS_APP_CLUSTER_STORAGE);
+
+  if (hasRequestedPermission) {
+    if (config.appClusterID === undefined) {
+      diagnostics.pushFatalError(
+        'App Cluster ID must be set when the App Cluster Storage permission is requested',
+      );
+    } else if (
+      config.appClusterID.length < 1 ||
+      config.appClusterID.length > 64
+    ) {
+      diagnostics.pushFatalError(
+        'App Cluster ID must be between 1-64 characters',
+      );
+    } else if (!/^([a-z0-9]+)(\.[a-z0-9]+)*$/.test(config.appClusterID)) {
+      diagnostics.pushFatalError(
+        'App Cluster ID may only contain alphanumeric characters separated by periods, eg: my.app.123',
+      );
+    }
+
+    if (config.developerID === undefined) {
+      diagnostics.pushFatalError(
+        'Developer ID must be set when the App Cluster Storage permission is requested',
+      );
+    } else if (!isUUID(String(config.developerID))) {
+      diagnostics.pushFatalError('Developer ID must be a valid UUID');
+    }
+  } else if (
+    config.appClusterID !== undefined ||
+    config.developerID !== undefined
+  ) {
+    diagnostics.pushFatalError(
+      'App Cluster Storage permission must be requested to set App Cluster ID and Developer ID fields',
+    );
+  }
+
+  return diagnostics;
+}
+
 export function validate(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
   [
@@ -388,6 +465,7 @@ export function validate(config: ProjectConfiguration) {
     validateSupportedLocales,
     validateLocaleDisplayNames,
     validateDefaultLanguage,
+    validateStorageGroup,
   ].forEach((validator) => diagnostics.extend(validator(config)));
   return diagnostics;
 }
