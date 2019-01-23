@@ -454,3 +454,18 @@ it('validates developer ID is a valid UUID if app cluster storage permission is 
     }),
   );
 });
+
+it('validates app cluster storage permission is requested if storage group is set', () => {
+  const configFile: any = {
+    storageGroup: 'some_storage_group',
+  };
+  // TODO: fixme with real version
+  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText:
+        'App Cluster Storage permission must be requested to set storage group and developer ID fields',
+    }),
+  );
+});

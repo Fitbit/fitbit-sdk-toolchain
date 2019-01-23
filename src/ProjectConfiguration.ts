@@ -406,28 +406,39 @@ export function validateDefaultLanguage(config: ProjectConfiguration) {
 
 export function validateStorageGroup(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
-  if (
-    config.requestedPermissions.includes(
-      Permission.ACCESS_APP_CLUSTER_STORAGE,
-    ) &&
-    getAllPermissionTypes(!!config.enableProposedAPI)
-      .map((permission) => permission.key)
-      .includes(Permission.ACCESS_APP_CLUSTER_STORAGE)
-  ) {
+
+  const hasRequestedPermission = getAllPermissionTypes(
+    !!config.enableProposedAPI,
+  )
+    .map((permission) => permission.key)
+    .filter((permission) =>
+      (config.requestedPermissions || []).includes(permission),
+    )
+    .includes(Permission.ACCESS_APP_CLUSTER_STORAGE);
+
+  if (hasRequestedPermission) {
     if (!config.storageGroup) {
       diagnostics.pushFatalError(
-        `Storage group must be set when the App Cluster Storage permission is requested`,
+        'Storage group must be set when the App Cluster Storage permission is requested',
       );
     }
 
     if (!config.developerID) {
       diagnostics.pushFatalError(
-        `Developer ID must be set when the App Cluster Storage permission is requested`,
+        'Developer ID must be set when the App Cluster Storage permission is requested',
       );
     } else if (!isUUID(String(config.developerID))) {
       diagnostics.pushFatalError('Developer ID must be a valid UUID');
     }
+  } else if (
+    config.storageGroup !== undefined ||
+    config.developerID !== undefined
+  ) {
+    diagnostics.pushFatalError(
+      'App Cluster Storage permission must be requested to set storage group and developer ID fields',
+    );
   }
+
   return diagnostics;
 }
 
