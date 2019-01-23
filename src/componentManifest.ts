@@ -256,8 +256,8 @@ export function makeCompanionManifest({
         manifest.settings = { main: settingsEntryPoint };
       }
 
-      if (projectConfig.storageGroup) {
-        manifest.appClusters = [projectConfig.storageGroup];
+      if (projectConfig.appClusterID) {
+        manifest.appClusters = [projectConfig.appClusterID];
       }
 
       if (projectConfig.developerID) {

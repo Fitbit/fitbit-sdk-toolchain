@@ -99,7 +99,7 @@ exports[`when there is a companion entry point present sets app cluster storage 
 Object {
   "apiVersion": "1.0.0",
   "appClusters": Array [
-    "a_storage_group",
+    "a.storage.group",
   ],
   "buildId": "0x0f75775f470c1585",
   "bundleDate": "2018-06-27T00:00:00.000Z",

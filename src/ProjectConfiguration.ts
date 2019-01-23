@@ -30,7 +30,7 @@ export interface BaseProjectConfiguration {
   // We don't want to accidentally serialize `enableProposedAPI: false`
   // out to users' package.json files.
   enableProposedAPI?: true;
-  storageGroup?: string;
+  appClusterID?: string;
   developerID?: string;
 }
 
@@ -417,13 +417,24 @@ export function validateStorageGroup(config: ProjectConfiguration) {
     .includes(Permission.ACCESS_APP_CLUSTER_STORAGE);
 
   if (hasRequestedPermission) {
-    if (!config.storageGroup) {
+    if (config.appClusterID === undefined) {
       diagnostics.pushFatalError(
-        'Storage group must be set when the App Cluster Storage permission is requested',
+        'App Cluster ID must be set when the App Cluster Storage permission is requested',
+      );
+    } else if (
+      config.appClusterID.length < 1 ||
+      config.appClusterID.length > 64
+    ) {
+      diagnostics.pushFatalError(
+        'App Cluster ID must be between 1-64 characters',
+      );
+    } else if (!/^([a-z0-9]+)(\.[a-z0-9]+)*$/.test(config.appClusterID)) {
+      diagnostics.pushFatalError(
+        'App Cluster ID may only contain alphanumeric characters separated by periods, eg: my.app.123',
       );
     }
 
-    if (!config.developerID) {
+    if (config.developerID === undefined) {
       diagnostics.pushFatalError(
         'Developer ID must be set when the App Cluster Storage permission is requested',
       );
@@ -431,11 +442,11 @@ export function validateStorageGroup(config: ProjectConfiguration) {
       diagnostics.pushFatalError('Developer ID must be a valid UUID');
     }
   } else if (
-    config.storageGroup !== undefined ||
+    config.appClusterID !== undefined ||
     config.developerID !== undefined
   ) {
     diagnostics.pushFatalError(
-      'App Cluster Storage permission must be requested to set storage group and developer ID fields',
+      'App Cluster Storage permission must be requested to set App Cluster ID and Developer ID fields',
     );
   }
 
