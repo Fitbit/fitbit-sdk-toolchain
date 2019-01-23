@@ -8,7 +8,7 @@ export default function getFileFromStream(
 ) {
   return new Promise<Vinyl>((resolve, reject) => {
     stream.on('data', (file: Vinyl) => {
-      if (file.contents && (!filename || file.basename === filename)) {
+      if (file.contents && (!filename || file.relative === filename)) {
         resolve(file);
       }
     });

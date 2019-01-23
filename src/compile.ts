@@ -46,12 +46,14 @@ function pluginIf(condition: boolean, plugin: () => rollup.Plugin) {
 export default function compile({
   component,
   entryPoint,
+  outputDir,
   defaultLanguage,
   allowUnknownExternals = false,
   onDiagnostic = logDiagnosticToConsole,
 }: {
   component: ComponentType;
   entryPoint: string;
+  outputDir?: string;
   defaultLanguage: string;
   allowUnknownExternals?: boolean;
   onDiagnostic?: DiagnosticHandler;
@@ -61,7 +63,6 @@ export default function compile({
   const { translationsGlob } = componentTargets[component];
   return new pumpify.obj([
     rollupToVinyl(
-      component,
       {
         input: entryPoint,
         external: externals[component],
@@ -114,6 +115,8 @@ export default function compile({
         inlineDynamicImports: true,
       },
       {
+        dir: outputDir,
+        file: outputDir === undefined ? `${component}.js` : undefined,
         format: 'cjs',
         sourcemap: true,
       },

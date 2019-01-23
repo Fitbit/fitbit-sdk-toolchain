@@ -17,12 +17,17 @@ function isEmittedAsset(
 }
 
 export default function rollupToVinyl(
-  outputDir: string,
   inputOptions: rollup.RollupOptions,
   outputOptions: rollup.OutputOptions,
 ) {
   const stream = new Readable({ objectMode: true });
   stream._read = () => {};
+
+  function generatePath(fileName: string) {
+    return outputOptions.dir
+      ? posix.join(outputOptions.dir, fileName)
+      : fileName;
+  }
 
   function emitAsset({ fileName, source }: rollup.OutputAsset) {
     stream.push(
@@ -30,12 +35,13 @@ export default function rollupToVinyl(
         contents: Buffer.isBuffer(source)
           ? source
           : Buffer.from(source, 'utf8'),
-        path: resolve(process.cwd(), outputDir, fileName),
+        path: resolve(process.cwd(), generatePath(fileName)),
       }),
     );
   }
 
   function emitChunk({ code, fileName, map, isEntry }: rollup.OutputChunk) {
+    const chunkPath = generatePath(fileName);
     if (map) {
       // Rollup produces bad sourcemaps, this package fixes them up.
       // We've tried taking it out, and source maps have broken each
@@ -43,13 +49,13 @@ export default function rollupToVinyl(
       map.mappings = JSON.parse(sourceMapCompactor(map)).mappings;
 
       // Rollup only writes the basename to the file property
-      map.file = posix.join(outputDir, fileName);
+      map.file = chunkPath;
     }
     stream.push(
       new Vinyl({
         isEntryPoint: isEntry,
         contents: Buffer.from(code, 'utf8'),
-        path: resolve(process.cwd(), outputDir, fileName),
+        path: resolve(process.cwd(), chunkPath),
         sourceMap: map,
       }),
     );
