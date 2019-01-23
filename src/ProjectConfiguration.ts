@@ -63,51 +63,65 @@ export const LOCALES = Object.freeze({
   'zh-tw': 'Chinese (T)',
 });
 
+enum Permission {
+  ACCESS_ACTIVITY = 'access_activity',
+  ACCESS_APP_CLUSTER_STORAGE = 'access_app_cluster_storage',
+  ACCESS_EXERCISE = 'access_exercise',
+  ACCESS_HEART_RATE = 'access_heart_rate',
+  ACCESS_INTERNET = 'access_internet',
+  ACCESS_LOCATION = 'access_location',
+  ACCESS_SECURE_EXCHANGE = 'access_secure_exchange',
+  ACCESS_USER_PROFILE = 'access_user_profile',
+  FITBIT_TOKEN = 'fitbit_token',
+  RUN_BACKGROUND = 'run_background',
+  EXTERNAL_APP_COMMUNICATION = 'external_app_communication',
+}
+
 const permissionTypes = [
   {
-    key: 'access_activity',
+    key: Permission.ACCESS_ACTIVITY,
     name: 'Activity',
     // tslint:disable-next-line:max-line-length
     description:
       'Read user activities for today (distance, calories, steps, elevation and active minutes), and daily goals.',
   },
   {
-    key: 'access_user_profile',
+    key: Permission.ACCESS_USER_PROFILE,
     name: 'User Profile',
     // tslint:disable-next-line:max-line-length
     description:
       'Read non-identifiable personal information (gender, age, height, weight, resting HR, basal metabolic rate, stride, HR zones).',
   },
   {
-    key: 'access_heart_rate',
+    key: Permission.ACCESS_HEART_RATE,
     name: 'Heart Rate',
     description: 'Application may read the heart-rate sensor in real-time.',
   },
   {
-    key: 'access_location',
+    key: Permission.ACCESS_LOCATION,
     name: 'Location',
     description: 'Application and companion may use GPS.',
   },
   {
-    key: 'access_internet',
+    key: Permission.ACCESS_INTERNET,
     name: 'Internet',
     description:
       'Companion may communicate with the Internet using your phone data connection.',
   },
   {
-    key: 'run_background',
+    key: Permission.RUN_BACKGROUND,
     name: 'Run in background',
     description:
       'Companion may run even when the application is not actively in use.',
   },
   {
-    key: 'access_exercise',
+    key: Permission.ACCESS_EXERCISE,
     name: 'Exercise Tracking',
     description: 'Application may track an exercise.',
     sdkVersion: '>=3.0.0',
   },
   {
-    key: 'access_app_cluster_storage',
+    key: Permission.ACCESS_APP_CLUSTER_STORAGE,
     name: 'App Cluster Storage',
     description:
       'Application may access storage shared by other applications from the same developer.',
@@ -118,18 +132,18 @@ const permissionTypes = [
 
 const restrictedPermissionTypes = [
   {
-    key: 'fitbit_token',
+    key: Permission.FITBIT_TOKEN,
     name: '[Restricted] Fitbit Token',
     description: 'Access Fitbit API token.',
   },
   {
-    key: 'external_app_communication',
+    key: Permission.EXTERNAL_APP_COMMUNICATION,
     name: '[Restricted] External Application Communication',
     description:
       'Allows communication between external mobile applications and companion.',
   },
   {
-    key: 'access_secure_exchange',
+    key: Permission.ACCESS_SECURE_EXCHANGE,
     name: '[Restricted] Secure Exchange',
     description: 'Allows securing any data and verifying that data was secured',
   },
@@ -392,12 +406,13 @@ export function validateDefaultLanguage(config: ProjectConfiguration) {
 
 export function validateStorageGroup(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
-  const permissionKey = 'access_app_cluster_storage';
   if (
-    config.requestedPermissions.includes(permissionKey) &&
+    config.requestedPermissions.includes(
+      Permission.ACCESS_APP_CLUSTER_STORAGE,
+    ) &&
     getAllPermissionTypes(!!config.enableProposedAPI)
       .map((permission) => permission.key)
-      .includes(permissionKey)
+      .includes(Permission.ACCESS_APP_CLUSTER_STORAGE)
   ) {
     if (!config.storageGroup) {
       diagnostics.pushFatalError(
