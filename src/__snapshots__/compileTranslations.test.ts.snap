@@ -2,8 +2,8 @@
 
 exports[`bails when a .po file is malformed 1`] = `
 PluginError {
-  "fileName": "en.po",
-  "message": "There are no translation strings for \\"en\\"",
+  "fileName": "en-US.po",
+  "message": "There are no translation strings for \\"en-US\\"",
   "name": "Error",
   "plugin": "compileTranslations",
 }
@@ -11,8 +11,8 @@ PluginError {
 
 exports[`bails when multiple .po files of the same name are present 1`] = `
 PluginError {
-  "fileName": "a/en.po",
-  "message": "Language 'en' already loaded",
+  "fileName": "a/en-US.po",
+  "message": "Language 'en-US' already loaded",
   "name": "Error",
   "plugin": "compileTranslations",
 }
@@ -20,7 +20,7 @@ PluginError {
 
 exports[`bails when the default langugage is not present 1`] = `
 PluginError {
-  "message": "No translation file found for default language \\"es\\"",
+  "message": "No translation file found for default language \\"es-ES\\"",
   "name": "Error",
   "plugin": "compileTranslations",
 }
@@ -28,7 +28,7 @@ PluginError {
 
 exports[`gracefully fails when a streaming-mode file is passed in 1`] = `
 PluginError {
-  "fileName": "en.po",
+  "fileName": "en-US.po",
   "message": "Streaming mode is not supported.",
   "name": "Error",
   "plugin": "compileTranslations",
@@ -38,7 +38,7 @@ PluginError {
 exports[`rejects .po files whose names are not acceptable language tags e.po 1`] = `
 PluginError {
   "fileName": "e.po",
-  "message": "Translation file e.po has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)",
+  "message": "Translation file e.po has a bad name. Translation files must be named de-DE.po, en-US.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po or zh-TW.po.",
   "name": "Error",
   "plugin": "compileTranslations",
 }
@@ -47,7 +47,7 @@ PluginError {
 exports[`rejects .po files whose names are not acceptable language tags en-USA.po 1`] = `
 PluginError {
   "fileName": "en-USA.po",
-  "message": "Translation file en-USA.po has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)",
+  "message": "Translation file en-USA.po has a bad name. Translation files must be named de-DE.po, en-US.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po or zh-TW.po.",
   "name": "Error",
   "plugin": "compileTranslations",
 }
@@ -56,7 +56,7 @@ PluginError {
 exports[`rejects .po files whose names are not acceptable language tags sl-IT-nedis.po 1`] = `
 PluginError {
   "fileName": "sl-IT-nedis.po",
-  "message": "Translation file sl-IT-nedis.po has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)",
+  "message": "Translation file sl-IT-nedis.po has a bad name. Translation files must be named de-DE.po, en-US.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po or zh-TW.po.",
   "name": "Error",
   "plugin": "compileTranslations",
 }

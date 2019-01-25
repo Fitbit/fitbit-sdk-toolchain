@@ -2,10 +2,11 @@ import { basename } from 'path';
 import { Transform } from 'stream';
 
 import { TranslationLoader } from '@fitbit/bison-i18n';
+import humanizeList from 'humanize-list';
 import PluginError from 'plugin-error';
 import Vinyl from 'vinyl';
 
-import { normalizeLanguageTag } from './languageTag';
+import { validateLanguageTag, supportedTags } from './languageTag';
 
 const PLUGIN_NAME = 'compileTranslations';
 
@@ -26,17 +27,18 @@ export default function compileTranslations(defaultLanguage: string) {
         return next(undefined, file);
       }
 
-      const normalizedTag = normalizeLanguageTag(
-        basename(file.basename, '.po'),
-      );
-      if (normalizedTag === null) {
+      const languageTag = basename(file.basename, '.po');
+      if (!validateLanguageTag(languageTag)) {
         next(
           new PluginError(
             PLUGIN_NAME,
             // tslint:disable-next-line:max-line-length
             `Translation file ${
               file.basename
-            } has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)`,
+            } has a bad name. Translation files must be named ${humanizeList(
+              supportedTags.map((tag) => tag + '.po'),
+              { conjunction: 'or' },
+            )}.`,
             { fileName: file.relative },
           ),
         );
@@ -46,8 +48,8 @@ export default function compileTranslations(defaultLanguage: string) {
       if (file.isBuffer()) {
         try {
           const contents = file.contents.toString('utf-8');
-          translations.loadLanguage(normalizedTag, contents);
-          translationFiles.set(normalizedTag, file.clone({ contents: false }));
+          translations.loadLanguage(languageTag, contents);
+          translationFiles.set(languageTag, file.clone({ contents: false }));
           return next();
         } catch (error) {
           next(

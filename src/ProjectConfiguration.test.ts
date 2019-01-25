@@ -325,7 +325,8 @@ it('validationErrors() validates all fields', () => {
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      messageText: 'Default language is an invalid language tag: _invalid_',
+      messageText:
+        'Default language is an invalid language tag: _invalid_. Must be de-DE, en-US, es-ES, fr-FR, it-IT, ja-JP, ko-KR, nl-NL, sv-SE, zh-CN or zh-TW.',
     }),
   ]);
 });
@@ -402,7 +403,7 @@ it('validates the default language is a valid language tag', () => {
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText:
-        'Default language is an invalid language tag: _really_not_bcp_47_',
+        'Default language is an invalid language tag: _really_not_bcp_47_. Must be de-DE, en-US, es-ES, fr-FR, it-IT, ja-JP, ko-KR, nl-NL, sv-SE, zh-CN or zh-TW.',
     }),
   );
 });

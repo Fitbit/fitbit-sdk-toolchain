@@ -25,7 +25,7 @@ function expectTranslations(translationsPath: string, defaultLanguage: string) {
 }
 
 it('builds a table from all the available translations', () =>
-  expectTranslations('good/**/*.po', 'fr').resolves.toMatchSnapshot());
+  expectTranslations('good/**/*.po', 'fr-FR').resolves.toMatchSnapshot());
 
 it('throws when multiple files map to the same language', () =>
   expectTranslations(
@@ -34,13 +34,16 @@ it('throws when multiple files map to the same language', () =>
   ).rejects.toMatchSnapshot());
 
 it('throws when a translation file has multiple msgstr values for the same msgid', () =>
-  expectTranslations('multiple-msgstr/en.po', 'en').rejects.toMatchSnapshot());
+  expectTranslations(
+    'multiple-msgstr/en-US.po',
+    'en-US',
+  ).rejects.toMatchSnapshot());
 
 it('throws if the default language is not found', () =>
-  expectTranslations('good/**/*.po', 'it').rejects.toMatchSnapshot());
+  expectTranslations('good/**/*.po', 'it-IT').rejects.toMatchSnapshot());
 
 it.each(['.po', 'a.po', 'english.po', 'enus.po'])(
   'throws when encountering the badly named file %j',
   (name: string) =>
-    expectTranslations(`bad-name/${name}`, 'en').rejects.toMatchSnapshot(),
+    expectTranslations(`bad-name/${name}`, 'en-US').rejects.toMatchSnapshot(),
 );
