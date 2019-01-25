@@ -123,6 +123,8 @@ export default function compile({
     ),
     gulpTerser({
       ecma,
+      // We still support iOS 10, which ships Safari 10
+      safari10: component !== ComponentType.DEVICE,
       mangle: {
         toplevel: true,
       },
