@@ -136,6 +136,15 @@ Array [
 ]
 `;
 
+exports[`when building a device component which uses gettext emits an error if targeting SDK version lower than 3.0 1`] = `
+Array [
+  Object {
+    "category": 1,
+    "messageText": "i18n is imported by src/__test__/compile/i18n.js, but could not be resolved",
+  },
+]
+`;
+
 exports[`when building a device component which uses gettext polyfills gettext on device 1`] = `
 "\\"use strict\\"
 var e=require(\\"resources\\")
