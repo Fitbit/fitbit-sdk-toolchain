@@ -154,10 +154,10 @@
     reflect-metadata "^0.1.12"
     tslib "^1.8.1"
 
-"@fitbit-sdk/companion-gettext@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@fitbit-sdk/companion-gettext/-/companion-gettext-2.0.0.tgz#38daeb12a028554251205a1a05f86bb54d1967c8"
-  integrity sha512-6ke/wd7usHeJhOBwXnTrG4z60PqbzX8BMr3Pv9Ijma9KHRNFy46wWpBH4oHB0KkWrNKeQjzuRCeAeuNzZRlQrQ==
+"@fitbit-sdk/companion-gettext@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@fitbit-sdk/companion-gettext/-/companion-gettext-3.0.0.tgz#d87e1b9c7bf569fb68848a5af4311c5abf3258a7"
+  integrity sha512-ZimJXZDZBZ2IBj31asS5Oqb0TrPadoILfmdyGcTk/mh/eeKlKDfRxvXjycz7ygu2mh3V3mA0zRefLhYY5s727Q==
 
 "@fitbit/bison-i18n@^1.0.0":
   version "1.0.1"
@@ -2363,9 +2363,10 @@ invert-kv@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-2.0.0.tgz#7393f5afa59ec9ff5f67a27620d11c226e3eec02"
 
-io-ts@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-1.3.1.tgz#04b71579fec0592cb758bd460a1fc0520f18b3c8"
+io-ts@1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-1.7.0.tgz#7e291b058afdde72f30d54e12e10761bfd8edd7a"
+  integrity sha512-NFXDhjUNW+JKzNIkSeHTUUMXn+2QVoPg33qTIcoS7eDycupoeeeMqgmqlT7EiIe4n5w31Dc1uUrhg7Rt0Kf7xA==
   dependencies:
     fp-ts "^1.0.0"
 
