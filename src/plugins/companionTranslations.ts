@@ -3,10 +3,11 @@ import { promisify } from 'util';
 
 import { LanguageTable, MessageTable } from '@fitbit-sdk/companion-gettext';
 import { default as _glob } from 'glob';
+import humanizeList from 'humanize-list';
 import pofile from 'pofile';
 import { dataToEsm } from 'rollup-pluginutils';
 
-import { normalizeLanguageTag } from '../languageTag';
+import { validateLanguageTag, supportedTags } from '../languageTag';
 
 const glob = promisify(_glob);
 const loadPOFile = promisify(pofile.load);
@@ -37,26 +38,29 @@ export default function companionTranslations(
     const translations: LanguageTable = {};
 
     for (const filePath of await glob(globPattern)) {
-      const tag = normalizeLanguageTag(basename(filePath, '.po'));
+      const languageTag = basename(filePath, '.po');
 
-      if (tag === null) {
+      if (!validateLanguageTag(languageTag)) {
         // tslint:disable-next-line:max-line-length
         throw new Error(
-          `Translation file "${filePath}" has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)`,
+          `Translation file "${filePath}" has a bad name. Translation files must be named ${humanizeList(
+            supportedTags.map((tag) => tag + '.po'),
+            { conjunction: 'or' },
+          )}.`,
         );
       }
 
-      const existingTranslations = languagePaths.get(tag);
+      const existingTranslations = languagePaths.get(languageTag);
 
       if (existingTranslations) {
         // tslint:disable-next-line:max-line-length
         throw new Error(
-          `More than one translation file found for language ${tag}. Found "${existingTranslations}" and "${filePath}".`,
+          `More than one translation file found for language ${languageTag}. Found "${existingTranslations}" and "${filePath}".`,
         );
       }
 
-      languagePaths.set(tag, filePath);
-      translations[tag] = await loadTranslations(filePath);
+      languagePaths.set(languageTag, filePath);
+      translations[languageTag] = await loadTranslations(filePath);
     }
 
     if (!translations.hasOwnProperty(defaultLanguage)) {

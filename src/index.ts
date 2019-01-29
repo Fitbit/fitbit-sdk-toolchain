@@ -247,12 +247,14 @@ export function buildDeviceComponents({
                 onDiagnostic,
               ),
             ),
-            new pumpify.obj(
-              vinylFS.src(componentTargets.device.translationsGlob, {
-                base: '.',
-              }),
-              compileTranslations(projectConfig.defaultLanguage),
-            ),
+            sdkVersion().major >= 3
+              ? new pumpify.obj(
+                  vinylFS.src(componentTargets.device.translationsGlob, {
+                    base: '.',
+                  }),
+                  compileTranslations(projectConfig.defaultLanguage),
+                )
+              : new Stream.PassThrough(),
           ),
           makeDeviceManifest({ projectConfig, buildId }),
           zip(`device-${family}.zip`, { compress: sdkVersion().major >= 3 }),

@@ -78,17 +78,10 @@ describe('when no .po files are piped in', () => {
 });
 
 it('grabs .po files from any directory', (done) => {
-  translationFileSource('en.po', 'foo/es.po', 'foo/bar/fr.po')
-    .pipe(compileTranslations('en'))
-    .on('error', done.fail)
-    .pipe(expectTranslationsForLanguages(done, 'en', 'es', 'fr'));
-});
-
-it('normalizes the language tag of the file name', (done) => {
-  translationFileSource('eN-us.po', 'DE.po')
+  translationFileSource('en-US.po', 'foo/es-ES.po', 'foo/bar/fr-FR.po')
     .pipe(compileTranslations('en-US'))
     .on('error', done.fail)
-    .pipe(expectTranslationsForLanguages(done, 'en-US', 'de'));
+    .pipe(expectTranslationsForLanguages(done, 'en-US', 'es-ES', 'fr-FR'));
 });
 
 function compileExpectError(defaultLanguage: string, done: jest.DoneCallback) {
@@ -115,28 +108,28 @@ describe('rejects .po files whose names are not acceptable language tags', () =>
 });
 
 it('bails when multiple .po files of the same name are present', (done) => {
-  translationFileSource('en.po', 'a/en.po').pipe(
-    compileExpectError('en', done),
+  translationFileSource('en-US.po', 'a/en-US.po').pipe(
+    compileExpectError('en-US', done),
   );
 });
 
 it('bails when the default langugage is not present', (done) => {
-  translationFileSource('en.po').pipe(compileExpectError('es', done));
+  translationFileSource('en-US.po').pipe(compileExpectError('es-ES', done));
 });
 
 it('bails when a .po file is malformed', (done) => {
-  compileExpectError('en', done).end(
+  compileExpectError('en-US', done).end(
     new Vinyl({
-      path: 'en.po',
+      path: 'en-US.po',
       contents: Buffer.from('definitely not gettext format'),
     }),
   );
 });
 
 it('gracefully fails when a streaming-mode file is passed in', (done) => {
-  compileExpectError('en', done).end(
+  compileExpectError('en-US', done).end(
     new Vinyl({
-      path: 'en.po',
+      path: 'en-US.po',
       contents: new PassThrough(),
     }),
   );

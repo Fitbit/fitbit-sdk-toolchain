@@ -74,9 +74,13 @@ export default function compile({
               target: ecma === 6 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
             },
           }),
-          ...pluginIf(component === ComponentType.DEVICE, polyfillDevice),
-          ...pluginIf(component !== ComponentType.DEVICE, () =>
-            polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
+          ...pluginIf(
+            sdkVersion().major >= 3 && component === ComponentType.DEVICE,
+            polyfillDevice,
+          ),
+          ...pluginIf(
+            sdkVersion().major >= 3 && component !== ComponentType.DEVICE,
+            () => polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
           ),
           ...pluginIf(
             sdkVersion().major < 3 || component === ComponentType.SETTINGS,

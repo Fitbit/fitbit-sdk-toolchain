@@ -5,7 +5,7 @@ import semver from 'semver';
 
 import buildTargets from './buildTargets';
 import DiagnosticList from './DiagnosticList';
-import { normalizeLanguageTag } from './languageTag';
+import { supportedTags, validateLanguageTag } from './languageTag';
 import sdkVersion from './sdkVersion';
 
 const knownBuildTargets = Object.keys(buildTargets);
@@ -246,13 +246,6 @@ export function normalizeProjectConfig(
     ...(config.fitbit as {}),
   };
 
-  const normalizedDefaultLanguage = normalizeLanguageTag(
-    mergedConfig.defaultLanguage,
-  );
-  if (normalizedDefaultLanguage !== null) {
-    mergedConfig.defaultLanguage = normalizedDefaultLanguage;
-  }
-
   const { requestedPermissions } = mergedConfig;
   if (!Array.isArray(requestedPermissions)) {
     // tslint:disable-next-line:max-line-length
@@ -396,9 +389,11 @@ export function validateAppUUID({ appUUID }: ProjectConfiguration) {
 
 export function validateDefaultLanguage(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
-  if (normalizeLanguageTag(config.defaultLanguage) === null) {
+  if (!validateLanguageTag(config.defaultLanguage)) {
     diagnostics.pushFatalError(
-      `Default language is an invalid language tag: ${config.defaultLanguage}`,
+      `Default language is an invalid language tag: ${
+        config.defaultLanguage
+      }. Must be ${humanizeList(supportedTags, { conjunction: 'or' })}.`,
     );
   }
   return diagnostics;

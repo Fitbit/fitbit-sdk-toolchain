@@ -2,34 +2,28 @@
 
 exports[`builds a table from all the available translations 1`] = `
 "export default {
-	en: {
-		foo: \\"English\\"
-	},
 	\\"fr-FR\\": {
 		foo: \\"France français\\"
-	},
-	fr: {
-		foo: \\"Français\\"
 	},
 	\\"en-US\\": {
 		foo: \\"US English\\"
 	},
-	\\"fr-CA\\": {
-		foo: \\"Français canadien\\"
+	\\"es-ES\\": {
+		foo: \\"Spanish Spanish\\"
 	}
 };"
 `;
 
-exports[`throws if the default language is not found 1`] = `[Error: No translation file found for default language "it"]`;
+exports[`throws if the default language is not found 1`] = `[Error: No translation file found for default language "it-IT"]`;
 
-exports[`throws when a translation file has multiple msgstr values for the same msgid 1`] = `[Error: msgid "foo" in file "<base>/multiple-msgstr/en.po" has multiple msgstr values. This is not supported.]`;
+exports[`throws when a translation file has multiple msgstr values for the same msgid 1`] = `[Error: msgid "foo" in file "<base>/multiple-msgstr/en-US.po" has multiple msgstr values. This is not supported.]`;
 
-exports[`throws when encountering the badly named file ".po" 1`] = `[Error: Translation file "<base>/bad-name/.po" has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)]`;
+exports[`throws when encountering the badly named file ".po" 1`] = `[Error: Translation file "<base>/bad-name/.po" has a bad name. Translation files must be named de-DE.po, en-US.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po or zh-TW.po.]`;
 
-exports[`throws when encountering the badly named file "a.po" 1`] = `[Error: Translation file "<base>/bad-name/a.po" has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)]`;
+exports[`throws when encountering the badly named file "a.po" 1`] = `[Error: Translation file "<base>/bad-name/a.po" has a bad name. Translation files must be named de-DE.po, en-US.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po or zh-TW.po.]`;
 
-exports[`throws when encountering the badly named file "english.po" 1`] = `[Error: Translation file "<base>/bad-name/english.po" has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)]`;
+exports[`throws when encountering the badly named file "english.po" 1`] = `[Error: Translation file "<base>/bad-name/english.po" has a bad name. Translation files must be named de-DE.po, en-US.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po or zh-TW.po.]`;
 
-exports[`throws when encountering the badly named file "enus.po" 1`] = `[Error: Translation file "<base>/bad-name/enus.po" has a bad name. Translation files must have names in the form ll-cc.po or ll.po (e.g. en-US.po)]`;
+exports[`throws when encountering the badly named file "enus.po" 1`] = `[Error: Translation file "<base>/bad-name/enus.po" has a bad name. Translation files must be named de-DE.po, en-US.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po or zh-TW.po.]`;
 
-exports[`throws when multiple files map to the same language 1`] = `[Error: More than one translation file found for language en-US. Found "<base>/language-collision/EN-us.po" and "<base>/language-collision/lang/en-US.po".]`;
+exports[`throws when multiple files map to the same language 1`] = `[Error: More than one translation file found for language en-US. Found "<base>/language-collision/en-US.po" and "<base>/language-collision/lang/en-US.po".]`;
