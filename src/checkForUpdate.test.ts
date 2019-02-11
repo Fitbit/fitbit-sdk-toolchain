@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import checkForUpdate from './checkForUpdate';
 
-let consoleSpy: jest.MockInstance<typeof global.console.log>;
+let consoleSpy: jest.SpyInstance;
 let mockUpdateNotifier: jest.Mock;
 
 beforeEach(() => {

@@ -1,5 +1,3 @@
-import { MangleOptions } from 'uglify-js';
-
 interface CompressOptions {}
 
 interface MangleOptions {

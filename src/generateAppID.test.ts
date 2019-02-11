@@ -11,7 +11,7 @@ jest.mock('uuid');
 const CONFIG_PATH = 'package.json';
 const MOCK_UUID = '8d8daf4a-6d92-4df7-a5d2-2655bc2eadae';
 
-let configWriteSpy: jest.MockInstance<typeof fsExtra.writeJSONSync>;
+let configWriteSpy: jest.SpyInstance;
 
 function mockConfigContent(config: any) {
   jest.spyOn(fsExtra, 'readJSONSync').mockReturnValueOnce(config);
@@ -19,7 +19,7 @@ function mockConfigContent(config: any) {
 
 beforeEach(() => {
   configWriteSpy = jest.spyOn(fsExtra, 'writeJSONSync');
-  jest.spyOn(uuid, 'v4').mockReturnValue(MOCK_UUID);
+  jest.spyOn(uuid, 'v4').mockReturnValue(MOCK_UUID as any);
 });
 
 it('throws an error if package.json is not an object', () => {
