@@ -1,3 +1,5 @@
+import path from 'path';
+
 import gulpTerser from 'gulp-terser';
 import pumpify from 'pumpify';
 import * as rollup from 'rollup';
@@ -73,6 +75,7 @@ export default function compile({
               ...tsconfigOverrides,
               target: ecma === 6 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
             },
+            tsconfigSearchPath: path.dirname(entryPoint),
           }),
           ...pluginIf(
             sdkVersion().major >= 3 && component === ComponentType.DEVICE,

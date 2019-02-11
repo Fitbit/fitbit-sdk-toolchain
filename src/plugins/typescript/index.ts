@@ -14,6 +14,7 @@ interface IOptions {
   exclude: Filter;
   tsconfig?: string;
   tsconfigOverride?: ts.CompilerOptions;
+  tsconfigSearchPath?: string;
   onDiagnostic: (diagnostic: Diagnostic) => void;
 }
 
@@ -97,6 +98,7 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
         pluginOptions.tsconfig,
         pluginOptions.tsconfigOverride,
         emitDiagnostics,
+        pluginOptions.tsconfigSearchPath,
       );
       filter = createFilter(pluginOptions.include, pluginOptions.exclude);
 

@@ -35,9 +35,10 @@ export function parseTsConfig(
   tsConfig?: string,
   tsconfigOverride?: ts.CompilerOptions,
   onDiagnostics?: (diagnostics: ts.Diagnostic[]) => void,
+  searchPath = process.cwd(),
 ): ts.ParsedCommandLine {
   const fileName = ts.findConfigFile(
-    process.cwd(),
+    path.resolve(searchPath),
     ts.sys.fileExists,
     tsConfig,
   );
