@@ -242,3 +242,8 @@ describe('when building a device component which uses gettext', () => {
     expect(mockDiagnosticHandler.mock.calls[0]).toMatchSnapshot();
   });
 });
+
+it('emits sourcemaps with source paths relative to the project root', async () => {
+  const file = await compileFile('sourcemap/index.js', { outputDir: 'app' });
+  expect(file.sourceMap.sources).toMatchSnapshot();
+});
