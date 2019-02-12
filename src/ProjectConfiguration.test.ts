@@ -7,10 +7,10 @@ import sdkVersion from './sdkVersion';
 jest.mock('./sdkVersion');
 
 function mockSDKVersion(version: string) {
-  const ret = semver.parse(version);
-  if (ret === null) throw new Error(`Invalid version: ${version}`);
+  const parsedSDKVersion = semver.parse(version);
+  if (parsedSDKVersion === null) throw new Error(`Invalid version: ${version}`);
   const sdkVersionSpy = sdkVersion as jest.Mock;
-  sdkVersionSpy.mockReturnValue(ret);
+  sdkVersionSpy.mockReturnValue(parsedSDKVersion);
 }
 
 const mockUUID = '672bc0d9-624c-4ea9-b08f-a4c05f552031';
