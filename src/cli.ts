@@ -21,12 +21,12 @@ yargs
         hidden: true,
       }),
     ({ nativeDeviceComponent }) => {
-      return build({ nativeDeviceComponentPaths: nativeDeviceComponent }).catch(
-        (error) => {
-          process.exitCode = 1;
-          if (error) console.error(error);
-        },
-      );
+      return build({
+        nativeDeviceComponentPaths: nativeDeviceComponent as string[],
+      }).catch((error) => {
+        process.exitCode = 1;
+        if (error) console.error(error);
+      });
     },
   )
   .command(

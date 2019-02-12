@@ -6,13 +6,19 @@ import sdkVersion from './sdkVersion';
 
 jest.mock('./sdkVersion');
 
-const mockSDKVersion = sdkVersion as jest.Mock<typeof sdkVersion>;
-mockSDKVersion.mockReturnValue(semver.parse('3.0.0'));
+function mockSDKVersion(version: string) {
+  const parsedSDKVersion = semver.parse(version);
+  if (parsedSDKVersion === null) throw new Error(`Invalid version: ${version}`);
+  const sdkVersionSpy = sdkVersion as jest.Mock;
+  sdkVersionSpy.mockReturnValue(parsedSDKVersion);
+}
 
 const mockUUID = '672bc0d9-624c-4ea9-b08f-a4c05f552031';
 const validPermission = 'access_location';
 const invalidPermission = 'invalid';
 const sdk3Permission = 'access_exercise';
+
+beforeEach(() => mockSDKVersion('3.0.0'));
 
 it('validates the length of the app display name', () => {
   const configFile: any = {
@@ -109,7 +115,7 @@ it('validates the requested permissions are valid with the current sdk', () => {
     requestedPermissions: [sdk3Permission],
   };
 
-  mockSDKVersion.mockReturnValueOnce(semver.parse('2.0.0'));
+  mockSDKVersion('2.0.0');
 
   expect(
     config.validateRequestedPermissions(configFile).diagnostics[0],
@@ -414,7 +420,7 @@ it('validates app cluster ID is defined if app cluster storage permission is req
     developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -437,7 +443,7 @@ it.each([
     developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -453,7 +459,7 @@ it('validates app cluster ID is of correct format', () => {
     appClusterID: 'foo_bar',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -469,7 +475,7 @@ it('validates developer ID is defined if app cluster storage permission is reque
     appClusterID: 'abc.123',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -486,7 +492,7 @@ it('validates developer ID is a valid UUID if app cluster storage permission is 
     developerID: 'definitely_not_a_uuid',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -500,7 +506,7 @@ it('validates app cluster storage permission is requested if app cluster ID is s
     appClusterID: 'abc',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
