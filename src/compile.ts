@@ -13,14 +13,14 @@ import {
   DiagnosticHandler,
   logDiagnosticToConsole,
 } from './diagnostics';
-import externals from './externals';
 import rollupToVinyl from './rollupToVinyl';
 import sdkVersion from './sdkVersion';
 
 import brokenImports from './plugins/brokenImports';
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
 import i18nPolyfill from './plugins/i18nPolyfill';
-import polyfill from './plugins/polyfill';
+import platformExternals from './plugins/platformExternals';
+import polyfill, { PolyfillMap } from './plugins/polyfill';
 import polyfillDevice from './plugins/polyfillDevice';
 import resourceImports from './plugins/resourceImports';
 import terser from './plugins/terser';
@@ -51,6 +51,7 @@ export default function compile({
   defaultLanguage,
   allowUnknownExternals = false,
   onDiagnostic = logDiagnosticToConsole,
+  polyfills = {},
 }: {
   component: ComponentType;
   entryPoint: string;
@@ -58,6 +59,7 @@ export default function compile({
   defaultLanguage: string;
   allowUnknownExternals?: boolean;
   onDiagnostic?: DiagnosticHandler;
+  polyfills?: PolyfillMap;
 }) {
   const ecma =
     sdkVersion().major >= 3 && component !== ComponentType.DEVICE ? 6 : 5;
@@ -65,7 +67,6 @@ export default function compile({
   return rollupToVinyl(
     {
       input: entryPoint,
-      external: externals[component],
       plugins: [
         typescript({
           onDiagnostic,
@@ -75,6 +76,7 @@ export default function compile({
           },
           tsconfigSearchPath: path.dirname(entryPoint),
         }),
+        polyfill(polyfills),
         ...pluginIf(
           sdkVersion().major >= 3 && component === ComponentType.DEVICE,
           polyfillDevice,
@@ -128,6 +130,7 @@ export default function compile({
           // https://github.com/mishoo/UglifyJS2#source-maps-and-debugging
           compress: false,
         }),
+        platformExternals(component),
       ],
       onwarn: rollupWarningHandler({
         onDiagnostic,
