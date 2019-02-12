@@ -49,19 +49,19 @@ export default ProjectConfiguration;
 
 export const MAX_DISPLAY_NAME_LENGTH = 30;
 
-export const LOCALES = Object.freeze({
-  en: 'English',
-  de: 'German',
-  es: 'Spanish',
-  fr: 'French',
-  it: 'Italian',
-  ja: 'Japanese',
-  ko: 'Korean',
-  nl: 'Dutch',
-  sv: 'Swedish',
-  'zh-cn': 'Chinese (S)',
-  'zh-tw': 'Chinese (T)',
-});
+enum Locales {
+  'en-US' = 'English (US)',
+  'de-DE' = 'German',
+  'es-ES' = 'Spanish',
+  'fr-FR' = 'French',
+  'it-IT' = 'Italian',
+  'ja-JP' = 'Japanese',
+  'ko-KR' = 'Korean',
+  'nl-NL' = 'Dutch',
+  'sv-SE' = 'Swedish',
+  'zh-CN' = 'Chinese (Simplified)',
+  'zh-TW' = 'Chinese (Traditional)',
+}
 
 enum Permission {
   ACCESS_ACTIVITY = 'access_activity',
@@ -213,6 +213,56 @@ function constrainedSetDiagnostics({
   return diagnostics;
 }
 
+function normalizeLanguageTag(languageTag: string) {
+  const match = /^([a-z]{2})(-[a-z]{2})?$/i.exec(languageTag);
+  if (match === null) return languageTag;
+  const [, language, region] = match;
+  return language.toLowerCase() + (region || '').toUpperCase();
+}
+
+export function normalizeLocales(locales: LocalesConfig) {
+  /**
+   * FbOS 3.0 has a max size limit on the app manifest of 1K
+   * so if a developer specifies language + locale variants (eg en and en-US)
+   * for all languages they'll quickly exceed this. This code merges the language
+   * tag into a locale tag unless one is present.
+   */
+  const localeMapping: Record<string, string | undefined> = {
+    en: 'en-US',
+    de: 'de-DE',
+    it: 'it-IT',
+    es: 'es-ES',
+    fr: 'fr-FR',
+    ja: 'ja-JP',
+    ko: 'ko-KR',
+    nl: 'nl-NL',
+    sv: 'sv-SE',
+  };
+
+  const normalizedLocales: LocalesConfig = {};
+
+  for (const [locale, localeConfig] of Object.entries(locales)) {
+    const mappedLocale = localeMapping[locale];
+
+    // If no mapping exists, just normalize + copy
+    if (mappedLocale === undefined) {
+      normalizedLocales[normalizeLanguageTag(locale)] = localeConfig;
+      continue;
+    }
+
+    // If a mapping exists, but locale info for the mapped locale already exists
+    // do nothing.
+    if (locales[mappedLocale] !== undefined) {
+      continue;
+    }
+
+    // If a mapping exists and won't overwrite, just copy
+    normalizedLocales[mappedLocale] = localeConfig;
+  }
+
+  return normalizedLocales;
+}
+
 /**
  * Normalize the project configuration from a parsed package.json.
  *
@@ -253,6 +303,8 @@ export function normalizeProjectConfig(
       `fitbit.requestedPermissions must be an array, not ${typeof requestedPermissions}`,
     );
   }
+
+  mergedConfig.i18n = normalizeLocales(mergedConfig.i18n);
 
   return mergedConfig;
 }
@@ -327,7 +379,7 @@ export function validateBuildTarget({ buildTargets }: ProjectConfiguration) {
 
 export function validateLocaleDisplayName(
   { i18n }: ProjectConfiguration,
-  localeKey: keyof typeof LOCALES,
+  localeKey: keyof typeof Locales,
 ) {
   const diagnostics = new DiagnosticList();
   const locale = i18n[localeKey];
@@ -337,14 +389,14 @@ export function validateLocaleDisplayName(
   if (!locale.name || locale.name.length === 0) {
     // tslint:disable-next-line:max-line-length
     diagnostics.pushFatalError(
-      `Localized display name for ${LOCALES[localeKey]} must not be blank`,
+      `Localized display name for ${Locales[localeKey]} must not be blank`,
     );
   }
   if (locale.name.length > MAX_DISPLAY_NAME_LENGTH) {
     // tslint:disable-next-line:max-line-length
     diagnostics.pushFatalError(
       `Localized display name for ${
-        LOCALES[localeKey]
+        Locales[localeKey]
       } must not exceed ${MAX_DISPLAY_NAME_LENGTH} characters`,
     );
   }
@@ -354,9 +406,9 @@ export function validateLocaleDisplayName(
 
 export function validateLocaleDisplayNames(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
-  for (const localeKey of Object.keys(LOCALES)) {
+  for (const localeKey of Object.keys(Locales)) {
     diagnostics.extend(
-      validateLocaleDisplayName(config, localeKey as keyof typeof LOCALES),
+      validateLocaleDisplayName(config, localeKey as keyof typeof Locales),
     );
   }
   return diagnostics;
@@ -367,7 +419,7 @@ export function validateSupportedLocales({ i18n }: ProjectConfiguration) {
 
   const unknownLocales = lodash.without(
     Object.keys(i18n),
-    ...Object.keys(LOCALES),
+    ...Object.keys(Locales),
   );
   if (unknownLocales.length > 0) {
     diagnostics.pushWarning(`Invalid locales: ${unknownLocales.join(', ')}`);

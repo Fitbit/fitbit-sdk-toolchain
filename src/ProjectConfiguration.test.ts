@@ -215,11 +215,11 @@ it('validates the supported locales are valid', () => {
 it('validates the length of the localized display name', () => {
   const configFile: any = {
     i18n: {
-      fr: { name: 'The quick brown fox jumped over the lazy dog' },
+      'fr-FR': { name: 'The quick brown fox jumped over the lazy dog' },
     },
   };
   expect(
-    config.validateLocaleDisplayName(configFile, 'fr').diagnostics[0],
+    config.validateLocaleDisplayName(configFile, 'fr-FR').diagnostics[0],
   ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -234,11 +234,11 @@ it('validates the length of the localized display name', () => {
 it('validates the localized app display name is not empty', () => {
   const configFile: any = {
     i18n: {
-      fr: { name: '' },
+      'fr-FR': { name: '' },
     },
   };
   expect(
-    config.validateLocaleDisplayName(configFile, 'fr').diagnostics[0],
+    config.validateLocaleDisplayName(configFile, 'fr-FR').diagnostics[0],
   ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -251,8 +251,8 @@ it('validates multiple localized display names', () => {
   const configFile: any = {
     appType: config.AppType.CLOCKFACE,
     i18n: {
-      fr: { name: '' },
-      it: { name: '' },
+      'fr-FR': { name: '' },
+      'it-IT': { name: '' },
     },
   };
 
@@ -285,9 +285,9 @@ it('validationErrors() validates all fields', () => {
     appType: 'invalid',
     requestedPermissions: [invalidPermission, validPermission],
     i18n: {
-      en: { name: '' },
+      'en-US': { name: '' },
       invalid: { name: 'foo' },
-      fr: { name: '' },
+      'fr-FR': { name: '' },
     },
     defaultLanguage: '_invalid_',
   };
@@ -323,7 +323,7 @@ it('validationErrors() validates all fields', () => {
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      messageText: 'Localized display name for English must not be blank',
+      messageText: 'Localized display name for English (US) must not be blank',
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -398,6 +398,29 @@ describe('normalizeProjectConfig', () => {
   it('defaults default language to en-US', () => {
     const configFile = config.normalizeProjectConfig({});
     expect(configFile.defaultLanguage).toBe('en-US');
+  });
+
+  it('converts a language only display name locale into a full one', () => {
+    const configFile = config.normalizeProjectConfig({
+      fitbit: {
+        i18n: {
+          fr: 'French Name',
+        },
+      },
+    });
+    expect(configFile.i18n).toHaveProperty('fr-FR');
+  });
+
+  it('uses a full locale instead of a language only one if present', () => {
+    const configFile = config.normalizeProjectConfig({
+      fitbit: {
+        i18n: {
+          fr: 'French Name',
+          'fr-FR': 'French French name',
+        },
+      },
+    });
+    expect(configFile.i18n['fr-FR']).toEqual('French French name');
   });
 });
 
@@ -514,4 +537,37 @@ it('validates app cluster storage permission is requested if app cluster ID is s
         'App Cluster Storage permission must be requested to set App Cluster ID and Developer ID fields',
     }),
   );
+});
+
+describe('normalizeLocales()', () => {
+  it('maps en to en-US', () => {
+    expect(
+      config.normalizeLocales({
+        en: { name: 'English' },
+      }),
+    ).toEqual({
+      'en-US': { name: 'English' },
+    });
+  });
+
+  it('does not overwrite an existing en-US value', () => {
+    expect(
+      config.normalizeLocales({
+        en: { name: 'English' },
+        'en-US': { name: 'US English' },
+      }),
+    ).toEqual({
+      'en-US': { name: 'US English' },
+    });
+  });
+
+  it('copies unknown values', () => {
+    expect(
+      config.normalizeLocales({
+        foo: { name: 'Foo' },
+      }),
+    ).toEqual({
+      foo: { name: 'Foo' },
+    });
+  });
 });
