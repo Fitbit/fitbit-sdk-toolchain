@@ -149,7 +149,7 @@ exports[`emits an error if a component bundle tag has a device type but missing 
 
 exports[`emits an error if a component bundle tag has a device type but missing platform 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
 
-exports[`emits an error if a component bundle tag has an invalid type field 1`] = `"Unknown bundle component tag: Invalid value \\"__invalid__\\" supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/type: \\"device\\" | \\"companion\\""`;
+exports[`emits an error if a component bundle tag has an invalid type field 1`] = `"Unknown bundle component tag: Invalid value {\\"type\\":\\"__invalid__\\"} supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })"`;
 
 exports[`emits an error if both JS and native device components are present 1`] = `"Cannot bundle mixed native/JS device components"`;
 

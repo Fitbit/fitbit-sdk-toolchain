@@ -6,13 +6,19 @@ import sdkVersion from './sdkVersion';
 
 jest.mock('./sdkVersion');
 
-const mockSDKVersion = sdkVersion as jest.Mock<typeof sdkVersion>;
-mockSDKVersion.mockReturnValue(semver.parse('3.0.0'));
+function mockSDKVersion(version: string) {
+  const parsedSDKVersion = semver.parse(version);
+  if (parsedSDKVersion === null) throw new Error(`Invalid version: ${version}`);
+  const sdkVersionSpy = sdkVersion as jest.Mock;
+  sdkVersionSpy.mockReturnValue(parsedSDKVersion);
+}
 
 const mockUUID = '672bc0d9-624c-4ea9-b08f-a4c05f552031';
 const validPermission = 'access_location';
 const invalidPermission = 'invalid';
 const sdk3Permission = 'access_exercise';
+
+beforeEach(() => mockSDKVersion('3.0.0'));
 
 it('validates the length of the app display name', () => {
   const configFile: any = {
@@ -109,7 +115,7 @@ it('validates the requested permissions are valid with the current sdk', () => {
     requestedPermissions: [sdk3Permission],
   };
 
-  mockSDKVersion.mockReturnValueOnce(semver.parse('2.0.0'));
+  mockSDKVersion('2.0.0');
 
   expect(
     config.validateRequestedPermissions(configFile).diagnostics[0],
@@ -209,11 +215,11 @@ it('validates the supported locales are valid', () => {
 it('validates the length of the localized display name', () => {
   const configFile: any = {
     i18n: {
-      fr: { name: 'The quick brown fox jumped over the lazy dog' },
+      'fr-FR': { name: 'The quick brown fox jumped over the lazy dog' },
     },
   };
   expect(
-    config.validateLocaleDisplayName(configFile, 'fr').diagnostics[0],
+    config.validateLocaleDisplayName(configFile, 'fr-FR').diagnostics[0],
   ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -228,11 +234,11 @@ it('validates the length of the localized display name', () => {
 it('validates the localized app display name is not empty', () => {
   const configFile: any = {
     i18n: {
-      fr: { name: '' },
+      'fr-FR': { name: '' },
     },
   };
   expect(
-    config.validateLocaleDisplayName(configFile, 'fr').diagnostics[0],
+    config.validateLocaleDisplayName(configFile, 'fr-FR').diagnostics[0],
   ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -245,8 +251,8 @@ it('validates multiple localized display names', () => {
   const configFile: any = {
     appType: config.AppType.CLOCKFACE,
     i18n: {
-      fr: { name: '' },
-      it: { name: '' },
+      'fr-FR': { name: '' },
+      'it-IT': { name: '' },
     },
   };
 
@@ -279,9 +285,9 @@ it('validationErrors() validates all fields', () => {
     appType: 'invalid',
     requestedPermissions: [invalidPermission, validPermission],
     i18n: {
-      en: { name: '' },
+      'en-US': { name: '' },
       invalid: { name: 'foo' },
-      fr: { name: '' },
+      'fr-FR': { name: '' },
     },
     defaultLanguage: '_invalid_',
   };
@@ -317,7 +323,7 @@ it('validationErrors() validates all fields', () => {
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      messageText: 'Localized display name for English must not be blank',
+      messageText: 'Localized display name for English (US) must not be blank',
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -393,6 +399,29 @@ describe('normalizeProjectConfig', () => {
     const configFile = config.normalizeProjectConfig({});
     expect(configFile.defaultLanguage).toBe('en-US');
   });
+
+  it('converts a language only display name locale into a full one', () => {
+    const configFile = config.normalizeProjectConfig({
+      fitbit: {
+        i18n: {
+          fr: 'French Name',
+        },
+      },
+    });
+    expect(configFile.i18n).toHaveProperty('fr-FR');
+  });
+
+  it('uses a full locale instead of a language only one if present', () => {
+    const configFile = config.normalizeProjectConfig({
+      fitbit: {
+        i18n: {
+          fr: 'French Name',
+          'fr-FR': 'French French name',
+        },
+      },
+    });
+    expect(configFile.i18n['fr-FR']).toEqual('French French name');
+  });
 });
 
 it('validates the default language is a valid language tag', () => {
@@ -414,7 +443,7 @@ it('validates app cluster ID is defined if app cluster storage permission is req
     developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -437,7 +466,7 @@ it.each([
     developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -453,7 +482,7 @@ it('validates app cluster ID is of correct format', () => {
     appClusterID: 'foo_bar',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -469,7 +498,7 @@ it('validates developer ID is defined if app cluster storage permission is reque
     appClusterID: 'abc.123',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -486,7 +515,7 @@ it('validates developer ID is a valid UUID if app cluster storage permission is 
     developerID: 'definitely_not_a_uuid',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -500,7 +529,7 @@ it('validates app cluster storage permission is requested if app cluster ID is s
     appClusterID: 'abc',
   };
   // TODO: fixme with real version
-  mockSDKVersion.mockReturnValue(semver.parse('999.0.0'));
+  mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -508,4 +537,37 @@ it('validates app cluster storage permission is requested if app cluster ID is s
         'App Cluster Storage permission must be requested to set App Cluster ID and Developer ID fields',
     }),
   );
+});
+
+describe('normalizeLocales()', () => {
+  it('maps en to en-US', () => {
+    expect(
+      config.normalizeLocales({
+        en: { name: 'English' },
+      }),
+    ).toEqual({
+      'en-US': { name: 'English' },
+    });
+  });
+
+  it('does not overwrite an existing en-US value', () => {
+    expect(
+      config.normalizeLocales({
+        en: { name: 'English' },
+        'en-US': { name: 'US English' },
+      }),
+    ).toEqual({
+      'en-US': { name: 'US English' },
+    });
+  });
+
+  it('copies unknown values', () => {
+    expect(
+      config.normalizeLocales({
+        foo: { name: 'Foo' },
+      }),
+    ).toEqual({
+      foo: { name: 'Foo' },
+    });
+  });
 });

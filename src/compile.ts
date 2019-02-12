@@ -1,7 +1,5 @@
 import path from 'path';
 
-import gulpTerser from 'gulp-terser';
-import pumpify from 'pumpify';
 import * as rollup from 'rollup';
 import rollupPluginBabel from 'rollup-plugin-babel';
 import rollupPluginCommonjs from 'rollup-plugin-commonjs';
@@ -25,6 +23,7 @@ import i18nPolyfill from './plugins/i18nPolyfill';
 import polyfill from './plugins/polyfill';
 import polyfillDevice from './plugins/polyfillDevice';
 import resourceImports from './plugins/resourceImports';
+import terser from './plugins/terser';
 import typescript from './plugins/typescript';
 import rollupWarningHandler from './rollupWarningHandler';
 
@@ -63,88 +62,91 @@ export default function compile({
   const ecma =
     sdkVersion().major >= 3 && component !== ComponentType.DEVICE ? 6 : 5;
   const { translationsGlob } = componentTargets[component];
-  return new pumpify.obj([
-    rollupToVinyl(
-      {
-        input: entryPoint,
-        external: externals[component],
-        plugins: [
-          typescript({
-            onDiagnostic,
-            tsconfigOverride: {
-              ...tsconfigOverrides,
-              target: ecma === 6 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
-            },
-            tsconfigSearchPath: path.dirname(entryPoint),
-          }),
-          ...pluginIf(
-            sdkVersion().major >= 3 && component === ComponentType.DEVICE,
-            polyfillDevice,
-          ),
-          ...pluginIf(
-            sdkVersion().major >= 3 && component !== ComponentType.DEVICE,
-            () => polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
-          ),
-          ...pluginIf(
-            sdkVersion().major < 3 || component === ComponentType.SETTINGS,
-            resourceImports,
-          ),
-          ...pluginIf(sdkVersion().major < 2, rollupPluginJson),
-          forbidAbsoluteImport(),
-          ...pluginIf(sdkVersion().major < 2, brokenImports),
-          rollupPluginNodeResolve({ preferBuiltins: false }),
-          rollupPluginCommonjs({ include: ['node_modules/**'] }),
-          ...pluginIf(ecma === 5, () =>
-            rollupPluginBabel({
-              plugins: [
-                // Plugins are specified in this way to avoid this:
-                // https://github.com/webpack/webpack/issues/1866
-                // Also makes this work correctly in a browser environment
-                require('@babel/plugin-transform-block-scoped-functions'),
-                require('@babel/plugin-transform-block-scoping'),
-                require('@babel/plugin-syntax-dynamic-import'),
-              ],
-              compact: false,
-              babelrc: false,
-              // We include JSON here to get a more sane error that includes the path
-              extensions: ['.js', '.json'],
-              // Types for babel are broken and don't accept anything but an object here
-              inputSourceMap: false as any,
-            }),
-          ),
-        ],
-        onwarn: rollupWarningHandler({
+  return rollupToVinyl(
+    {
+      input: entryPoint,
+      external: externals[component],
+      plugins: [
+        typescript({
           onDiagnostic,
-          codeCategories: allowUnknownExternals
-            ? { UNRESOLVED_IMPORT: DiagnosticCategory.Warning }
-            : undefined,
+          tsconfigOverride: {
+            ...tsconfigOverrides,
+            target: ecma === 6 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
+          },
+          tsconfigSearchPath: path.dirname(entryPoint),
         }),
-        inlineDynamicImports: true,
-      },
-      {
-        dir: outputDir,
-        file: outputDir === undefined ? `${component}.js` : undefined,
-        format: 'cjs',
-        sourcemap: true,
-      },
-    ),
-    gulpTerser({
-      ecma,
-      // We still support iOS 10, which ships Safari 10
-      safari10: component !== ComponentType.DEVICE,
-      mangle: {
-        toplevel: true,
-      },
-      output: {
-        // Fitbit OS versions before 2.2 couldn't handle multiple statements per line and still
-        // give correct position info
-        // Mobile doesn't give correct column info, so also one statement per line
-        // Happily this causes a negligible difference in code size
-        semicolons: false,
-      },
-      // Compression produces bad source maps
-      // https://github.com/mishoo/UglifyJS2#source-maps-and-debugging
-      compress: false,
-    }),
-  ]);
+        ...pluginIf(
+          sdkVersion().major >= 3 && component === ComponentType.DEVICE,
+          polyfillDevice,
+        ),
+        ...pluginIf(
+          sdkVersion().major >= 3 && component !== ComponentType.DEVICE,
+          () => polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
+        ),
+        ...pluginIf(
+          sdkVersion().major < 3 || component === ComponentType.SETTINGS,
+          resourceImports,
+        ),
+        ...pluginIf(sdkVersion().major < 2, rollupPluginJson),
+        forbidAbsoluteImport(),
+        ...pluginIf(sdkVersion().major < 2, brokenImports),
+        rollupPluginNodeResolve({ preferBuiltins: false }),
+        rollupPluginCommonjs({ include: ['node_modules/**'] }),
+        ...pluginIf(ecma === 5, () =>
+          rollupPluginBabel({
+            plugins: [
+              // Plugins are specified in this way to avoid this:
+              // https://github.com/webpack/webpack/issues/1866
+              // Also makes this work correctly in a browser environment
+              require('@babel/plugin-transform-block-scoped-functions'),
+              require('@babel/plugin-transform-block-scoping'),
+              require('@babel/plugin-syntax-dynamic-import'),
+            ],
+            compact: false,
+            babelrc: false,
+            // We include JSON here to get a more sane error that includes the path
+            extensions: ['.js', '.json'],
+            // Types for babel are broken and don't accept anything but an object here
+            inputSourceMap: false as any,
+          }),
+        ),
+        terser({
+          ecma,
+          // We still support iOS 10, which ships Safari 10
+          safari10: component !== ComponentType.DEVICE,
+          mangle: {
+            toplevel: true,
+          },
+          output: {
+            // Fitbit OS versions before 2.2 couldn't handle multiple statements per line and still
+            // give correct position info
+            // Mobile doesn't give correct column info, so also one statement per line
+            // Happily this causes a negligible difference in code size
+            semicolons: false,
+          },
+          // Compression produces bad source maps
+          // https://github.com/mishoo/UglifyJS2#source-maps-and-debugging
+          compress: false,
+        }),
+      ],
+      onwarn: rollupWarningHandler({
+        onDiagnostic,
+        codeCategories: allowUnknownExternals
+          ? { UNRESOLVED_IMPORT: DiagnosticCategory.Warning }
+          : undefined,
+      }),
+      inlineDynamicImports: true,
+    },
+    {
+      dir: outputDir,
+      file: outputDir === undefined ? `${component}.js` : undefined,
+      format: 'cjs',
+      sourcemap: true,
+      // mapPath is relative to outputDir,
+      sourcemapPathTransform: (mapPath) =>
+        path.normalize(
+          outputDir === undefined ? mapPath : path.join(outputDir, mapPath),
+        ),
+    },
+  );
 }
