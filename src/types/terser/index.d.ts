@@ -1,4 +1,4 @@
-import { MangleOptions } from 'uglify-js';
+import { ExistingRawSourceMap } from 'rollup';
 
 interface CompressOptions {}
 
@@ -17,8 +17,12 @@ export interface TerserOptions {
   mangle?: MangleOptions | false;
   output?: OutputOptions;
   safari10?: boolean;
+  sourceMap?: boolean;
 }
 
-interface TerserResult {}
+interface TerserResult {
+  code: string;
+  map: ExistingRawSourceMap;
+}
 
-export default function terser(options?: TerserOptions): TerserResult;
+export function minify(code: string, options?: TerserOptions): TerserResult;

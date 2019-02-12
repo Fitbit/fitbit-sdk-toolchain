@@ -49,6 +49,7 @@ export default function rollupToVinyl(
       map.mappings = JSON.parse(sourceMapCompactor(map)).mappings;
 
       // Rollup only writes the basename to the file property
+      // This path must be bundle-root relative
       map.file = chunkPath;
     }
     stream.push(
