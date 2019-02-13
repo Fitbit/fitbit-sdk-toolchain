@@ -68,6 +68,7 @@ export default function compile({
     {
       input: entryPoint,
       plugins: [
+        platformExternals(component),
         typescript({
           onDiagnostic,
           tsconfigOverride: {
@@ -130,7 +131,6 @@ export default function compile({
           // https://github.com/mishoo/UglifyJS2#source-maps-and-debugging
           compress: false,
         }),
-        platformExternals(component),
       ],
       onwarn: rollupWarningHandler({
         onDiagnostic,
