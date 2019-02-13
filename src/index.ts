@@ -1,11 +1,9 @@
 import fs from 'fs';
 import { Readable, Stream } from 'stream';
 
-import dropStream from 'drop-stream';
 import lazystream from 'lazystream';
 import mergeStream from 'merge-stream';
 import multistream from 'multistream';
-import playbackStream from 'playback-stream';
 import PluginError from 'plugin-error';
 import pumpify from 'pumpify';
 import simpleRandom from 'simple-random';
