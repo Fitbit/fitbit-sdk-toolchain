@@ -1,7 +1,10 @@
+import { PolyfillMap } from './plugins/polyfill';
+
 export interface BuildTargetDescriptor {
   displayName: string;
   platform: string[];
   resourceFilterTag: string;
+  polyfills?: PolyfillMap;
 }
 
 const buildTargets: { [platform: string]: BuildTargetDescriptor } = {

@@ -1,11 +1,9 @@
 import fs from 'fs';
 import { Readable, Stream } from 'stream';
 
-import dropStream from 'drop-stream';
 import lazystream from 'lazystream';
 import mergeStream from 'merge-stream';
 import multistream from 'multistream';
-import playbackStream from 'playback-stream';
 import PluginError from 'plugin-error';
 import pumpify from 'pumpify';
 import simpleRandom from 'simple-random';
@@ -38,6 +36,7 @@ import filterResourceTag from './filterResourceTag';
 import findEntryPoint from './findEntryPoint';
 import nativeComponents from './nativeComponents';
 import pluginError from './util/pluginError';
+import { PolyfillMap } from './plugins/polyfill';
 import ProjectConfiguration, {
   normalizeProjectConfig,
   validate,
@@ -126,11 +125,13 @@ export function loadProjectConfig({
 export function buildComponent({
   projectConfig,
   component,
+  polyfills = {},
   onDiagnostic = logDiagnosticToConsole,
 }: {
   projectConfig: ProjectConfiguration;
   component: ComponentType;
   onDiagnostic?: DiagnosticHandler;
+  polyfills?: PolyfillMap;
 }) {
   const { inputs, outputDir, notFoundIsFatal } = componentTargets[component];
 
@@ -149,6 +150,7 @@ export function buildComponent({
           onDiagnostic,
           entryPoint,
           outputDir,
+          polyfills,
           allowUnknownExternals: projectConfig.enableProposedAPI,
           defaultLanguage: projectConfig.defaultLanguage,
         }),
@@ -186,35 +188,12 @@ export function buildDeviceComponents({
   buildId: string;
   onDiagnostic?: DiagnosticHandler;
 }) {
-  const deviceJSPipeline: Stream[] = [
-    // TODO: remove is-defined assertion ('!')
-    buildComponent({
-      projectConfig,
-      onDiagnostic,
-      component: ComponentType.DEVICE,
-    })!,
-  ];
-
-  if (sdkVersion().major < 3) {
-    deviceJSPipeline.push(gulpMagicString(errataPrimaryExpressionInSwitch));
-  }
-
-  const processedJS = new playbackStream({ objectMode: true });
-  deviceJSPipeline.push(processedJS);
-
   return multistream.obj([
     // Sequence the build process: wait until compilation finishes
     // before building the resources for each component.
-    new pumpify.obj(
-      ...deviceJSPipeline,
-      // We don't want to send the JS file downstream directly. It will
-      // be played back into the individual device component pipelines.
-      dropStream.obj(),
-    ),
-
     ...projectConfig.buildTargets.map((family) =>
       lazyObjectReadable(() => {
-        const { platform, displayName } = buildTargets[family];
+        const { platform, displayName, polyfills } = buildTargets[family];
         onDiagnostic({
           messageText: `Building app for ${displayName}`,
           category: DiagnosticCategory.Message,
@@ -225,7 +204,16 @@ export function buildDeviceComponents({
         return new pumpify.obj(
           mergeStream(
             new pumpify.obj(
-              processedJS.newReadableSide({ objectMode: true }),
+              // TODO: remove is-defined assertion ('!')
+              buildComponent({
+                projectConfig,
+                onDiagnostic,
+                polyfills,
+                component: ComponentType.DEVICE,
+              })!,
+              sdkVersion().major < 3
+                ? gulpMagicString(errataPrimaryExpressionInSwitch)
+                : new Stream.PassThrough({ objectMode: true }),
               sourceMap.collector(ComponentType.DEVICE, family),
             ),
             new pumpify.obj(
@@ -254,7 +242,7 @@ export function buildDeviceComponents({
                   }),
                   compileTranslations(projectConfig.defaultLanguage),
                 )
-              : new Stream.PassThrough(),
+              : new Stream.PassThrough({ objectMode: true }),
           ),
           makeDeviceManifest({ projectConfig, buildId }),
           zip(`device-${family}.zip`, { compress: sdkVersion().major >= 3 }),

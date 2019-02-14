@@ -1,17 +1,18 @@
 import { Plugin } from 'rollup';
 
 export type Polyfill = string | (() => string | Promise<string>);
+export type PolyfillMap = Record<string, Polyfill>;
 
 /**
  * Polyfill a module to make it seem like a builtin.
  */
-export default function polyfill(modules: {
-  [name: string]: Polyfill;
-}): Plugin {
+export default function polyfill(modules: PolyfillMap): Plugin {
   return {
     name: 'polyfill',
 
-    resolveId(importee) {
+    resolveId(importee, importer) {
+      // Allow a module to wrap a module of the same name
+      if (importer === '\0' + importee) return false;
       if (modules[importee]) return '\0' + importee;
     },
 
