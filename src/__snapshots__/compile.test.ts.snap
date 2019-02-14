@@ -7,6 +7,14 @@ console.log(A)
 "
 `;
 
+exports[`applies specified polyfills 1`] = `
+"\\"use strict\\"
+var e=require(\\"cbor\\")
+const o=false
+console.log(o,e.decode)
+"
+`;
+
 exports[`build fails when a non-existent relative import is specified 1`] = `"Could not resolve './__doesNotExist.js' from src/__test__/compile/relativeImportNotFound.js"`;
 
 exports[`build fails when an absolute import is specified 1`] = `/foo.js is imported by <cwd>/src/__test__/compile/absoluteImport.js, but absolute imports are disallowed`;
