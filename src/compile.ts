@@ -68,15 +68,7 @@ export default function compile({
     {
       input: entryPoint,
       plugins: [
-        platformExternals(component),
-        typescript({
-          onDiagnostic,
-          tsconfigOverride: {
-            ...tsconfigOverrides,
-            target: ecma === 6 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
-          },
-          tsconfigSearchPath: path.dirname(entryPoint),
-        }),
+        // Polyfills must come before platform externals
         polyfill(polyfills),
         ...pluginIf(
           sdkVersion().major >= 3 && component === ComponentType.DEVICE,
@@ -86,6 +78,15 @@ export default function compile({
           sdkVersion().major >= 3 && component !== ComponentType.DEVICE,
           () => polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
         ),
+        platformExternals(component),
+        typescript({
+          onDiagnostic,
+          tsconfigOverride: {
+            ...tsconfigOverrides,
+            target: ecma === 6 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
+          },
+          tsconfigSearchPath: path.dirname(entryPoint),
+        }),
         ...pluginIf(
           sdkVersion().major < 3 || component === ComponentType.SETTINGS,
           resourceImports,
