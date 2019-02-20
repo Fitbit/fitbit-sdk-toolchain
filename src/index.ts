@@ -45,6 +45,7 @@ import * as resources from './resources';
 import sdkVersion from './sdkVersion';
 import validateIcon from './validateIcon';
 import vinylAssertFiles from './vinylAssertFiles';
+import validateFileSizes from './validateFileSizes';
 import zip from './zip';
 
 export { DiagnosticCategory };
@@ -88,6 +89,10 @@ function addErrorTarget(
 
 function lazyObjectReadable(fn: () => Readable) {
   return new lazystream.Readable(fn, { objectMode: true });
+}
+
+function transformIf<T>(condition: boolean, plugin: T) {
+  return condition ? plugin : new Stream.PassThrough({ objectMode: true });
 }
 
 export function loadProjectConfig({
@@ -193,11 +198,18 @@ export function buildDeviceComponents({
     // before building the resources for each component.
     ...projectConfig.buildTargets.map((family) =>
       lazyObjectReadable(() => {
-        const { platform, displayName, polyfills } = buildTargets[family];
+        const {
+          platform,
+          displayName,
+          polyfills,
+          maxDeviceBundleSize,
+        } = buildTargets[family];
         onDiagnostic({
           messageText: `Building app for ${displayName}`,
           category: DiagnosticCategory.Message,
         });
+
+        const bundleFilename = `device-${family}.zip`;
 
         const sourceMap = collectComponentSourceMaps();
         // Split so that JS doesn't pass through resource filtering
@@ -211,9 +223,10 @@ export function buildDeviceComponents({
                 polyfills,
                 component: ComponentType.DEVICE,
               })!,
-              sdkVersion().major < 3
-                ? gulpMagicString(errataPrimaryExpressionInSwitch)
-                : new Stream.PassThrough({ objectMode: true }),
+              transformIf(
+                sdkVersion().major < 3,
+                gulpMagicString(errataPrimaryExpressionInSwitch),
+              ),
               sourceMap.collector(ComponentType.DEVICE, family),
             ),
             new pumpify.obj(
@@ -235,17 +248,25 @@ export function buildDeviceComponents({
                 onDiagnostic,
               ),
             ),
-            sdkVersion().major >= 3
-              ? new pumpify.obj(
-                  vinylFS.src(componentTargets.device.translationsGlob, {
-                    base: '.',
-                  }),
-                  compileTranslations(projectConfig.defaultLanguage),
-                )
-              : new Stream.PassThrough({ objectMode: true }),
+            transformIf(
+              sdkVersion().major >= 3,
+              new pumpify.obj(
+                vinylFS.src(componentTargets.device.translationsGlob, {
+                  base: '.',
+                }),
+                compileTranslations(projectConfig.defaultLanguage),
+              ),
+            ),
           ),
           makeDeviceManifest({ projectConfig, buildId }),
-          zip(`device-${family}.zip`, { compress: sdkVersion().major >= 3 }),
+          zip(bundleFilename, { compress: sdkVersion().major >= 3 }),
+          transformIf(
+            maxDeviceBundleSize !== undefined,
+            validateFileSizes({
+              onDiagnostic,
+              maxSizes: { [bundleFilename]: maxDeviceBundleSize },
+            }),
+          ),
           gulpSetProperty({
             componentBundle: {
               family,

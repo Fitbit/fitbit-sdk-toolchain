@@ -5,6 +5,7 @@ export interface BuildTargetDescriptor {
   platform: string[];
   resourceFilterTag: string;
   polyfills?: PolyfillMap;
+  maxDeviceBundleSize?: number; // in bytes
 }
 
 const buildTargets: { [platform: string]: BuildTargetDescriptor } = {
