@@ -12,5 +12,5 @@ module.exports = {
   collectCoverageFrom: ['**/*.ts', '!**/*.d.ts'],
   clearMocks: true,
   restoreMocks: true,
-  setupTestFrameworkScriptFile: './setupTests.ts',
+  setupFilesAfterEnv: ['./setupTests.ts'],
 };
