@@ -16,7 +16,6 @@ import BuildError from './util/BuildError';
 import buildTargets, { BuildTargetDescriptor } from './buildTargets';
 import collectComponentSourceMaps from './collectComponentSourceMaps';
 import compile from './compile';
-import compileTranslations from './compileTranslations';
 import { makeDeviceManifest, makeCompanionManifest } from './componentManifest';
 import componentTargets, { ComponentType } from './componentTargets';
 import convertImageToTXI, {
@@ -148,7 +147,6 @@ export function buildComponent({
       onDiagnostic,
       input: entryPoint,
       allowUnknownExternals: projectConfig.enableProposedAPI,
-      defaultLanguage: projectConfig.defaultLanguage,
     }),
   );
 }
@@ -240,12 +238,6 @@ export function buildDeviceComponents({
                 buildTargets[family],
                 onDiagnostic,
               ),
-            ),
-            new pumpify.obj(
-              vinylFS.src(componentTargets.device.translationsGlob, {
-                base: '.',
-              }),
-              compileTranslations(projectConfig.defaultLanguage),
             ),
           ),
           makeDeviceManifest({ projectConfig, buildId }),

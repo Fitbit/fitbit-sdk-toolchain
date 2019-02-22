@@ -1,7 +1,4 @@
-import { PassThrough } from 'stream';
-
 import { advanceTo } from 'jest-date-mock';
-import Vinyl from 'vinyl';
 
 import { makeDeviceManifest, makeCompanionManifest } from './componentManifest';
 import ProjectConfiguration, {
@@ -11,9 +8,7 @@ import ProjectConfiguration, {
 } from './ProjectConfiguration';
 import { apiVersions } from './sdkVersion';
 
-import getFileFromStream from './testUtils/getFileFromStream';
 import getJSONFileFromStream from './testUtils/getJSONFileFromStream';
-import getVinylContents from './testUtils/getVinylContents';
 
 jest.mock('./packageVersion.const');
 
@@ -28,7 +23,6 @@ const makeClockfaceProjectConfig = (): ClockProjectConfiguration => ({
   },
   buildTargets: ['higgs'],
   requestedPermissions: [],
-  defaultLanguage: 'en-US',
 });
 
 const makeAppProjectConfig = (): AppProjectConfiguration => ({
@@ -45,7 +39,6 @@ function expectDeviceManifest(
     buildId,
     projectConfig,
   });
-  manifest.end();
 
   return expect(getJSONFileFromStream(manifest)).resolves;
 }
@@ -89,93 +82,3 @@ it('sets apiVersion in companion manifest', () =>
     'apiVersion',
     apiVersions({}).companionApi,
   ));
-
-describe('when there are compiled language files', () => {
-  let sources: PassThrough;
-
-  beforeEach(() => {
-    sources = new PassThrough({ objectMode: true });
-
-    sources.write(
-      new Vinyl({
-        path: 'lang/english',
-        translationLanguage: 'en',
-        contents: Buffer.from('foo'),
-      }),
-    );
-
-    sources.write(
-      new Vinyl({
-        path: 'app/index.js',
-        contents: Buffer.from('foo'),
-      }),
-    );
-
-    sources.write(
-      new Vinyl({
-        path: 'spanish/language',
-        translationLanguage: 'es',
-        contents: Buffer.from('foo'),
-      }),
-    );
-
-    sources.end();
-  });
-
-  it('sets the i18n[lang].resources key for language files that pass through', () => {
-    return expect(
-      getJSONFileFromStream(
-        sources.pipe(
-          makeDeviceManifest({
-            buildId,
-            projectConfig: makeClockfaceProjectConfig(),
-          }),
-        ),
-        'manifest.json',
-      ),
-    ).resolves.toMatchSnapshot();
-  });
-
-  it.each(['es', 'en'])(
-    'ensures the default language %s is the first key in the i18n object',
-    (defaultLanguage) => {
-      return expect(
-        getFileFromStream(
-          sources.pipe(
-            makeDeviceManifest({
-              buildId,
-              projectConfig: {
-                ...makeClockfaceProjectConfig(),
-                defaultLanguage,
-              },
-            }),
-          ),
-          'manifest.json',
-        ).then(getVinylContents),
-      ).resolves.toMatchSnapshot();
-    },
-  );
-
-  it('passes all files through', (done) => {
-    const files: string[] = [];
-
-    sources
-      .pipe(
-        makeDeviceManifest({
-          buildId,
-          projectConfig: makeClockfaceProjectConfig(),
-        }),
-      )
-      .on('error', done.fail)
-      .on('data', (file: Vinyl) => files.push(file.relative))
-      .on('end', () => {
-        expect(files).toEqual([
-          'lang/english',
-          'app/index.js',
-          'spanish/language',
-          'manifest.json',
-        ]);
-        done();
-      });
-  });
-});

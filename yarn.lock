@@ -147,19 +147,6 @@
     reflect-metadata "^0.1.12"
     tslib "^1.8.1"
 
-"@fitbit-sdk/companion-gettext@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@fitbit-sdk/companion-gettext/-/companion-gettext-2.0.0.tgz#38daeb12a028554251205a1a05f86bb54d1967c8"
-  integrity sha512-6ke/wd7usHeJhOBwXnTrG4z60PqbzX8BMr3Pv9Ijma9KHRNFy46wWpBH4oHB0KkWrNKeQjzuRCeAeuNzZRlQrQ==
-
-"@fitbit/bison-i18n@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@fitbit/bison-i18n/-/bison-i18n-1.0.1.tgz#22ded681a52a0304a010c9e5fd1bb63f7bc75e97"
-  dependencies:
-    pofile "^1.0.10"
-    text-encoding-utf-8 "^1.0.2"
-    tslib "^1.9.0"
-
 "@fitbit/image-codec-txi@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@fitbit/image-codec-txi/-/image-codec-txi-1.1.1.tgz#a04ba09f564f33a1041da416ece74cb891aa50c1"
@@ -4130,7 +4117,7 @@ pn@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/pn/-/pn-1.1.0.tgz#e2f4cef0e219f463c179ab37463e4e1ecdccbafb"
 
-pofile@^1.0.10, pofile@^1.0.11:
+pofile@^1.0.11:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/pofile/-/pofile-1.0.11.tgz#35aff58c17491d127a07336d5522ebc9df57c954"
 
@@ -4977,10 +4964,6 @@ test-exclude@^4.2.1:
     object-assign "^4.1.0"
     read-pkg-up "^1.0.1"
     require-main-filename "^1.0.1"
-
-text-encoding-utf-8@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/text-encoding-utf-8/-/text-encoding-utf-8-1.0.2.tgz#585b62197b0ae437e3c7b5d0af27ac1021e10d13"
 
 throat@^4.0.0:
   version "4.1.0"

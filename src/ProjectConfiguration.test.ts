@@ -283,7 +283,6 @@ it('validationErrors() validates all fields', () => {
       invalid: { name: 'foo' },
       fr: { name: '' },
     },
-    defaultLanguage: '_invalid_',
   };
   expect(config.validate(configFile).diagnostics).toEqual([
     expect.objectContaining({
@@ -322,10 +321,6 @@ it('validationErrors() validates all fields', () => {
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText: 'Localized display name for French must not be blank',
-    }),
-    expect.objectContaining({
-      category: DiagnosticCategory.Error,
-      messageText: 'Default language is an invalid language tag: _invalid_',
     }),
   ]);
 });
@@ -387,22 +382,4 @@ describe('normalizeProjectConfig', () => {
     const configFile = config.normalizeProjectConfig({});
     expect(configFile.buildTargets).toHaveLength(0);
   });
-
-  it('defaults default language to en-US', () => {
-    const configFile = config.normalizeProjectConfig({});
-    expect(configFile.defaultLanguage).toBe('en-US');
-  });
-});
-
-it('validates the default language is a valid language tag', () => {
-  const configFile: any = {
-    defaultLanguage: '_really_not_bcp_47_',
-  };
-  expect(config.validateDefaultLanguage(configFile).diagnostics[0]).toEqual(
-    expect.objectContaining({
-      category: DiagnosticCategory.Error,
-      messageText:
-        'Default language is an invalid language tag: _really_not_bcp_47_',
-    }),
-  );
 });

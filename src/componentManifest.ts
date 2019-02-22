@@ -31,7 +31,6 @@ interface DeviceManifest extends ComponentManifest {
   i18n: {
     [locale: string]: {
       name?: string;
-      resources?: string;
     };
   };
   iconFile?: string;
@@ -96,42 +95,7 @@ export function makeDeviceManifest({
     manifest.wipeColor = projectConfig.wipeColor;
   }
 
-  return new Transform({
-    objectMode: true,
-
-    transform(file: Vinyl, _, next) {
-      const lang: string | undefined = file.translationLanguage;
-
-      if (lang) {
-        if (manifest.i18n[lang] === undefined) manifest.i18n[lang] = {};
-        manifest.i18n[lang].resources = normalizeToPOSIX(file.relative);
-      }
-
-      next(undefined, file);
-    },
-
-    flush(done) {
-      // Ensure the default language is the first listed in the manifest
-      const {
-        [projectConfig.defaultLanguage]: defaultLanguage,
-        ...otherLocales
-      } = manifest.i18n;
-      manifest.i18n = {
-        [projectConfig.defaultLanguage]: defaultLanguage,
-        ...otherLocales,
-      };
-
-      done(
-        undefined,
-        new Vinyl({
-          cwd: '',
-          base: undefined,
-          path: manifestPath,
-          contents: Buffer.from(JSON.stringify(manifest)),
-        }),
-      );
-    },
-  });
+  return gulpFile(manifestPath, JSON.stringify(manifest));
 }
 
 export function makeCompanionManifest({
