@@ -71,11 +71,15 @@ export default function compile({
         // Polyfills must come before platform externals
         polyfill(polyfills),
         ...pluginIf(
-          sdkVersion().major >= 3 && component === ComponentType.DEVICE,
+          (sdkVersion().major >= 4 ||
+            (sdkVersion().major === 3 && sdkVersion().minor >= 1)) &&
+            component === ComponentType.DEVICE,
           polyfillDevice,
         ),
         ...pluginIf(
-          sdkVersion().major >= 3 && component !== ComponentType.DEVICE,
+          (sdkVersion().major >= 4 ||
+            (sdkVersion().major === 3 && sdkVersion().minor >= 1)) &&
+            component !== ComponentType.DEVICE,
           () => polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
         ),
         platformExternals(component),
