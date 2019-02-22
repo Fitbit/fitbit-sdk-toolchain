@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`in buffered mode logs a warning if a file is much larger than the allowed size 1`] = `
+Array [
+  Object {
+    "category": 1,
+    "messageText": "test.bin is larger than maximum allowed size. File size was 10 MB, maximum allowed is 3 MB.",
+  },
+]
+`;
+
+exports[`in buffered mode logs a warning if a file is one byte over the allowed size 1`] = `
+Array [
+  Object {
+    "category": 1,
+    "messageText": "test.bin is larger than maximum allowed size. File size was 3 MB, maximum allowed is 3 MB.",
+  },
+]
+`;
+
+exports[`in streaming mode throws an error 1`] = `
+PluginError {
+  "fileName": "test.bin",
+  "message": "File is not a buffer: test.bin",
+  "name": "Error",
+  "plugin": "validateFileSizes",
+}
+`;

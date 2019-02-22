@@ -9,6 +9,7 @@ export interface BuildTargetDescriptor {
   platform: string[];
   resourceFilterTag: string;
   polyfills?: PolyfillMap;
+  maxDeviceBundleSize?: number; // in bytes
   minSDKVersion?: string;
 }
 
