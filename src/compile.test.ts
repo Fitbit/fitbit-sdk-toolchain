@@ -227,7 +227,7 @@ describe('when building a device component which uses gettext', () => {
   let file: string;
 
   beforeEach(async () => {
-    mockSDKVersion.mockReturnValue({ major: 3, minor: 0 });
+    mockSDKVersion.mockReturnValue({ major: 3, minor: 1 });
     file = await compileFile('i18n.js', {
       component: ComponentType.DEVICE,
     }).then(getVinylContents);
@@ -238,8 +238,8 @@ describe('when building a device component which uses gettext', () => {
   it('builds without diagnostic messages', () =>
     expect(mockDiagnosticHandler).not.toBeCalled());
 
-  it('emits an error if targeting SDK version lower than 3.0', async () => {
-    mockSDKVersion.mockReturnValue({ major: 2, minor: 0 });
+  it('emits an error if targeting SDK version lower than 3.1', async () => {
+    mockSDKVersion.mockReturnValue({ major: 3, minor: 0 });
     await expect(compileFile('i18n.js')).rejects.toThrowError();
     expect(mockDiagnosticHandler.mock.calls[0]).toMatchSnapshot();
   });

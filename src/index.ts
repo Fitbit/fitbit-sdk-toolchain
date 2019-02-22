@@ -249,7 +249,8 @@ export function buildDeviceComponents({
               ),
             ),
             transformIf(
-              sdkVersion().major >= 3,
+              sdkVersion().major >= 4 ||
+                (sdkVersion().major === 3 && sdkVersion().minor >= 1),
               new pumpify.obj(
                 vinylFS.src(componentTargets.device.translationsGlob, {
                   base: '.',

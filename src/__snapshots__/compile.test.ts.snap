@@ -152,7 +152,7 @@ Array [
 ]
 `;
 
-exports[`when building a device component which uses gettext emits an error if targeting SDK version lower than 3.0 1`] = `
+exports[`when building a device component which uses gettext emits an error if targeting SDK version lower than 3.1 1`] = `
 Array [
   Object {
     "category": 1,
