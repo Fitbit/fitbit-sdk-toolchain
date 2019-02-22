@@ -1,3 +1,7 @@
+import lodash from 'lodash';
+import semver from 'semver';
+
+import sdkVersion from './sdkVersion';
 import { PolyfillMap } from './plugins/polyfill';
 
 export interface BuildTargetDescriptor {
@@ -5,9 +9,10 @@ export interface BuildTargetDescriptor {
   platform: string[];
   resourceFilterTag: string;
   polyfills?: PolyfillMap;
+  minSDKVersion?: string;
 }
 
-const buildTargets: { [platform: string]: BuildTargetDescriptor } = {
+const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
   higgs: {
     displayName: 'Fitbit Ionic',
     platform: ['30.1.2+'],
@@ -20,11 +25,22 @@ const buildTargets: { [platform: string]: BuildTargetDescriptor } = {
   },
 };
 
-let extraBuildTargets: typeof buildTargets | undefined;
+let extraBuildTargets: typeof baseBuildTargets | undefined;
 try {
   extraBuildTargets = require('@fitbit/sdk-build-targets').default;
 } catch {}
 
-Object.assign(buildTargets, extraBuildTargets);
+export function generateBuildTargets() {
+  return lodash.pickBy(
+    {
+      ...baseBuildTargets,
+      ...extraBuildTargets,
+    },
+    ({ minSDKVersion }) =>
+      minSDKVersion === undefined ||
+      semver.gte(sdkVersion().format(), minSDKVersion),
+  );
+}
 
+const buildTargets = generateBuildTargets();
 export default buildTargets;
