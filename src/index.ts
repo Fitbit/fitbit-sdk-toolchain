@@ -88,7 +88,27 @@ function addErrorTarget(
 }
 
 function lazyObjectReadable(fn: () => Readable) {
-  return new lazystream.Readable(fn, { objectMode: true });
+  const lazyStream = new lazystream.Readable(
+    () => {
+      try {
+        return fn();
+      } catch (ex) {
+        lazyStream.emit('error', ex);
+        return emptyReadable();
+      }
+    },
+    { objectMode: true },
+  );
+  return lazyStream;
+}
+
+function emptyReadable() {
+  return new Readable({
+    objectMode: true,
+    read() {
+      this.push(null);
+    },
+  });
 }
 
 function transformIf<T>(condition: boolean, plugin: T) {
@@ -96,14 +116,7 @@ function transformIf<T>(condition: boolean, plugin: T) {
 }
 
 function readableIf<T>(condition: boolean, plugin: T) {
-  return condition
-    ? plugin
-    : new Readable({
-        objectMode: true,
-        read() {
-          this.push(null);
-        },
-      });
+  return condition ? plugin : emptyReadable();
 }
 
 export function loadProjectConfig({
