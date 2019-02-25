@@ -95,6 +95,17 @@ function transformIf<T>(condition: boolean, plugin: T) {
   return condition ? plugin : new Stream.PassThrough({ objectMode: true });
 }
 
+function readableIf<T>(condition: boolean, plugin: T) {
+  return condition
+    ? plugin
+    : new Readable({
+        objectMode: true,
+        read() {
+          this.push(null);
+        },
+      });
+}
+
 export function loadProjectConfig({
   onDiagnostic = logDiagnosticToConsole,
   fileName = 'package.json',
@@ -248,7 +259,7 @@ export function buildDeviceComponents({
                 onDiagnostic,
               ),
             ),
-            transformIf(
+            readableIf(
               sdkVersion().major >= 4 ||
                 (sdkVersion().major === 3 && sdkVersion().minor >= 1),
               new pumpify.obj(
