@@ -105,7 +105,7 @@ export function makeDeviceManifest({
               ),
             );
           }
-          entryPoint = file.relative;
+          entryPoint = normalizeToPOSIX(file.relative);
         } else {
           return next(
             new PluginError(
@@ -198,7 +198,7 @@ export function makeCompanionManifest({
               ),
             );
           }
-          companionEntryPoint = file.relative;
+          companionEntryPoint = normalizeToPOSIX(file.relative);
         } else if (file.componentType === ComponentType.SETTINGS) {
           if (settingsEntryPoint) {
             return next(
@@ -208,7 +208,7 @@ export function makeCompanionManifest({
               ),
             );
           }
-          settingsEntryPoint = file.relative;
+          settingsEntryPoint = normalizeToPOSIX(file.relative);
         } else {
           return next(
             new PluginError(
