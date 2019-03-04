@@ -71,7 +71,9 @@ it.each([
   ['compiles a JS file with tslib helpers imported', 'importHelpers.js'],
 ])('build passes when %s', (_, filename) =>
   expect(
-    compileFile(filename).then(getVinylContents),
+    compileFile(filename, { component: ComponentType.DEVICE }).then(
+      getVinylContents,
+    ),
   ).resolves.toMatchSnapshot(),
 );
 
@@ -98,32 +100,14 @@ it('allows importing image files when building settings', () =>
     ),
   ).resolves.toMatchSnapshot());
 
-describe('when targeting SDK 1.0', () => {
-  beforeEach(() => mockSDKVersion.mockReturnValue({ major: 1, minor: 0 }));
+it.each([ComponentType.DEVICE, ComponentType.COMPANION])(
+  'allows importing image files when building %s',
+  (component: ComponentType) =>
+    expect(compileFile('importImage.js', { component })).rejects.toThrowError(),
+);
 
-  it('allows JSON imports', () =>
-    expect(
-      compileFile('importJSON.js').then(getVinylContents),
-    ).resolves.toMatchSnapshot());
-
-  it('allows unintentionally non-relative imports', async () => {
-    await expect(
-      compileFile('incorrectlyNonRelativeImport.js').then(getVinylContents),
-    ).resolves.toMatchSnapshot();
-    expect(mockDiagnosticHandler.mock.calls[0]).toMatchSnapshot();
-  });
-
-  it.each([ComponentType.DEVICE, ComponentType.COMPANION])(
-    'allows importing image files when building %s',
-    (component: ComponentType) =>
-      expect(
-        compileFile('importImage.js', { component }),
-      ).resolves.toBeDefined(),
-  );
-});
-
-describe('when targeting SDK 2.0', () => {
-  beforeEach(() => mockSDKVersion.mockReturnValue({ major: 2, minor: 0 }));
+describe('when targeting SDK 3.0', () => {
+  beforeEach(() => mockSDKVersion.mockReturnValue({ major: 3, minor: 0 }));
 
   it('does not allow JSON imports', () =>
     expect(
@@ -134,18 +118,6 @@ describe('when targeting SDK 2.0', () => {
     expect(
       compileFile('incorrectlyNonRelativeImport.js').then(getVinylContents),
     ).rejects.toThrowError());
-
-  it.each([ComponentType.DEVICE, ComponentType.COMPANION])(
-    'allows importing image files when building %s',
-    (component: ComponentType) =>
-      expect(
-        compileFile('importImage.js', { component }),
-      ).resolves.toBeDefined(),
-  );
-});
-
-describe('when targeting SDK 3.0', () => {
-  beforeEach(() => mockSDKVersion.mockReturnValue({ major: 3, minor: 0 }));
 
   it('emits ES6 code', () =>
     expect(

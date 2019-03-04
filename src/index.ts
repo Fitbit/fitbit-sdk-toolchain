@@ -17,13 +17,8 @@ import compile from './compile';
 import compileTranslations from './compileTranslations';
 import { makeDeviceManifest, makeCompanionManifest } from './componentManifest';
 import componentTargets, { ComponentType } from './componentTargets';
-import convertImageToTXI, {
-  ConvertImageToTXIOptions,
-  TXIOutputFormat,
-} from './convertImageToTXI';
-import { errataPrimaryExpressionInSwitch } from './errataWorkarounds';
+import convertImageToTXI, { TXIOutputFormat } from './convertImageToTXI';
 import eventsIntercept from './util/eventsIntercept';
-import gulpMagicString from './gulpMagicString';
 import gulpSetProperty from './gulpSetProperty';
 import {
   logDiagnosticToConsole,
@@ -195,15 +190,12 @@ export function buildDeviceResources(
   { resourceFilterTag }: BuildTargetDescriptor,
   onDiagnostic = logDiagnosticToConsole,
 ) {
-  const convertImageToTXIOptions: ConvertImageToTXIOptions = {};
-  if (sdkVersion().major >= 2) {
-    convertImageToTXIOptions.rgbaOutputFormat = TXIOutputFormat.RGBA6666;
-  }
-
   return new pumpify.obj(
     filterResourceTag(resourceFilterTag),
     validateIcon({ projectConfig, onDiagnostic }),
-    convertImageToTXI(convertImageToTXIOptions),
+    convertImageToTXI({
+      rgbaOutputFormat: TXIOutputFormat.RGBA6666,
+    }),
     vinylAssertFiles([resources.svgMain, resources.svgWidgets]),
   );
 }
@@ -247,10 +239,6 @@ export function buildDeviceComponents({
                 polyfills,
                 component: ComponentType.DEVICE,
               })!,
-              transformIf(
-                sdkVersion().major < 3,
-                gulpMagicString(errataPrimaryExpressionInSwitch),
-              ),
               sourceMap.collector(ComponentType.DEVICE, family),
             ),
             new pumpify.obj(
@@ -284,7 +272,7 @@ export function buildDeviceComponents({
             ),
           ),
           makeDeviceManifest({ projectConfig, buildId }),
-          zip(bundleFilename, { compress: sdkVersion().major >= 3 }),
+          zip(bundleFilename),
           transformIf(
             maxDeviceBundleSize !== undefined,
             validateFileSizes({

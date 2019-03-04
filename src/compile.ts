@@ -3,7 +3,6 @@ import path from 'path';
 import * as rollup from 'rollup';
 import rollupPluginBabel from 'rollup-plugin-babel';
 import rollupPluginCommonjs from 'rollup-plugin-commonjs';
-import rollupPluginJson from 'rollup-plugin-json';
 import rollupPluginNodeResolve from 'rollup-plugin-node-resolve';
 import ts from 'typescript';
 
@@ -16,7 +15,6 @@ import {
 import rollupToVinyl from './rollupToVinyl';
 import sdkVersion from './sdkVersion';
 
-import brokenImports from './plugins/brokenImports';
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
 import i18nPolyfill from './plugins/i18nPolyfill';
 import platformExternals from './plugins/platformExternals';
@@ -61,8 +59,7 @@ export default function compile({
   onDiagnostic?: DiagnosticHandler;
   polyfills?: PolyfillMap;
 }) {
-  const ecma =
-    sdkVersion().major >= 3 && component !== ComponentType.DEVICE ? 6 : 5;
+  const ecma = component !== ComponentType.DEVICE ? 6 : 5;
   const { translationsGlob } = componentTargets[component];
   return rollupToVinyl(
     {
@@ -91,13 +88,8 @@ export default function compile({
           },
           tsconfigSearchPath: path.dirname(entryPoint),
         }),
-        ...pluginIf(
-          sdkVersion().major < 3 || component === ComponentType.SETTINGS,
-          resourceImports,
-        ),
-        ...pluginIf(sdkVersion().major < 2, rollupPluginJson),
+        ...pluginIf(component === ComponentType.SETTINGS, resourceImports),
         forbidAbsoluteImport(),
-        ...pluginIf(sdkVersion().major < 2, brokenImports),
         rollupPluginNodeResolve({ preferBuiltins: false }),
         rollupPluginCommonjs({ include: ['node_modules/**'] }),
         ...pluginIf(ecma === 5, () =>

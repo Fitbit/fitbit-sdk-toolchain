@@ -21,12 +21,6 @@ export function apiVersions(
   if (enableProposedAPI) return { deviceApi: '*', companionApi: '*' };
 
   const { major, minor } = sdkVersion(toolchainVersion);
-  if (major === 1 && minor === 0) {
-    return { deviceApi: '1.0.0', companionApi: '1.0.0' };
-  }
-  if (major === 2 && minor === 0) {
-    return { deviceApi: '3.0.0', companionApi: '2.0.0' };
-  }
   if (major === 3 && minor === 0) {
     return { deviceApi: '4.0.0', companionApi: '2.1.0' };
   }
