@@ -5,31 +5,31 @@ it('throws if package version has no known mapping', () => {
   expect(() => apiVersions({}, '1000.0.0')).toThrowErrorMatchingSnapshot();
 });
 
-it('provides a mapping for SDKv1', () => {
-  expect(apiVersions({}, '1.0.0')).toEqual({
-    deviceApi: '1.0.0',
-    companionApi: '1.0.0',
+it('provides a mapping for SDKv3', () => {
+  expect(apiVersions({}, '3.0.0')).toEqual({
+    deviceApi: '4.0.0',
+    companionApi: '2.1.0',
   });
 });
 
-it('provides a mapping for SDKv2', () => {
-  expect(apiVersions({}, '2.0.0')).toEqual({
-    deviceApi: '3.0.0',
-    companionApi: '2.0.0',
+it('provides a mapping for SDKv3.1', () => {
+  expect(apiVersions({}, '3.1.0')).toEqual({
+    deviceApi: '4.0.0',
+    companionApi: '2.1.0',
   });
 });
 
 it('provides a mapping for a known SDK version with a non-zero patch version', () => {
-  expect(apiVersions({}, '1.0.100')).toEqual({
-    deviceApi: '1.0.0',
-    companionApi: '1.0.0',
+  expect(apiVersions({}, '3.0.100')).toEqual({
+    deviceApi: '4.0.0',
+    companionApi: '2.1.0',
   });
 });
 
 it('provides a mapping for a known SDK version with a pre-release suffix', () => {
-  expect(apiVersions({}, '2.0.0-alpha.1')).toEqual({
-    deviceApi: '3.0.0',
-    companionApi: '2.0.0',
+  expect(apiVersions({}, '3.0.0-alpha.1')).toEqual({
+    deviceApi: '4.0.0',
+    companionApi: '2.1.0',
   });
 });
 

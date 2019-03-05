@@ -178,38 +178,7 @@ console.log(\\"Hello!\\")
 "
 `;
 
-exports[`when targeting SDK 1.0 allows JSON imports 1`] = `
-"\\"use strict\\"
-var t=\\"fitbit\\"
-console.log(t)
-"
-`;
-
-exports[`when targeting SDK 1.0 allows unintentionally non-relative imports 1`] = `
-"\\"use strict\\"
-function n(){return 1}console.log(n())
-"
-`;
-
-exports[`when targeting SDK 1.0 allows unintentionally non-relative imports 2`] = `
-Array [
-  Object {
-    "category": 0,
-    "messageText": "Import in src/__test__/compile/incorrectlyNonRelativeImport.js has non-relative path but should be relative: replace 'importee' with './importee'.",
-  },
-]
-`;
-
-exports[`when targeting SDK 2.0 does not allow JSON imports 1`] = `
-<cwd>/src/__test__/compile/data.json: Unexpected token, expected ";" (2:7)
-
-[0m [90m 1 | [39m{[0m
-[0m[31m[1m>[22m[39m[90m 2 | [39m  [32m"foo"[39m[33m:[39m [32m"bar"[39m[33m,[39m[0m
-[0m [90m   | [39m       [31m[1m^[22m[39m[0m
-[0m [90m 3 | [39m  [32m"pebble"[39m[33m:[39m [32m"fitbit"[39m[0m
-[0m [90m 4 | [39m}[0m
-[0m [90m 5 | [39m[0m
-`;
+exports[`when targeting SDK 3.0 does not allow JSON imports 1`] = `"Unexpected token (Note that you need rollup-plugin-json to import JSON files)"`;
 
 exports[`when targeting SDK 3.0 emits ES5 code for device 1`] = `
 "\\"use strict\\"
