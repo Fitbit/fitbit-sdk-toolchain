@@ -24,6 +24,21 @@ const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
     platform: ['32.4.18+'],
     resourceFilterTag: '300x300',
   },
+  gemini: {
+    displayName: 'Fitbit Versa Lite',
+    platform: ['33.1.30+'],
+    resourceFilterTag: '300x300',
+    minSDKVersion: '3.1.0',
+    maxDeviceBundleSize: 3145728,
+    polyfills: {
+      barometer: 'export var Barometer = undefined; export default Barometer;',
+      gyroscope: 'export var Gyroscope = undefined; export default Gyroscope;',
+      orientation:
+        'export var OrientationSensor = undefined; export default OrientationSensor;',
+      'user-activity':
+        'export * from "user-activity"; import { today } from "user-activity"; Object.defineProperty(today.local, "elevationGain", {});',
+    },
+  },
 };
 
 let extraBuildTargets: typeof baseBuildTargets | undefined;
