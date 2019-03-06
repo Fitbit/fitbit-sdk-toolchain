@@ -140,10 +140,10 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "bundleDate": "2018-06-27T00:00:00.000Z",
   "i18n": Object {
-    "en": Object {
+    "en-us": Object {
       "name": "My App",
     },
-    "fr": Object {
+    "fr-fr": Object {
       "name": "Mon application",
     },
   },
@@ -164,10 +164,10 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "bundleDate": "2018-06-27T00:00:00.000Z",
   "i18n": Object {
-    "en": Object {
+    "en-us": Object {
       "name": "My App",
     },
-    "fr": Object {
+    "fr-fr": Object {
       "name": "Mon application",
     },
   },
@@ -182,9 +182,9 @@ Object {
 }
 `;
 
-exports[`when there is a device entry point present when there are compiled language files ensures the default language en is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"apiVersion\\":\\"4.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"i18n\\":{\\"en\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr\\":{\\"name\\":\\"Mon application\\"},\\"es\\":{\\"resources\\":\\"spanish/language\\"}}}"`;
+exports[`when there is a device entry point present when there are compiled language files ensures the default language en-US is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"apiVersion\\":\\"4.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"i18n\\":{\\"en-us\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr-fr\\":{\\"name\\":\\"Mon application\\"},\\"es-es\\":{\\"resources\\":\\"spanish/language\\"}}}"`;
 
-exports[`when there is a device entry point present when there are compiled language files ensures the default language es is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"apiVersion\\":\\"4.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"i18n\\":{\\"es\\":{\\"resources\\":\\"spanish/language\\"},\\"en\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr\\":{\\"name\\":\\"Mon application\\"}}}"`;
+exports[`when there is a device entry point present when there are compiled language files ensures the default language es-ES is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"apiVersion\\":\\"4.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"i18n\\":{\\"en-us\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr-fr\\":{\\"name\\":\\"Mon application\\"},\\"es-es\\":{\\"resources\\":\\"spanish/language\\"}}}"`;
 
 exports[`when there is a device entry point present when there are compiled language files sets the i18n[lang].resources key for language files that pass through 1`] = `
 Object {
@@ -194,14 +194,14 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "bundleDate": "2018-06-27T00:00:00.000Z",
   "i18n": Object {
-    "en": Object {
+    "en-us": Object {
       "name": "My App",
       "resources": "lang/english",
     },
-    "es": Object {
+    "es-es": Object {
       "resources": "spanish/language",
     },
-    "fr": Object {
+    "fr-fr": Object {
       "name": "Mon application",
     },
   },

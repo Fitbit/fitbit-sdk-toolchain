@@ -25,8 +25,8 @@ const makeClockfaceProjectConfig = (): ClockProjectConfiguration => ({
   appType: AppType.CLOCKFACE,
   appDisplayName: 'My App',
   i18n: {
-    en: { name: 'My App' },
-    fr: { name: 'Mon application' },
+    'en-US': { name: 'My App' },
+    'fr-FR': { name: 'Mon application' },
   },
   buildTargets: ['higgs'],
   requestedPermissions: [],
@@ -148,8 +148,8 @@ describe('when there is a device entry point present', () => {
 
   describe('when there are compiled language files', () => {
     beforeEach(() => {
-      addBuildFile('lang/english', 'foo', { translationLanguage: 'en' });
-      addBuildFile('spanish/language', 'foo', { translationLanguage: 'es' });
+      addBuildFile('lang/english', 'foo', { translationLanguage: 'en-US' });
+      addBuildFile('spanish/language', 'foo', { translationLanguage: 'es-ES' });
     });
 
     it('sets the i18n[lang].resources key for language files that pass through', () =>
@@ -157,7 +157,7 @@ describe('when there is a device entry point present', () => {
         makeDeviceManifestStream(),
       ).resolves.toMatchSnapshot());
 
-    it.each(['es', 'en'])(
+    it.each(['es-ES', 'en-US'])(
       'ensures the default language %s is the first key in the i18n object',
       (defaultLanguage) => {
         buildStream.push(null);
