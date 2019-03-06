@@ -4,7 +4,7 @@ import { DiagnosticCategory } from './diagnostics';
 import * as config from './ProjectConfiguration';
 import sdkVersion from './sdkVersion';
 
-jest.mock('./sdkVersion');
+jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('0.0.0')));
 
 function mockSDKVersion(version: string) {
   const parsedSDKVersion = semver.parse(version);
