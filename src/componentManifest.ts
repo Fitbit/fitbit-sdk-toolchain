@@ -1,5 +1,6 @@
 import { Transform } from 'stream';
 
+import lodash from 'lodash';
 import PluginError from 'plugin-error';
 import Vinyl from 'vinyl';
 
@@ -122,11 +123,16 @@ export function makeDeviceManifest({
     },
 
     flush(done) {
+      // FW is case sensitive for locales, it insists on everything being lowercase
+      const lowerCasedLocales = lodash.mapKeys(locales, (_, locale) =>
+        locale.toLowerCase(),
+      );
+
       // Ensure the default language is the first listed in the manifest
       const {
         [projectConfig.defaultLanguage]: defaultLanguage,
         ...otherLocales
-      } = locales;
+      } = lowerCasedLocales;
 
       if (!entryPoint) {
         return done(
