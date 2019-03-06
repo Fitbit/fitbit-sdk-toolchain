@@ -36,10 +36,9 @@ const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
       orientation:
         'export var OrientationSensor = undefined; export default OrientationSensor;',
       'user-activity': `
-        export * from "user-activity";
-        export { default } from "user-activity";
-        import { today } from "user-activity";
-        Object.defineProperty(today.local, "elevationGain", {});
+        export { today, goals, default } from 'user-activity';
+        import { today } from 'user-activity';
+        Object.defineProperty(today.local, 'elevationGain', {});
       `,
     },
   },
