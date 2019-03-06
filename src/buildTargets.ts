@@ -35,8 +35,12 @@ const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
       gyroscope: 'export var Gyroscope = undefined; export default Gyroscope;',
       orientation:
         'export var OrientationSensor = undefined; export default OrientationSensor;',
-      'user-activity':
-        'export * from "user-activity"; import { today } from "user-activity"; Object.defineProperty(today.local, "elevationGain", {});',
+      'user-activity': `
+        export * from "user-activity";
+        export { default } from "user-activity";
+        import { today } from "user-activity";
+        Object.defineProperty(today.local, "elevationGain", {});
+      `,
     },
   },
 };
