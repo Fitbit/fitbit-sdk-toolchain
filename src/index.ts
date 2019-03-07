@@ -128,7 +128,7 @@ export function loadProjectConfig({
     );
 
     if (diagnostics.fatalError) {
-      throw new Error('Project configuration is invalid');
+      throw new BuildError('Project configuration is invalid');
     }
 
     if (config.enableProposedAPI) {

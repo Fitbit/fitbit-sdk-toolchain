@@ -7,6 +7,7 @@ import humanizeList from 'humanize-list';
 import pofile from 'pofile';
 import { dataToEsm } from 'rollup-pluginutils';
 
+import BuildError from '../util/BuildError';
 import { validateLanguageTag, supportedTags } from '../languageTag';
 
 const glob = promisify(_glob);
@@ -18,8 +19,7 @@ async function loadTranslations(filePath: string) {
 
   for (const { msgid, msgstr } of po.items) {
     if (msgstr.length > 1) {
-      // tslint:disable-next-line:max-line-length
-      throw new Error(
+      throw new BuildError(
         `msgid "${msgid}" in file "${filePath}" has multiple msgstr values. This is not supported.`,
       );
     }
@@ -41,8 +41,7 @@ export default function companionTranslations(
       const languageTag = basename(filePath, '.po');
 
       if (!validateLanguageTag(languageTag)) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(
+        throw new BuildError(
           `Translation file "${filePath}" has a bad name. Translation files must be named ${humanizeList(
             supportedTags.map((tag) => tag + '.po'),
             { conjunction: 'or' },
@@ -53,8 +52,7 @@ export default function companionTranslations(
       const existingTranslations = languagePaths.get(languageTag);
 
       if (existingTranslations) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(
+        throw new BuildError(
           `More than one translation file found for language ${languageTag}. Found "${existingTranslations}" and "${filePath}".`,
         );
       }
@@ -64,7 +62,7 @@ export default function companionTranslations(
     }
 
     if (!translations.hasOwnProperty(defaultLanguage)) {
-      throw new Error(
+      throw new BuildError(
         `No translation file found for default language "${defaultLanguage}"`,
       );
     }

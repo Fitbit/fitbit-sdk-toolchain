@@ -1,5 +1,6 @@
 import semver from 'semver';
 
+import BuildError from './util/BuildError';
 import packageVersionConst from './packageVersion.const';
 
 export default function sdkVersion(toolchainVersion = packageVersionConst) {
@@ -27,7 +28,7 @@ export function apiVersions(
   if (major === 3 && minor === 1) {
     return { deviceApi: '4.0.0', companionApi: '2.1.0' };
   }
-  throw new Error(
+  throw new BuildError(
     `No known API versions for SDK package version ${major}.${minor}`,
   );
 }
