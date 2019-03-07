@@ -123,16 +123,11 @@ export function makeDeviceManifest({
     },
 
     flush(done) {
-      // FW is case sensitive for locales, it insists on everything being lowercase
-      const lowerCasedLocales = lodash.mapKeys(locales, (_, locale) =>
-        locale.toLowerCase(),
-      );
-
       // Ensure the default language is the first listed in the manifest
       const {
         [projectConfig.defaultLanguage]: defaultLanguage,
         ...otherLocales
-      } = lowerCasedLocales;
+      } = locales;
 
       if (!entryPoint) {
         return done(
@@ -154,10 +149,16 @@ export function makeDeviceManifest({
           buildId,
           apiVersion: apiVersions(projectConfig).deviceApi,
         }),
-        i18n: {
-          [projectConfig.defaultLanguage]: defaultLanguage,
-          ...otherLocales,
-        },
+        // FW is case sensitive for locales, it insists on everything being lowercase
+        // Doing this too early means the casing won't match the developers defaultLanguage
+        // setting, so do it as late as possible
+        i18n: lodash.mapKeys(
+          {
+            [projectConfig.defaultLanguage]: defaultLanguage,
+            ...otherLocales,
+          },
+          (_, locale) => locale.toLowerCase(),
+        ),
         ...(projectConfig.appType !== AppType.CLOCKFACE && {
           iconFile: projectConfig.iconFile,
           wipeColor: projectConfig.wipeColor,
