@@ -19,3 +19,11 @@ blanket applied to all modules. The `.const` suffix flags the file as
 being safe (or necessary) for processing by `aot-loader` when bundling.
 The toolchain browser bundle Webpack config has a rule to only apply
 `aot-loader` to files matching that pattern.
+
+When should I throw a BuildError?
+---------------------------------
+
+Throwing a `BuildError` surfaces that error to the developer in a clear way
+and attributes the error to the component that was being built at the time.
+Use a `BuildError` when something went wrong as a result of a developer's bad
+action or configuration.
