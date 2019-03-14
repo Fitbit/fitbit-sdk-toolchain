@@ -2498,10 +2498,10 @@ invert-kv@^2.0.0:
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-2.0.0.tgz#7393f5afa59ec9ff5f67a27620d11c226e3eec02"
   integrity sha512-wPVv/y/QQ/Uiirj/vh3oP+1Ww+AWehmi1g5fFWGPF6IpCBCDVrhgHRMvrLfdYcwDh3QJbGXDW4JAuzxElLSqKA==
 
-io-ts@1.8.2:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-1.8.2.tgz#4fe3878c147c9851604d36982ee6f64d3e6a4a1e"
-  integrity sha512-BvP7iC4bgum5e3Fh82xCUrKWt739osKjmQBMORGij2AOMfTmevj8SEqBhN8EeI0GEwIMHb2bXe4fuikN0lsTWg==
+io-ts@1.8.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-1.8.3.tgz#b617159ad030b5c85e14192ffbf24dd054030b38"
+  integrity sha512-zrZRpGNqbuMu8LWJ7lNNQpgdjIiOsNsIfzk8CJpeuVmdnNExGBpb5Wwtp+G9gmMOzLqj4+iFA7+HiFGLzqgBFQ==
   dependencies:
     fp-ts "^1.0.0"
 
