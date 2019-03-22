@@ -19,6 +19,7 @@ import { makeDeviceManifest, makeCompanionManifest } from './componentManifest';
 import componentTargets, { ComponentType } from './componentTargets';
 import convertImageToTXI, { TXIOutputFormat } from './convertImageToTXI';
 import eventsIntercept from './util/eventsIntercept';
+import gulpAssertFiles from './gulpAssertFiles';
 import gulpSetProperty from './gulpSetProperty';
 import {
   logDiagnosticToConsole,
@@ -39,7 +40,6 @@ import ProjectConfiguration, {
 import * as resources from './resources';
 import sdkVersion from './sdkVersion';
 import validateIcon from './validateIcon';
-import vinylAssertFiles from './vinylAssertFiles';
 import validateFileSizes from './validateFileSizes';
 import zip from './zip';
 
@@ -196,7 +196,7 @@ export function buildDeviceResources(
     convertImageToTXI({
       rgbaOutputFormat: TXIOutputFormat.RGBA6666,
     }),
-    vinylAssertFiles([resources.svgMain, resources.svgWidgets]),
+    gulpAssertFiles([resources.svgMain, resources.svgWidgets]),
   );
 }
 

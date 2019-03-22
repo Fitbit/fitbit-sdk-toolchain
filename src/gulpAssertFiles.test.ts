@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 
 import Vinyl from 'vinyl';
-import vinylAssertFiles from './vinylAssertFiles';
+import gulpAssertFiles from './gulpAssertFiles';
 
 function makeTestStream(paths: string[]) {
   const stream = new Readable({ objectMode: true });
@@ -25,7 +25,7 @@ function expectAssertResult({
   return expect(
     new Promise((resolve, reject) => {
       const stream = makeTestStream(actual || ['foo', 'bar']).pipe(
-        vinylAssertFiles(expected),
+        gulpAssertFiles(expected),
       );
       stream.on('error', reject);
       stream.on('finish', resolve);
