@@ -5,7 +5,7 @@ import humanizeList from 'humanize-list';
 import PluginError from 'plugin-error';
 import Vinyl from 'vinyl';
 
-const PLUGIN_NAME = 'vinyl-assert-files';
+const PLUGIN_NAME = 'assert-files';
 
 export default function vinylAssertFiles(expected: string[]) {
   const expectedPaths = new Set(expected.map(path.normalize));
