@@ -82,7 +82,6 @@
     "multistream": "^2.1.1",
     "plugin-error": "^1.0.1",
     "pofile": "^1.0.11",
-    "prettysize": "^2.0.0",
     "pumpify": "^1.5.1",
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.3.2",
