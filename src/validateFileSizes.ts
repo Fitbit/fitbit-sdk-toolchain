@@ -1,10 +1,8 @@
-import stream from 'stream';
-
 import PluginError from 'plugin-error';
+import stream from 'stream';
 import Vinyl from 'vinyl';
-
 import { DiagnosticCategory, DiagnosticHandler } from './diagnostics';
-import byteStringFormatter from './util/byteStringFormatter';
+import humanizeByteCount from './util/humanizeByteCount';
 
 const PLUGIN_NAME = 'validateFileSizes';
 
@@ -42,10 +40,9 @@ export default function validateFileSizes({
           category: DiagnosticCategory.Error,
           messageText: `${
             file.relative
-          } is larger than maximum allowed size. File size was ${byteStringFormatter(
+          } is larger than maximum allowed size. File size was ${humanizeByteCount(
             actualSize,
-            4,
-          )}, maximum allowed is ${byteStringFormatter(expectedMaxSize, 4)}.`,
+          )}, maximum allowed is ${humanizeByteCount(expectedMaxSize)}.`,
         });
       }
 
