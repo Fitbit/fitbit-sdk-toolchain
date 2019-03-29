@@ -22,20 +22,27 @@ describe('humanizeByteCount', () => {
     },
   );
 
-  it('handles decimal point accordingly when the conversion value is not an integer', () => {
-    expect(humanizeByteCount(340000, 0)).toBe('332 KB');
-    expect(humanizeByteCount(340000, 2)).toBe('332.03 KB');
-    expect(humanizeByteCount(340000, 4)).toBe('332.0313 KB');
-    expect(humanizeByteCount(340000)).toBe('332.0313 KB');
-    expect(humanizeByteCount(340000, 5)).toBe('332.03125 KB');
-  });
+  it.each([
+    [340000, 0, '332 KB'],
+    [340000, 2, '332.03 KB'],
+    [340000, 4, '332.0313 KB'],
+    [340000, undefined, '332.0313 KB'],
+    [340000, 5, '332.03125 KB'],
+  ])(
+    'handles decimal point accordingly when the conversion value is not an integer',
+    (byteCount, decimalCount, result) => {
+      expect(humanizeByteCount(byteCount, decimalCount)).toBe(result);
+    },
+  );
 
-  it('converts to different unit types', () => {
-    expect(humanizeByteCount(10, 0)).toBe('10 B');
-    expect(humanizeByteCount(307200)).toBe('300 KB');
-    expect(humanizeByteCount(2097152)).toBe('2 MB');
-    expect(humanizeByteCount(2411724.8)).toBe('2.3 MB');
-    expect(humanizeByteCount(500170752)).toBe('477 MB');
-    expect(humanizeByteCount(11811160067, 0)).toBe('11 GB');
+  it.each([
+    [10, 0, '10 B'],
+    [307200, undefined, '300 KB'],
+    [2097152, undefined, '2 MB'],
+    [2411724.8, undefined, '2.3 MB'],
+    [500170752, undefined, '477 MB'],
+    [11811160067, 0, '11 GB'],
+  ])('converts to different unit types', (byteCount, decimalCount, result) => {
+    expect(humanizeByteCount(byteCount, decimalCount)).toBe(result);
   });
 });
