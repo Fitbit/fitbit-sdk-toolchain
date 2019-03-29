@@ -16,13 +16,13 @@ describe('humanizeByteCount', () => {
   );
 
   it.each([[1048576, 0], [1048576, 2], [1048576, undefined], [1048576, 5]])(
-    'converts bytes to megabytes and shows no decimal point, even when we request it',
+    'converts bytes to an exact megabyte and shows no decimal point, even when we request it',
     (byteCount, decimalCount) => {
       expect(humanizeByteCount(byteCount, decimalCount)).toBe('1 MB');
     },
   );
 
-  it('handles decimal point accordingly when the conversion value is not an exact number', () => {
+  it('handles decimal point accordingly when the conversion value is not an integer', () => {
     expect(humanizeByteCount(340000, 0)).toBe('332 KB');
     expect(humanizeByteCount(340000, 2)).toBe('332.03 KB');
     expect(humanizeByteCount(340000, 4)).toBe('332.0313 KB');
