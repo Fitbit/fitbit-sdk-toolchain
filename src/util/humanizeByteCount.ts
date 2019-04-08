@@ -13,7 +13,7 @@ export default function byteStringFormatter(
   const index = Math.floor(Math.log(byteCount) / Math.log(unitSize));
   return `${parseFloat(
     (byteCount / Math.pow(unitSize, index)).toFixed(
-      lodash.clamp(decimalCount, 0, 100),
+      lodash.clamp(decimalCount, 0, 20),
     ),
   )} ${unitNames[index]}`;
 }
