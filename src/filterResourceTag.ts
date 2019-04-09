@@ -24,6 +24,7 @@ class FilterResourceTag extends Transform {
     ) {
       const newFile = file.clone({ contents: false });
       newFile.basename = basename;
+      newFile.path = `./resources/${basename}`;
       this.files.set(newFile.path, newFile);
     }
     callback();

@@ -42,6 +42,7 @@ import sdkVersion from './sdkVersion';
 import validateIcon from './validateIcon';
 import validateFileSizes from './validateFileSizes';
 import zip from './zip';
+import buildFilePath from './buildFilePath';
 
 export { DiagnosticCategory };
 
@@ -159,7 +160,7 @@ export function buildComponent({
 }) {
   const { inputs, outputDir, notFoundIsFatal } = componentTargets[component];
 
-  const entryPoint = findEntryPoint(inputs, {
+  const entryPoint = findEntryPoint(projectConfig.rootPath, inputs, {
     onDiagnostic,
     component,
     notFoundIsFatal,
@@ -253,7 +254,12 @@ export function buildDeviceComponents({
               // no backpressure. We like our users and don't want to eat
               // all their RAM, so we just have to be careful not to
               // introduce a regression when modifying this code.
-              vinylFS.src('./resources/**', { base: '.' }),
+              vinylFS.src(
+                buildFilePath(projectConfig.rootPath, './resources/**'),
+                {
+                  base: '.',
+                },
+              ),
               buildDeviceResources(
                 projectConfig,
                 buildTargets[family],

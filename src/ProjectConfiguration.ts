@@ -32,6 +32,7 @@ export interface BaseProjectConfiguration {
   enableProposedAPI?: true;
   appClusterID?: string;
   developerID?: string;
+  rootPath?: string;
 }
 
 export interface AppProjectConfiguration extends BaseProjectConfiguration {
@@ -288,6 +289,7 @@ export function normalizeProjectConfig(
     buildTargets: [],
     i18n: {},
     defaultLanguage: 'en-US',
+    rootPath: './',
 
     // Override defaults
     ...defaults,

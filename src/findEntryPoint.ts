@@ -4,8 +4,10 @@ import humanizeList from 'humanize-list';
 
 import BuildError from './util/BuildError';
 import { DiagnosticCategory, DiagnosticHandler } from './diagnostics';
+import buildFilePath from './buildFilePath';
 
 export default function findEntryPoint(
+  rootPath: string | undefined,
   possibilities: string[],
   options: {
     notFoundIsFatal?: boolean;
@@ -18,12 +20,20 @@ export default function findEntryPoint(
     ...options,
   };
 
-  const foundEntryPoints = possibilities.filter((path) => fs.existsSync(path));
+  const remappedPossibilities = possibilities.map((path) =>
+    buildFilePath(rootPath, path),
+  );
+
+  const foundEntryPoints = remappedPossibilities.filter((path) => {
+    return fs.existsSync(path);
+  });
 
   let entryPoint;
   if (foundEntryPoints.length === 1) entryPoint = foundEntryPoints[0];
   else if (foundEntryPoints.length === 0) {
-    const possibilitiesStr = humanizeList(possibilities, { conjunction: 'or' });
+    const possibilitiesStr = humanizeList(remappedPossibilities, {
+      conjunction: 'or',
+    });
     if (notFoundIsFatal) {
       throw new BuildError(
         // tslint:disable-next-line:max-line-length
