@@ -32,7 +32,7 @@ it('throws an error if package.json fitbit section is not an object', () => {
   expect(generateAppID).toThrowErrorMatchingSnapshot();
 });
 
-it.each([
+it.each<[string, any]>([
   ['no fitbit key exists', {}],
   ['a fitbit key exists', { fitbit: {} }],
   ['an existing app ID is present', { fitbit: { appUUID: 'foo' } }],

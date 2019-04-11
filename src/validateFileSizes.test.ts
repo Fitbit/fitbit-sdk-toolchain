@@ -82,7 +82,9 @@ describe('in buffered mode', () => {
     validator.end();
   });
 
-  it.each([
+  // FIXME: Jest typings are broken and can't deal with the done callback parameter properly
+  // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34617
+  it.each<any>([
     ['one byte over the allowed size', 3 * 1024 * 1024 + 1],
     ['much larger than the allowed size', 10 * 1024 * 1024],
   ])('logs a warning if a file is %s', (_, fileSize, done) => {

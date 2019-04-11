@@ -94,7 +94,9 @@ function compileExpectError(defaultLanguage: string, done: jest.DoneCallback) {
 }
 
 describe('rejects .po files whose names are not acceptable language tags', () => {
-  it.each(['e.po', 'en-USA.po', 'sl-IT-nedis.po'])(
+  // FIXME: Jest typings are broken and can't deal with the done callback parameter properly
+  // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34617
+  it.each<any>(['e.po', 'en-USA.po', 'sl-IT-nedis.po'])(
     '%s',
     (path: string, done: jest.DoneCallback) => {
       compileExpectError('en', done).end(

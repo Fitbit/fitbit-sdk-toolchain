@@ -147,7 +147,9 @@ describe('in streaming mode', () => {
       });
   });
 
-  it.each([
+  // FIXME: Jest typings are broken and can't deal with the done callback parameter properly
+  // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34617
+  it.each<any>([
     ['empty', Buffer.of()],
     ['truncated', Buffer.from('89504E470D0A1A0A', 'hex')],
   ])('gracefully errors if the PNG file is %s', (_, data, done) => {
@@ -183,7 +185,9 @@ describe('in streaming mode', () => {
       );
   });
 
-  it.each([
+  // FIXME: Jest typings are broken and can't deal with the done callback parameter properly
+  // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34617
+  it.each<any>([
     ['1bit.png', 'monochrome'],
     ['rgb_image.png', 'RGB'],
     ['rle_no_leftovers.png', 'RGBA'],
@@ -227,7 +231,9 @@ describe('in buffered mode', () => {
       .on('data', () => done.fail('Got an unexpected file'));
   });
 
-  it.each([
+  // FIXME: Jest typings are broken and can't deal with the done callback parameter properly
+  // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34617
+  it.each<any>([
     ['empty', Buffer.of()],
     ['truncated', Buffer.from('89504E470D0A1A0A', 'hex')],
   ])('gracefully errors if the PNG file is %s', (_, contents, done) => {
@@ -247,7 +253,9 @@ describe('in buffered mode', () => {
       );
   });
 
-  it.each([
+  // FIXME: Jest typings are broken and can't deal with the done callback parameter properly
+  // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34617
+  it.each<any>([
     ['1bit.png', 'monochrome'],
     ['rgb_image.png', 'RGB'],
     ['rle_no_leftovers.png', 'RGBA'],
