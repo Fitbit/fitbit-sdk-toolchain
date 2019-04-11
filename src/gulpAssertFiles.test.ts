@@ -33,7 +33,7 @@ function expectAssertResult({
   );
 }
 
-it.each([
+it.each<[string, string[]]>([
   ['one required file is missing', ['baz']],
   ['two required files are missing', ['baz', 'zab']],
   ['three required files are missing', ['baz', 'zab', 'oof']],

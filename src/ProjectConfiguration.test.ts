@@ -178,7 +178,7 @@ it('reports the correct validation warning for both invalid and non-string permi
   ]);
 });
 
-it.each([
+it.each<[string, any]>([
   ['a number', 3.14],
   ['an array', ['foo', 'bar']],
   ['null', null],
@@ -350,7 +350,7 @@ it('validates all specified build targets are known', () => {
 });
 
 describe('normalizeProjectConfig', () => {
-  it.each([
+  it.each<[string, any]>([
     ['a number', 3.14],
     ['an array', ['foo', 'bar']],
     ['null', null],
@@ -360,7 +360,7 @@ describe('normalizeProjectConfig', () => {
     expect(() => config.normalizeProjectConfig(configData)).toThrow(TypeError);
   });
 
-  it.each([
+  it.each<[string, any]>([
     ['a number', 3.14],
     ['an object', { foo: 'bar' }],
     ['null', null],

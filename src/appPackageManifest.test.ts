@@ -188,7 +188,7 @@ it('builds a package manifest with a native device component and companion', () 
     hasCompanion: true,
   }).toMatchSnapshot());
 
-it.each([
+it.each<[string, any]>([
   ['has an invalid type field', { type: '__invalid__' }],
   ['has a device type but missing platform', { type: 'device', family: 'foo' }],
   [

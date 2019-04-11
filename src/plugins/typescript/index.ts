@@ -1,5 +1,5 @@
 import { Plugin } from 'rollup';
-import { createFilter, Filter } from 'rollup-pluginutils';
+import { createFilter } from 'rollup-pluginutils';
 import ts from 'typescript';
 
 import LanguageServiceHost from './LanguageServiceHost';
@@ -8,6 +8,8 @@ import { parseTsConfig } from './parse-tsconfig';
 import { default as tslib } from './tslib.const';
 
 import { Diagnostic } from '../../diagnostics';
+
+type Filter = RegExp | RegExp[];
 
 interface IOptions {
   include: Filter;
@@ -112,7 +114,7 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
 
     resolveId(importee, importer) {
       if (importee === 'tslib') return tslib.sentinel;
-      if (!importer) return null;
+      if (!importer) return;
 
       const result = ts.nodeModuleNameResolver(
         importee,
@@ -123,12 +125,10 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
 
       if (result.resolvedModule && result.resolvedModule.resolvedFileName) {
         if (result.resolvedModule.resolvedFileName.endsWith('.d.ts')) {
-          return null;
+          return;
         }
         return result.resolvedModule.resolvedFileName;
       }
-
-      return null;
     },
 
     load(id) {

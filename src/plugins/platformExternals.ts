@@ -62,7 +62,6 @@ export default function platformExternals(component: ComponentType): Plugin {
     resolveId(importee) {
       if (importee.startsWith('internal/')) return false;
       if (externals[component].indexOf(importee) !== -1) return false;
-      return null;
     },
   };
 }

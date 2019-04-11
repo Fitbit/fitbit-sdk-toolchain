@@ -141,7 +141,9 @@ describe('in buffered mode', () => {
     validator.end();
   });
 
-  it.each([
+  // FIXME: Jest typings are broken and can't deal with the done callback parameter properly
+  // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34617
+  it.each<any>([
     ['corrupt', readFileSync(corruptImage)],
     [
       'an invalid width and height',
