@@ -42,7 +42,7 @@
     "@types/vinyl-fs": "^2.4.10",
     "@types/yargs": "^13.0.0",
     "concat-stream": "^2.0.0",
-    "depcheck": "^0.7.1",
+    "depcheck": "^0.8.0",
     "event-stream": "^4.0.1",
     "husky": "^2.2.0",
     "jest": "^24.1.0",
