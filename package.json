@@ -95,7 +95,7 @@
     "terser": "^3.16.1",
     "tslib": "^1.9.3",
     "typescript": "^3.3.3",
-    "update-notifier": "^2.5.0",
+    "update-notifier": "^3.0.0",
     "uuid": "^3.3.2",
     "validator": "^10.11.0",
     "vinyl": "^2.2.0",
