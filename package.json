@@ -22,7 +22,7 @@
     "@types/concat-stream": "^1.6.0",
     "@types/dateformat": "^3.0.0",
     "@types/event-stream": "^3.3.34",
-    "@types/fs-extra": "^5.0.4",
+    "@types/fs-extra": "^7.0.0",
     "@types/glob": "^7.1.1",
     "@types/gulp-zip": "^4.0.0",
     "@types/indent-string": "^3.2.0",
