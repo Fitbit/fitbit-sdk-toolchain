@@ -86,7 +86,7 @@
     "rollup": "^1.9.3",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-node-resolve": "^5.0.0",
     "rollup-pluginutils": "^2.3.3",
     "semver": "^6.0.0",
     "simple-random": "^1.0.3",
