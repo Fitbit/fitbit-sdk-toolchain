@@ -92,7 +92,7 @@
     "simple-random": "^1.0.3",
     "source-map": "^0.7.3",
     "source-map-compactor": "^1.0.1",
-    "terser": "^3.16.1",
+    "terser": "^4.0.0",
     "tslib": "^1.9.3",
     "typescript": "^3.3.3",
     "update-notifier": "^2.5.0",
