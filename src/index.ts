@@ -209,6 +209,11 @@ export function buildDeviceComponents({
   buildId: string;
   onDiagnostic?: DiagnosticHandler;
 }) {
+  // If we build only the companion, we don't have build targets
+  if (!projectConfig.buildTargets || projectConfig.buildTargets.length === 0) {
+    return multistream.obj([]);
+  }
+
   return multistream.obj([
     // Sequence the build process: wait until compilation finishes
     // before building the resources for each component.

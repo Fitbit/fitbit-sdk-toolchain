@@ -57,29 +57,34 @@ function expectValidPackageManifest(options?: {
     ...options,
   };
   const stream = makeReadStream();
-  for (const platform of projectConfig.buildTargets) {
-    if (!nativeApp) {
+  if (projectConfig.buildTargets) {
+    for (const platform of projectConfig.buildTargets) {
+      if (!nativeApp) {
+        stream.push(
+          new Vinyl({
+            path: `sourceMaps/${
+              ComponentType.DEVICE
+            }/${platform}/index.js.json`,
+            contents: Buffer.alloc(0),
+            componentMapKey: [ComponentType.DEVICE, platform],
+          }),
+        );
+      }
       stream.push(
         new Vinyl({
-          path: `sourceMaps/${ComponentType.DEVICE}/${platform}/index.js.json`,
+          path: `${ComponentType.DEVICE}-${platform}.zip`,
           contents: Buffer.alloc(0),
-          componentMapKey: [ComponentType.DEVICE, platform],
+          componentBundle: {
+            type: 'device',
+            family: platform,
+            platform: buildTargets[platform].platform,
+            ...(nativeApp && { isNative: true }),
+          },
         }),
       );
     }
-    stream.push(
-      new Vinyl({
-        path: `${ComponentType.DEVICE}-${platform}.zip`,
-        contents: Buffer.alloc(0),
-        componentBundle: {
-          type: 'device',
-          family: platform,
-          platform: buildTargets[platform].platform,
-          ...(nativeApp && { isNative: true }),
-        },
-      }),
-    );
   }
+
   if (hasCompanion) {
     for (const componentType of [
       ComponentType.COMPANION,

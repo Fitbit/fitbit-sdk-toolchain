@@ -26,7 +26,7 @@ export interface BaseProjectConfiguration {
   requestedPermissions: string[];
   i18n: LocalesConfig;
   defaultLanguage: string;
-  buildTargets: string[];
+  buildTargets?: string[];
   // We don't want to accidentally serialize `enableProposedAPI: false`
   // out to users' package.json files.
   enableProposedAPI?: true;
@@ -285,7 +285,6 @@ export function normalizeProjectConfig(
     iconFile: 'resources/icon.png',
     wipeColor: '',
     requestedPermissions: [],
-    buildTargets: [],
     i18n: {},
     defaultLanguage: 'en-US',
 
@@ -363,18 +362,12 @@ export function validateRequestedPermissions({
 }
 
 export function validateBuildTarget({ buildTargets }: ProjectConfiguration) {
-  const diagnostics = constrainedSetDiagnostics({
-    actualValues: buildTargets,
+  return constrainedSetDiagnostics({
+    actualValues: buildTargets || [],
     knownValues: knownBuildTargets,
     valueTypeNoun: 'build targets',
     notFoundIsFatal: true,
   });
-
-  if (buildTargets.length === 0) {
-    diagnostics.pushFatalError('At least one build target must be enabled');
-  }
-
-  return diagnostics;
 }
 
 export function validateLocaleDisplayName(

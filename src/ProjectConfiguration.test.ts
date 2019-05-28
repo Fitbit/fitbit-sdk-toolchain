@@ -1,7 +1,7 @@
 import semver from 'semver';
 
 import { DiagnosticCategory } from './diagnostics';
-import * as config from './ProjectConfiguration';
+import ProjectConfiguration, * as config from './ProjectConfiguration';
 import sdkVersion from './sdkVersion';
 
 jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('0.0.0')));
@@ -21,10 +21,13 @@ const sdk3Permission = 'access_exercise';
 beforeEach(() => mockSDKVersion('3.0.0'));
 
 it('validates the length of the app display name', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     appDisplayName: 'The quick brown fox jumped over the lazy dog',
   };
-  expect(config.validateProjectDisplayName(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateProjectDisplayName(configFile as ProjectConfiguration)
+      .diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText: `Display name must not exceed ${
@@ -35,10 +38,13 @@ it('validates the length of the app display name', () => {
 });
 
 it('validates the app display name is not empty', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     appDisplayName: '',
   };
-  expect(config.validateProjectDisplayName(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateProjectDisplayName(configFile as ProjectConfiguration)
+      .diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText: 'Display name must not be blank',
@@ -47,19 +53,22 @@ it('validates the app display name is not empty', () => {
 });
 
 it('allows app display names of acceptable length', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     appDisplayName: 'My App',
   };
   expect(
-    config.validateProjectDisplayName(configFile).diagnostics,
+    config.validateProjectDisplayName(configFile as ProjectConfiguration)
+      .diagnostics,
   ).toHaveLength(0);
 });
 
 it('validates the app type is not an invalid app type', () => {
-  const configFile: any = {
-    appType: 'invalid',
+  const configFile: Partial<ProjectConfiguration> = {
+    appType: 'invalid' as any,
   };
-  expect(config.validateAppType(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateAppType(configFile as ProjectConfiguration).diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText: "App type 'invalid' is invalid, expected app or clockface",
@@ -68,40 +77,49 @@ it('validates the app type is not an invalid app type', () => {
 });
 
 it('validates app is a valid app type', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     appType: config.AppType.APP,
   };
-  expect(config.validateAppType(configFile).diagnostics).toHaveLength(0);
+  expect(
+    config.validateAppType(configFile as ProjectConfiguration).diagnostics,
+  ).toHaveLength(0);
 });
 
 it('validates clockface is a valid app type', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     appType: config.AppType.CLOCKFACE,
   };
-  expect(config.validateAppType(configFile).diagnostics).toHaveLength(0);
+  expect(
+    config.validateAppType(configFile as ProjectConfiguration).diagnostics,
+  ).toHaveLength(0);
 });
 
 it('does not validate wipe color is invalid if app type is clockface', () => {
   const configFile: any = {
     appType: config.AppType.CLOCKFACE,
-    wipeColor: 'invalid',
+    wipeColor: 'invalid' as any,
   };
-  expect(config.validateWipeColor(configFile).diagnostics).toHaveLength(0);
+  expect(
+    config.validateWipeColor(configFile as ProjectConfiguration).diagnostics,
+  ).toHaveLength(0);
 });
 
 it('does not validate wipe color existence if app type is clockface', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     appType: config.AppType.CLOCKFACE,
   };
-  expect(config.validateWipeColor(configFile).diagnostics).toHaveLength(0);
+  expect(
+    config.validateWipeColor(configFile as ProjectConfiguration).diagnostics,
+  ).toHaveLength(0);
 });
 
 it('validates the requested permissions are valid', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     requestedPermissions: [invalidPermission],
   };
   expect(
-    config.validateRequestedPermissions(configFile).diagnostics[0],
+    config.validateRequestedPermissions(configFile as ProjectConfiguration)
+      .diagnostics[0],
   ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Warning,
@@ -111,14 +129,15 @@ it('validates the requested permissions are valid', () => {
 });
 
 it('validates the requested permissions are valid with the current sdk', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     requestedPermissions: [sdk3Permission],
   };
 
   mockSDKVersion('2.0.0');
 
   expect(
-    config.validateRequestedPermissions(configFile).diagnostics[0],
+    config.validateRequestedPermissions(configFile as ProjectConfiguration)
+      .diagnostics[0],
   ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Warning,
@@ -128,30 +147,33 @@ it('validates the requested permissions are valid with the current sdk', () => {
 });
 
 it('does not produce a warning if sdk version is satisfied for the requested permissions', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     requestedPermissions: [sdk3Permission],
   };
 
   expect(
-    config.validateRequestedPermissions(configFile).diagnostics,
+    config.validateRequestedPermissions(configFile as ProjectConfiguration)
+      .diagnostics,
   ).toHaveLength(0);
 });
 
 it('does not produce a validation warning for restricted permissions', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     requestedPermissions: ['fitbit_token'],
   };
   expect(
-    config.validateRequestedPermissions(configFile).diagnostics,
+    config.validateRequestedPermissions(configFile as ProjectConfiguration)
+      .diagnostics,
   ).toHaveLength(0);
 });
 
 it('validates the requested permissions are not duplicated', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     requestedPermissions: [validPermission, validPermission, validPermission],
   };
   expect(
-    config.validateRequestedPermissions(configFile).diagnostics[0],
+    config.validateRequestedPermissions(configFile as ProjectConfiguration)
+      .diagnostics[0],
   ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Warning,
@@ -162,10 +184,18 @@ it('validates the requested permissions are not duplicated', () => {
 });
 
 it('reports the correct validation warning for both invalid and non-string permissions', () => {
-  const configFile: any = {
-    requestedPermissions: [validPermission, invalidPermission, 123, null],
+  const configFile: Partial<ProjectConfiguration> = {
+    requestedPermissions: [
+      validPermission,
+      invalidPermission,
+      123,
+      null,
+    ] as any[],
   };
-  expect(config.validateRequestedPermissions(configFile).diagnostics).toEqual([
+  expect(
+    config.validateRequestedPermissions(configFile as ProjectConfiguration)
+      .diagnostics,
+  ).toEqual([
     expect.objectContaining({
       category: DiagnosticCategory.Warning,
       messageText: `One or more requested permissions was invalid: ${invalidPermission}`,
@@ -186,11 +216,12 @@ it.each<[string, any]>([
 ])(
   'reports a validation warning if requested permissions includes %s',
   (_, vector) => {
-    const configFile: any = {
+    const configFile: Partial<ProjectConfiguration> = {
       requestedPermissions: [vector],
     };
     expect(
-      config.validateRequestedPermissions(configFile).diagnostics[0],
+      config.validateRequestedPermissions(configFile as ProjectConfiguration)
+        .diagnostics[0],
     ).toEqual(
       expect.objectContaining({
         category: DiagnosticCategory.Error,
@@ -201,10 +232,13 @@ it.each<[string, any]>([
 );
 
 it('validates the supported locales are valid', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     i18n: { invalid: { name: 'foo' } },
   };
-  expect(config.validateSupportedLocales(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateSupportedLocales(configFile as ProjectConfiguration)
+      .diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Warning,
       messageText: 'Invalid locales: invalid',
@@ -213,13 +247,16 @@ it('validates the supported locales are valid', () => {
 });
 
 it('validates the length of the localized display name', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     i18n: {
       'fr-FR': { name: 'The quick brown fox jumped over the lazy dog' },
     },
   };
   expect(
-    config.validateLocaleDisplayName(configFile, 'fr-FR').diagnostics[0],
+    config.validateLocaleDisplayName(
+      configFile as ProjectConfiguration,
+      'fr-FR',
+    ).diagnostics[0],
   ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -232,13 +269,16 @@ it('validates the length of the localized display name', () => {
 });
 
 it('validates the localized app display name is not empty', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     i18n: {
       'fr-FR': { name: '' },
     },
   };
   expect(
-    config.validateLocaleDisplayName(configFile, 'fr-FR').diagnostics[0],
+    config.validateLocaleDisplayName(
+      configFile as ProjectConfiguration,
+      'fr-FR',
+    ).diagnostics[0],
   ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -248,7 +288,7 @@ it('validates the localized app display name is not empty', () => {
 });
 
 it('validates multiple localized display names', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     appType: config.AppType.CLOCKFACE,
     i18n: {
       'fr-FR': { name: '' },
@@ -256,7 +296,10 @@ it('validates multiple localized display names', () => {
     },
   };
 
-  expect(config.validateLocaleDisplayNames(configFile).diagnostics).toEqual([
+  expect(
+    config.validateLocaleDisplayNames(configFile as ProjectConfiguration)
+      .diagnostics,
+  ).toEqual([
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText: 'Localized display name for French must not be blank',
@@ -270,19 +313,19 @@ it('validates multiple localized display names', () => {
 
 it('does not complain if appUUID is any canonical-format UUID string', () => {
   expect(
-    config.validateAppUUID({
+    config.validateAppUUID(({
       appUUID: '00000000-0000-0000-0000-000000000000',
-    } as any).diagnostics,
+    } as Partial<ProjectConfiguration>) as ProjectConfiguration).diagnostics,
   ).toHaveLength(0);
 });
 
 it('validationErrors() validates all fields', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     appUUID: 'invalid',
     appDisplayName: '',
-    buildTargets: [],
+    buildTargets: ['badbuildtarget'],
     wipeColor: 'invalid',
-    appType: 'invalid',
+    appType: 'invalid' as any,
     requestedPermissions: [invalidPermission, validPermission],
     i18n: {
       'en-US': { name: '' },
@@ -291,7 +334,9 @@ it('validationErrors() validates all fields', () => {
     },
     defaultLanguage: '_invalid_',
   };
-  expect(config.validate(configFile).diagnostics).toEqual([
+  expect(
+    config.validate(configFile as ProjectConfiguration).diagnostics,
+  ).toEqual([
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText:
@@ -315,7 +360,7 @@ it('validationErrors() validates all fields', () => {
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      messageText: 'At least one build target must be enabled',
+      messageText: 'One or more build targets was invalid: badbuildtarget',
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Warning,
@@ -338,15 +383,28 @@ it('validationErrors() validates all fields', () => {
 });
 
 it('validates all specified build targets are known', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     buildTargets: ['__always_unknown__'],
   };
-  expect(config.validateBuildTarget(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateBuildTarget(configFile as ProjectConfiguration)
+      .diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText: 'One or more build targets was invalid: __always_unknown__',
     }),
   );
+});
+
+it('validates undefined buildTargets', () => {
+  const configFile: Partial<ProjectConfiguration> = {
+    buildTargets: undefined,
+  };
+
+  expect(
+    config.validateBuildTarget(configFile as ProjectConfiguration).diagnostics,
+  ).toHaveLength(0);
 });
 
 describe('normalizeProjectConfig', () => {
@@ -390,9 +448,9 @@ describe('normalizeProjectConfig', () => {
     expect(configFile.appUUID).toEqual(expectedUUID);
   });
 
-  it('defaults build targets to an empty array', () => {
+  it('defaults build targets to undefined', () => {
     const configFile = config.normalizeProjectConfig({});
-    expect(configFile.buildTargets).toHaveLength(0);
+    expect(configFile.buildTargets).toBeUndefined();
   });
 
   it('defaults default language to en-US', () => {
@@ -425,10 +483,13 @@ describe('normalizeProjectConfig', () => {
 });
 
 it('validates the default language is a valid language tag', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     defaultLanguage: '_really_not_bcp_47_',
   };
-  expect(config.validateDefaultLanguage(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateDefaultLanguage(configFile as ProjectConfiguration)
+      .diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText:
@@ -438,13 +499,16 @@ it('validates the default language is a valid language tag', () => {
 });
 
 it('validates app cluster ID is defined if app cluster storage permission is requested', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     requestedPermissions: ['access_app_cluster_storage'],
     developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
   };
   // TODO: fixme with real version
   mockSDKVersion('999.0.0');
-  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateStorageGroup(configFile as ProjectConfiguration)
+      .diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText:
@@ -460,14 +524,17 @@ it.each([
     '00000000000000000000000000000000000000000000000000000000000000000',
   ],
 ])('validates app cluster ID is not %s', (_, appClusterID) => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     appClusterID,
     requestedPermissions: ['access_app_cluster_storage'],
     developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
   };
   // TODO: fixme with real version
   mockSDKVersion('999.0.0');
-  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateStorageGroup(configFile as ProjectConfiguration)
+      .diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText: 'App Cluster ID must be between 1-64 characters',
@@ -476,14 +543,17 @@ it.each([
 });
 
 it('validates app cluster ID is of correct format', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     requestedPermissions: ['access_app_cluster_storage'],
     developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
     appClusterID: 'foo_bar',
   };
   // TODO: fixme with real version
   mockSDKVersion('999.0.0');
-  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateStorageGroup(configFile as ProjectConfiguration)
+      .diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText:
@@ -493,13 +563,16 @@ it('validates app cluster ID is of correct format', () => {
 });
 
 it('validates developer ID is defined if app cluster storage permission is requested', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     requestedPermissions: ['access_app_cluster_storage'],
     appClusterID: 'abc.123',
   };
   // TODO: fixme with real version
   mockSDKVersion('999.0.0');
-  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateStorageGroup(configFile as ProjectConfiguration)
+      .diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText:
@@ -509,14 +582,17 @@ it('validates developer ID is defined if app cluster storage permission is reque
 });
 
 it('validates developer ID is a valid UUID if app cluster storage permission is requested', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     requestedPermissions: ['access_app_cluster_storage'],
     appClusterID: '123',
     developerID: 'definitely_not_a_uuid',
   };
   // TODO: fixme with real version
   mockSDKVersion('999.0.0');
-  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateStorageGroup(configFile as ProjectConfiguration)
+      .diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText: 'Developer ID must be a valid UUID',
@@ -525,12 +601,15 @@ it('validates developer ID is a valid UUID if app cluster storage permission is 
 });
 
 it('validates app cluster storage permission is requested if app cluster ID is set', () => {
-  const configFile: any = {
+  const configFile: Partial<ProjectConfiguration> = {
     appClusterID: 'abc',
   };
   // TODO: fixme with real version
   mockSDKVersion('999.0.0');
-  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+  expect(
+    config.validateStorageGroup(configFile as ProjectConfiguration)
+      .diagnostics[0],
+  ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText:
