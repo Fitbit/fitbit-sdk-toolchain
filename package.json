@@ -12,6 +12,7 @@
   "scripts": {
     "build": "rm -rf lib && tsc -p tsconfig.build.json",
     "test": "jest",
+    "test:coveralls": "jest --runInBand --coverage --coverageReporters=text-lcov | coveralls",
     "lint": "tsc --noEmit --noUnusedLocals && tslint --project . --format codeFrame",
     "depcheck": "depcheck --ignores='@types/*,tslint-config-airbnb' --ignore-dirs='toolchain,__test__'",
     "checkstyle": "prettier --list-different '**/*.{js,jsx,ts,tsx,json}'",
@@ -42,6 +43,7 @@
     "@types/vinyl-fs": "^2.4.10",
     "@types/yargs": "^13.0.0",
     "concat-stream": "^2.0.0",
+    "coveralls": "^3.0.3",
     "depcheck": "^0.8.0",
     "event-stream": "^4.0.1",
     "husky": "^2.2.0",
