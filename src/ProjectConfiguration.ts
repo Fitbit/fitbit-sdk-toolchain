@@ -362,7 +362,10 @@ export function validateRequestedPermissions({
   });
 }
 
-export function validateBuildTarget({ buildTargets }: ProjectConfiguration) {
+export function validateBuildTarget(
+  { buildTargets }: ProjectConfiguration,
+  { hasNativeComponents }: { hasNativeComponents: boolean },
+) {
   const diagnostics = constrainedSetDiagnostics({
     actualValues: buildTargets,
     knownValues: knownBuildTargets,
@@ -370,7 +373,10 @@ export function validateBuildTarget({ buildTargets }: ProjectConfiguration) {
     notFoundIsFatal: true,
   });
 
-  if (buildTargets.length === 0) {
+  if (
+    (buildTargets === undefined || buildTargets.length === 0) &&
+    !hasNativeComponents
+  ) {
     diagnostics.pushFatalError('At least one build target must be enabled');
   }
 
@@ -500,7 +506,19 @@ export function validateStorageGroup(config: ProjectConfiguration) {
   return diagnostics;
 }
 
-export function validate(config: ProjectConfiguration) {
+interface ValidationOptions {
+  hasNativeComponents?: boolean;
+}
+
+export function validate(
+  config: ProjectConfiguration,
+  options?: ValidationOptions,
+) {
+  const { hasNativeComponents } = {
+    hasNativeComponents: false,
+    ...options,
+  };
+
   const diagnostics = new DiagnosticList();
   [
     validateAppUUID,
@@ -508,11 +526,11 @@ export function validate(config: ProjectConfiguration) {
     validateAppType,
     validateWipeColor,
     validateRequestedPermissions,
-    validateBuildTarget,
     validateSupportedLocales,
     validateLocaleDisplayNames,
     validateDefaultLanguage,
     validateStorageGroup,
   ].forEach((validator) => diagnostics.extend(validator(config)));
+  diagnostics.extend(validateBuildTarget(config, { hasNativeComponents }));
   return diagnostics;
 }

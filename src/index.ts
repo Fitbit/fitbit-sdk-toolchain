@@ -115,6 +115,7 @@ function readableIf<T>(condition: boolean, plugin: T) {
 }
 
 export function loadProjectConfig({
+  hasNativeComponents = false,
   onDiagnostic = logDiagnosticToConsole,
   fileName = 'package.json',
 }) {
@@ -122,7 +123,7 @@ export function loadProjectConfig({
     const config = normalizeProjectConfig(
       JSON.parse(fs.readFileSync(fileName, 'utf-8')),
     );
-    const diagnostics = validate(config);
+    const diagnostics = validate(config, { hasNativeComponents });
     diagnostics.diagnostics.forEach((diagnostic) =>
       onDiagnostic({ file: { path: fileName }, ...diagnostic }),
     );
@@ -382,6 +383,11 @@ export function buildAppPackage({
   const components = [];
 
   if (existingDeviceComponents) {
+    onDiagnostic({
+      messageText:
+        'Bundling native device components, JS device app will not be built',
+      category: DiagnosticCategory.Message,
+    });
     components.push(existingDeviceComponents);
   } else {
     components.push(
@@ -423,7 +429,11 @@ export function buildProject({
   let buildId: string;
   let existingDeviceComponents: Readable | undefined;
 
-  const projectConfig = loadProjectConfig({ onDiagnostic });
+  const projectConfig = loadProjectConfig({
+    onDiagnostic,
+    hasNativeComponents:
+      nativeDeviceComponentPaths && nativeDeviceComponentPaths.length > 0,
+  });
 
   if (nativeDeviceComponentPaths.length > 0) {
     ({ buildId, existingDeviceComponents } = nativeComponents(
