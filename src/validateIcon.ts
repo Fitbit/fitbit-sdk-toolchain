@@ -95,9 +95,7 @@ export default function validateIcon({
         onDiagnostic({
           category: DiagnosticCategory.Warning,
           // tslint:disable-next-line:max-line-length
-          messageText: `There is no app icon present in this project. To set an app icon, add a ${EXPECTED_ICON_WIDTH}x${EXPECTED_ICON_HEIGHT} PNG file named ${
-            projectConfig.iconFile
-          } to your project.`,
+          messageText: `There is no app icon present in this project. To set an app icon, add a ${EXPECTED_ICON_WIDTH}x${EXPECTED_ICON_HEIGHT} PNG file named ${projectConfig.iconFile} to your project.`,
         });
       }
       cb();

@@ -401,9 +401,7 @@ export function validateLocaleDisplayName(
   if (locale.name.length > MAX_DISPLAY_NAME_LENGTH) {
     // tslint:disable-next-line:max-line-length
     diagnostics.pushFatalError(
-      `Localized display name for ${
-        Locales[localeKey]
-      } must not exceed ${MAX_DISPLAY_NAME_LENGTH} characters`,
+      `Localized display name for ${Locales[localeKey]} must not exceed ${MAX_DISPLAY_NAME_LENGTH} characters`,
     );
   }
 
