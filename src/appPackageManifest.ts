@@ -79,9 +79,7 @@ class AppPackageManifestTransform extends Transform {
           : bundleInfo.type;
       throw new PluginError(
         PLUGIN_NAME,
-        `Duplicate ${componentType} component bundles: ${
-          file.relative
-        } / ${existingPath}`,
+        `Duplicate ${componentType} component bundles: ${file.relative} / ${existingPath}`,
       );
     }
 

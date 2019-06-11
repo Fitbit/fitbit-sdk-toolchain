@@ -111,9 +111,7 @@ export function makeDeviceManifest({
           return next(
             new PluginError(
               PLUGIN_NAME,
-              `Entry point for unrecognised component found: ${
-                file.componentType
-              }`,
+              `Entry point for unrecognised component found: ${file.componentType}`,
             ),
           );
         }
@@ -220,9 +218,7 @@ export function makeCompanionManifest({
           return next(
             new PluginError(
               PLUGIN_NAME,
-              `Entry point for unrecognised component found: ${
-                file.componentType
-              }`,
+              `Entry point for unrecognised component found: ${file.componentType}`,
             ),
           );
         }

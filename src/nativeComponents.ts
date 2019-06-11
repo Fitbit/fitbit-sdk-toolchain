@@ -16,9 +16,7 @@ function checkBufferLength(
   if (buffer.length !== expectedLength) {
     throw new PluginError(
       PLUGIN_NAME,
-      `${name} must be ${expectedLength} bytes, found ${
-        buffer.length
-      } in ${buffer}`,
+      `${name} must be ${expectedLength} bytes, found ${buffer.length} in ${buffer}`,
     );
   }
 }
@@ -75,9 +73,7 @@ function readMetadata(elfPath: string) {
   } catch (ex) {
     throw new PluginError(
       PLUGIN_NAME,
-      `Could not parse platform specification in .appplatform section: ${
-        ex.message
-      }`,
+      `Could not parse platform specification in .appplatform section: ${ex.message}`,
       { fileName: elfPath },
     );
   }

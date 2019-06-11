@@ -27,9 +27,7 @@ it('validates the length of the app display name', () => {
   expect(config.validateProjectDisplayName(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      messageText: `Display name must not exceed ${
-        config.MAX_DISPLAY_NAME_LENGTH
-      } characters`,
+      messageText: `Display name must not exceed ${config.MAX_DISPLAY_NAME_LENGTH} characters`,
     }),
   );
 });
@@ -224,9 +222,7 @@ it('validates the length of the localized display name', () => {
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       // tslint:disable-next-line:max-line-length
-      messageText: `Localized display name for French must not exceed ${
-        config.MAX_DISPLAY_NAME_LENGTH
-      } characters`,
+      messageText: `Localized display name for French must not exceed ${config.MAX_DISPLAY_NAME_LENGTH} characters`,
     }),
   );
 });
