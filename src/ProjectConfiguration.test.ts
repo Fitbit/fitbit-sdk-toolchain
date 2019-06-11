@@ -314,10 +314,6 @@ it('validationErrors() validates all fields', () => {
       messageText: `One or more requested permissions was invalid: ${invalidPermission}`,
     }),
     expect.objectContaining({
-      category: DiagnosticCategory.Error,
-      messageText: 'At least one build target must be enabled',
-    }),
-    expect.objectContaining({
       category: DiagnosticCategory.Warning,
       messageText: 'Invalid locales: invalid',
     }),
@@ -334,19 +330,47 @@ it('validationErrors() validates all fields', () => {
       messageText:
         'Default language is an invalid language tag: _invalid_. Must be de-DE, en-US, es-ES, fr-FR, it-IT, ja-JP, ko-KR, nl-NL, sv-SE, zh-CN or zh-TW.',
     }),
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText: 'At least one build target must be enabled',
+    }),
   ]);
 });
 
-it('validates all specified build targets are known', () => {
-  const configFile: any = {
-    buildTargets: ['__always_unknown__'],
-  };
-  expect(config.validateBuildTarget(configFile).diagnostics[0]).toEqual(
-    expect.objectContaining({
-      category: DiagnosticCategory.Error,
-      messageText: 'One or more build targets was invalid: __always_unknown__',
-    }),
-  );
+describe('validateBuildTarget()', () => {
+  it('validates values are valid build targets', () => {
+    const configFile: any = {
+      buildTargets: ['__always_unknown__'],
+    };
+    expect(
+      config.validateBuildTarget(configFile, { hasNativeComponents: false })
+        .diagnostics[0],
+    ).toEqual(
+      expect.objectContaining({
+        category: DiagnosticCategory.Error,
+        messageText:
+          'One or more build targets was invalid: __always_unknown__',
+      }),
+    );
+  });
+
+  it('allows an empty list if native components are present', () => {
+    const configFile: any = {
+      buildTargets: [],
+    };
+    expect(
+      config.validateBuildTarget(configFile, { hasNativeComponents: true })
+        .diagnostics,
+    ).toHaveLength(0);
+  });
+
+  it('allows missing field if native components are present', () => {
+    const configFile: any = {};
+    expect(
+      config.validateBuildTarget(configFile, { hasNativeComponents: true })
+        .diagnostics,
+    ).toHaveLength(0);
+  });
 });
 
 describe('normalizeProjectConfig', () => {
