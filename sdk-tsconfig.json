@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "es2015",
+    "module": "esnext",
     "noEmitHelpers": false,
     "importHelpers": true,
     "noResolve": false,
