@@ -46,7 +46,7 @@
     "coveralls": "^3.0.4",
     "depcheck": "^0.8.0",
     "event-stream": "^4.0.1",
-    "husky": "^2.4.0",
+    "husky": "^3.0.0",
     "jest": "^24.8.0",
     "jest-date-mock": "^1.0.7",
     "lint-staged": "^8.2.0",
