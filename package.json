@@ -81,7 +81,7 @@
     "lazystream": "^1.0.0",
     "lodash": "^4.17.10",
     "merge-stream": "^2.0.0",
-    "multistream": "^2.1.1",
+    "multistream": "^3.0.0",
     "plugin-error": "^1.0.1",
     "pofile": "^1.0.11",
     "pumpify": "^2.0.0",
