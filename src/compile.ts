@@ -13,7 +13,6 @@ import {
   logDiagnosticToConsole,
 } from './diagnostics';
 import rollupToVinyl from './rollupToVinyl';
-import sdkVersion from './sdkVersion';
 
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
 import i18nPolyfill from './plugins/i18nPolyfill';
@@ -67,17 +66,9 @@ export default function compile({
       plugins: [
         // Polyfills must come before platform externals
         polyfill(polyfills),
-        ...pluginIf(
-          (sdkVersion().major >= 4 ||
-            (sdkVersion().major === 3 && sdkVersion().minor >= 1)) &&
-            component === ComponentType.DEVICE,
-          polyfillDevice,
-        ),
-        ...pluginIf(
-          (sdkVersion().major >= 4 ||
-            (sdkVersion().major === 3 && sdkVersion().minor >= 1)) &&
-            component !== ComponentType.DEVICE,
-          () => polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
+        ...pluginIf(component === ComponentType.DEVICE, polyfillDevice),
+        ...pluginIf(component !== ComponentType.DEVICE, () =>
+          polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
         ),
         platformExternals(component),
         typescript({

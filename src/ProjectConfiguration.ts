@@ -125,8 +125,7 @@ const permissionTypes = [
     name: 'App Cluster Storage',
     description:
       'Application may access storage shared by other applications from the same developer.',
-    // TODO: change this to the real versison
-    sdkVersion: '>=999.0.0',
+    sdkVersion: '>=4.0.0',
   },
 ];
 

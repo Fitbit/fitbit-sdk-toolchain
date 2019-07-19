@@ -38,7 +38,6 @@ import ProjectConfiguration, {
   validate,
 } from './ProjectConfiguration';
 import * as resources from './resources';
-import sdkVersion from './sdkVersion';
 import validateIcon from './validateIcon';
 import validateFileSizes from './validateFileSizes';
 import zip from './zip';
@@ -108,10 +107,6 @@ function emptyReadable() {
 
 function transformIf<T>(condition: boolean, plugin: T) {
   return condition ? plugin : new Stream.PassThrough({ objectMode: true });
-}
-
-function readableIf<T>(condition: boolean, plugin: T) {
-  return condition ? plugin : emptyReadable();
 }
 
 export function loadProjectConfig({
@@ -261,15 +256,11 @@ export function buildDeviceComponents({
                 onDiagnostic,
               ),
             ),
-            readableIf(
-              sdkVersion().major >= 4 ||
-                (sdkVersion().major === 3 && sdkVersion().minor >= 1),
-              new pumpify.obj(
-                vinylFS.src(componentTargets.device.translationsGlob, {
-                  base: '.',
-                }),
-                compileTranslations(projectConfig.defaultLanguage),
-              ),
+            new pumpify.obj(
+              vinylFS.src(componentTargets.device.translationsGlob, {
+                base: '.',
+              }),
+              compileTranslations(projectConfig.defaultLanguage),
             ),
           ),
           makeDeviceManifest({ projectConfig, buildId }),
