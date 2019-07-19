@@ -106,8 +106,8 @@ it.each([ComponentType.DEVICE, ComponentType.COMPANION])(
     expect(compileFile('importImage.js', { component })).rejects.toThrowError(),
 );
 
-describe('when targeting SDK 3.0', () => {
-  beforeEach(() => mockSDKVersion.mockReturnValue({ major: 3, minor: 0 }));
+describe('when targeting SDK 4.0', () => {
+  beforeEach(() => mockSDKVersion.mockReturnValue({ major: 4, minor: 0 }));
 
   it('does not allow JSON imports', () =>
     expect(
@@ -209,12 +209,6 @@ describe('when building a device component which uses gettext', () => {
 
   it('builds without diagnostic messages', () =>
     expect(mockDiagnosticHandler).not.toBeCalled());
-
-  it('emits an error if targeting SDK version lower than 3.1', async () => {
-    mockSDKVersion.mockReturnValue({ major: 3, minor: 0 });
-    await expect(compileFile('i18n.js')).rejects.toThrowError();
-    expect(mockDiagnosticHandler.mock.calls[0]).toMatchSnapshot();
-  });
 });
 
 it('emits sourcemaps with source paths relative to the project root', async () => {

@@ -5,13 +5,6 @@ it('throws if package version has no known mapping', () => {
   expect(() => apiVersions({}, '1000.0.0')).toThrowErrorMatchingSnapshot();
 });
 
-it('provides a mapping for SDKv3', () => {
-  expect(apiVersions({}, '3.0.0')).toEqual({
-    deviceApi: '4.0.0',
-    companionApi: '2.1.0',
-  });
-});
-
 it('provides a mapping for SDKv3.1', () => {
   expect(apiVersions({}, '3.1.0')).toEqual({
     deviceApi: '4.0.0',
@@ -19,16 +12,23 @@ it('provides a mapping for SDKv3.1', () => {
   });
 });
 
+it('provides a mapping for SDKv4.0', () => {
+  expect(apiVersions({}, '4.0.0')).toEqual({
+    deviceApi: '5.0.0',
+    companionApi: '2.1.0',
+  });
+});
+
 it('provides a mapping for a known SDK version with a non-zero patch version', () => {
-  expect(apiVersions({}, '3.0.100')).toEqual({
-    deviceApi: '4.0.0',
+  expect(apiVersions({}, '4.0.100')).toEqual({
+    deviceApi: '5.0.0',
     companionApi: '2.1.0',
   });
 });
 
 it('provides a mapping for a known SDK version with a pre-release suffix', () => {
-  expect(apiVersions({}, '3.0.0-alpha.1')).toEqual({
-    deviceApi: '4.0.0',
+  expect(apiVersions({}, '4.0.0-alpha.1')).toEqual({
+    deviceApi: '5.0.0',
     companionApi: '2.1.0',
   });
 });
@@ -55,20 +55,20 @@ describe('given a specific toolchain version', () => {
   let version: SemVer;
 
   beforeEach(() => {
-    version = sdkVersion('3.0.5-pre.7');
+    version = sdkVersion('4.0.5-pre.7');
   });
 
   it('converts the toolchain version to an SDK version', () => {
     expect(version).toMatchObject({
-      major: 3,
+      major: 4,
       minor: 0,
       patch: 0,
       prerelease: [],
-      version: '3.0.0',
+      version: '4.0.0',
     });
   });
 
   it('returns an SDK version that compares as expected', () => {
-    expect(satisfies(version, '>=3.0.0')).toBe(true);
+    expect(satisfies(version, '>=4.0.0')).toBe(true);
   });
 });
