@@ -110,6 +110,8 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
       );
 
       emitDiagnostics(service.getCompilerOptionsDiagnostics());
+
+      return null;
     },
 
     resolveId(importee, importer) {

@@ -2,3 +2,4 @@
 /lib/
 __test__/
 __snapshots__/
+src/**/__test__
