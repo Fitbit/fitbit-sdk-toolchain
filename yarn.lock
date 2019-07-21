@@ -1837,6 +1837,13 @@ dot-prop@^4.1.0:
   dependencies:
     is-obj "^1.0.0"
 
+drop-stream@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/drop-stream/-/drop-stream-1.0.0.tgz#4edab6d4406853c5223bcc92ed123cbbc8055676"
+  integrity sha1-Ttq21EBoU8UiO8yS7RI8u8gFVnY=
+  dependencies:
+    readable-stream "^2.0"
+
 duplexer3@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/duplexer3/-/duplexer3-0.1.4.tgz#ee01dd1cac0ed3cbc7fdbea37dc0a8f1ce002ce2"
@@ -4608,6 +4615,13 @@ pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
+playback-stream@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/playback-stream/-/playback-stream-1.0.0.tgz#90540532563cdf6641222adcace0d531d9659f54"
+  integrity sha1-kFQFMlY832ZBIircrODVMdlln1Q=
+  dependencies:
+    readable-stream "^2.1.5"
+
 please-upgrade-node@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/please-upgrade-node/-/please-upgrade-node-3.1.1.tgz#ed320051dfcc5024fae696712c8288993595e8ac"
@@ -4800,7 +4814,7 @@ read-pkg@^5.1.1:
     string_decoder "^1.1.1"
     util-deprecate "^1.0.1"
 
-readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.5, readable-stream@^2.0.6, readable-stream@^2.1.5, readable-stream@^2.3.3, readable-stream@^2.3.5, readable-stream@^2.3.6, readable-stream@~2.3.6:
+readable-stream@^2.0, readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.5, readable-stream@^2.0.6, readable-stream@^2.1.5, readable-stream@^2.3.3, readable-stream@^2.3.5, readable-stream@^2.3.6, readable-stream@~2.3.6:
   version "2.3.6"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.6.tgz#b11c27d88b8ff1fbe070643cf94b0c79ae1b0aaf"
   integrity sha512-tQtKA9WIAhBF3+VLAseyMqZeBjW0AHJoxOtYqSUZNJxauErmLbVm2FW1y+J/YA9dUrAC39ITejlZWhVIwawkKw==

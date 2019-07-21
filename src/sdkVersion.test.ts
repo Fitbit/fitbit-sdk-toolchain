@@ -5,13 +5,6 @@ it('throws if package version has no known mapping', () => {
   expect(() => apiVersions({}, '1000.0.0')).toThrowErrorMatchingSnapshot();
 });
 
-it('provides a mapping for SDKv3.1', () => {
-  expect(apiVersions({}, '3.1.0')).toEqual({
-    deviceApi: '4.0.0',
-    companionApi: '2.1.0',
-  });
-});
-
 it('provides a mapping for SDKv4.0', () => {
   expect(apiVersions({}, '4.0.0')).toEqual({
     deviceApi: '5.0.0',

@@ -74,7 +74,7 @@ PluginError {
 
 exports[`when there is a companion entry point present builds a companion manifest 1`] = `
 Object {
-  "apiVersion": "2.1.0",
+  "apiVersion": "3.0.0",
   "buildId": "0x0f75775f470c1585",
   "bundleDate": "2018-06-27T00:00:00.000Z",
   "companion": Object {
@@ -97,7 +97,7 @@ PluginError {
 
 exports[`when there is a companion entry point present sets app cluster storage related fields if configured 1`] = `
 Object {
-  "apiVersion": "2.1.0",
+  "apiVersion": "3.0.0",
   "appClusters": Array [
     "a.storage.group",
   ],
@@ -116,7 +116,7 @@ Object {
 
 exports[`when there is a companion entry point present when there is a settings entry point present builds a companion manifest with settings 1`] = `
 Object {
-  "apiVersion": "2.1.0",
+  "apiVersion": "3.0.0",
   "buildId": "0x0f75775f470c1585",
   "bundleDate": "2018-06-27T00:00:00.000Z",
   "companion": Object {
@@ -134,7 +134,7 @@ Object {
 
 exports[`when there is a device entry point present builds a device manifest for a clock 1`] = `
 Object {
-  "apiVersion": "4.0.0",
+  "apiVersion": "5.0.0",
   "appManifestVersion": 1,
   "appType": "clockface",
   "buildId": "0x0f75775f470c1585",
@@ -158,7 +158,7 @@ Object {
 
 exports[`when there is a device entry point present builds a device manifest for an app 1`] = `
 Object {
-  "apiVersion": "4.0.0",
+  "apiVersion": "5.0.0",
   "appManifestVersion": 1,
   "appType": "app",
   "buildId": "0x0f75775f470c1585",
@@ -182,13 +182,13 @@ Object {
 }
 `;
 
-exports[`when there is a device entry point present when there are compiled language files ensures the default language en-US is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"apiVersion\\":\\"4.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"i18n\\":{\\"en-us\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr-fr\\":{\\"name\\":\\"Mon application\\"},\\"es-es\\":{\\"resources\\":\\"spanish/language\\"}}}"`;
+exports[`when there is a device entry point present when there are compiled language files ensures the default language en-US is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"apiVersion\\":\\"5.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"i18n\\":{\\"en-us\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr-fr\\":{\\"name\\":\\"Mon application\\"},\\"es-es\\":{\\"resources\\":\\"spanish/language\\"}}}"`;
 
-exports[`when there is a device entry point present when there are compiled language files ensures the default language es-ES is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"apiVersion\\":\\"4.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"i18n\\":{\\"es-es\\":{\\"resources\\":\\"spanish/language\\"},\\"en-us\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr-fr\\":{\\"name\\":\\"Mon application\\"}}}"`;
+exports[`when there is a device entry point present when there are compiled language files ensures the default language es-ES is the first key in the i18n object 1`] = `"{\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"svgMain\\":\\"resources/index.gui\\",\\"svgWidgets\\":\\"resources/widgets.gui\\",\\"appType\\":\\"clockface\\",\\"apiVersion\\":\\"5.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"i18n\\":{\\"es-es\\":{\\"resources\\":\\"spanish/language\\"},\\"en-us\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr-fr\\":{\\"name\\":\\"Mon application\\"}}}"`;
 
 exports[`when there is a device entry point present when there are compiled language files sets the i18n[lang].resources key for language files that pass through 1`] = `
 Object {
-  "apiVersion": "4.0.0",
+  "apiVersion": "5.0.0",
   "appManifestVersion": 1,
   "appType": "clockface",
   "buildId": "0x0f75775f470c1585",

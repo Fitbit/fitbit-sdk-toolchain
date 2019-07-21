@@ -2,13 +2,11 @@ import lodash from 'lodash';
 import semver from 'semver';
 
 import sdkVersion from './sdkVersion';
-import { PolyfillMap } from './plugins/polyfill';
 
 export interface BuildTargetDescriptor {
   displayName: string;
   platform: string[];
   resourceFilterTag: string;
-  polyfills?: PolyfillMap;
   maxDeviceBundleSize?: number; // in bytes
   minSDKVersion?: string;
 }
@@ -30,17 +28,6 @@ const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
     resourceFilterTag: '300x300',
     minSDKVersion: '3.1.0',
     maxDeviceBundleSize: 3145728,
-    polyfills: {
-      barometer: 'export var Barometer = undefined; export default Barometer;',
-      gyroscope: 'export var Gyroscope = undefined; export default Gyroscope;',
-      orientation:
-        'export var OrientationSensor = undefined; export default OrientationSensor;',
-      'user-activity': `
-        export { today, goals, default } from 'user-activity';
-        import { today } from 'user-activity';
-        Object.defineProperty(today.local, 'elevationGain', {});
-      `,
-    },
   },
   mira: {
     displayName: 'Fitbit Versa 2',

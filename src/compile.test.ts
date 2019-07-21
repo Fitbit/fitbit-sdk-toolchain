@@ -44,7 +44,6 @@ function compileFile(
     allowUnknownExternals = undefined as boolean | undefined,
     component = ComponentType.COMPANION,
     outputDir = undefined as string | undefined,
-    polyfills = {},
   } = {},
   expectFilename?: string,
 ) {
@@ -53,7 +52,6 @@ function compileFile(
       component,
       allowUnknownExternals,
       outputDir,
-      polyfills,
       entryPoint: testResourcePath(filename),
       onDiagnostic: mockDiagnosticHandler,
       defaultLanguage: 'en-US',
@@ -209,16 +207,6 @@ describe('when building a device component which uses gettext', () => {
 it('emits sourcemaps with source paths relative to the project root', async () => {
   const file = await compileFile('sourcemap/index.js', { outputDir: 'app' });
   expect(file.sourceMap.sources).toMatchSnapshot();
-});
-
-it('applies specified polyfills', () => {
-  return expect(
-    compileFile('polyfill.js', {
-      polyfills: {
-        cbor: "export * from 'cbor'; export const encode = false;",
-      },
-    }).then(getVinylContents),
-  ).resolves.toMatchSnapshot();
 });
 
 it('emits multiple chunks when dynamic import are used', async () => {
