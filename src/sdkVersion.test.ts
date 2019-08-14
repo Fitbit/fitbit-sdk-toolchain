@@ -15,21 +15,21 @@ it('provides a mapping for SDKv3.1', () => {
 it('provides a mapping for SDKv4.0', () => {
   expect(apiVersions({}, '4.0.0')).toEqual({
     deviceApi: '5.0.0',
-    companionApi: '2.1.0',
+    companionApi: '3.0.0',
   });
 });
 
 it('provides a mapping for a known SDK version with a non-zero patch version', () => {
   expect(apiVersions({}, '4.0.100')).toEqual({
     deviceApi: '5.0.0',
-    companionApi: '2.1.0',
+    companionApi: '3.0.0',
   });
 });
 
 it('provides a mapping for a known SDK version with a pre-release suffix', () => {
   expect(apiVersions({}, '4.0.0-alpha.1')).toEqual({
     deviceApi: '5.0.0',
-    companionApi: '2.1.0',
+    companionApi: '3.0.0',
   });
 });
 
