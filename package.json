@@ -78,7 +78,7 @@
     "humanize-list": "^1.0.1",
     "indent-string": "^4.0.0",
     "inquirer": "^6.5.0",
-    "io-ts": "2.0.0",
+    "io-ts": "2.0.1",
     "lazystream": "^1.0.0",
     "lodash": "^4.17.15",
     "merge-stream": "^2.0.0",
