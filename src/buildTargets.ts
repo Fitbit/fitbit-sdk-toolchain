@@ -6,7 +6,6 @@ import { PolyfillMap } from './plugins/polyfill';
 
 export interface BuildTargetDescriptor {
   displayName: string;
-  platform: string[];
   resourceFilterTag: string;
   polyfills?: PolyfillMap;
   maxDeviceBundleSize?: number; // in bytes
@@ -16,17 +15,14 @@ export interface BuildTargetDescriptor {
 const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
   higgs: {
     displayName: 'Fitbit Ionic',
-    platform: ['30.1.2+'],
     resourceFilterTag: '348x250',
   },
   meson: {
     displayName: 'Fitbit Versa',
-    platform: ['32.4.18+'],
     resourceFilterTag: '300x300',
   },
   gemini: {
     displayName: 'Fitbit Versa Lite',
-    platform: ['33.1.30+'],
     resourceFilterTag: '300x300',
     minSDKVersion: '3.1.0',
     maxDeviceBundleSize: 3145728,

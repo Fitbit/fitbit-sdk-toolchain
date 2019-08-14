@@ -33,7 +33,6 @@ it('merges the build target descriptors', () => {
   expect(generateBuildTargets()).toMatchObject({
     higgs: {
       displayName: 'Fitbit Ionic',
-      platform: expect.any(Array),
       resourceFilterTag: '348x250',
     },
     // Unfortunately, due to the way that module mocking works, the

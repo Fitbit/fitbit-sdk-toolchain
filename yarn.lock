@@ -2684,10 +2684,10 @@ invert-kv@^2.0.0:
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-2.0.0.tgz#7393f5afa59ec9ff5f67a27620d11c226e3eec02"
   integrity sha512-wPVv/y/QQ/Uiirj/vh3oP+1Ww+AWehmi1g5fFWGPF6IpCBCDVrhgHRMvrLfdYcwDh3QJbGXDW4JAuzxElLSqKA==
 
-io-ts@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.0.0.tgz#560f8ddf92cce7ea73820cedab7b31044e464d1e"
-  integrity sha512-6i8PKyNR/dvEbUU9uE+v4iVFU7l674ZEGQsh92y6xEZF/rj46fXbPy+uPPXJEsCP0J0X3UpzXAxp04K4HR2jVw==
+io-ts@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.0.1.tgz#1261c12f915c2f48d16393a36966636b48a45aa1"
+  integrity sha512-RezD+WcCfW4VkMkEcQWL/Nmy/nqsWTvTYg7oUmTGzglvSSV2P9h2z1PVeREPFf0GWNzruYleAt1XCMQZSg1xxQ==
 
 is-absolute@^1.0.0:
   version "1.0.0"
@@ -3954,12 +3954,11 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
   integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
 
-multistream@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/multistream/-/multistream-3.0.0.tgz#93d6a672828c311a5b228212d319a5e9073d2e45"
-  integrity sha512-v1Fx9uhHEpTB725/Kj8YpRCvrLhb20LeABFLw+0dkBkKUUAbDCY6CUUNzGQsJ94ji/p50wBPsRjIQXN1iOwZYA==
+multistream@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/multistream/-/multistream-4.0.0.tgz#c771b6d17d169138b6abcb15f0061170e3c09cea"
+  integrity sha512-t0C8MAtH/d3Y+5nooEtUMWli92lVw9Jhx4uOhRl5GAwS5vc+YTmp/VXNJNsCBAMeEyK/6zhbk6x9JE3AiCvo4g==
   dependencies:
-    inherits "^2.0.1"
     readable-stream "^3.4.0"
 
 mute-stream@0.0.7:

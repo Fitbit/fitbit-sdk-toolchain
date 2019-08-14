@@ -19,7 +19,7 @@ interface Components {
   watch?: {
     [platform: string]: {
       filename: string;
-      platform: string[];
+      platform?: string[];
     };
   };
   companion?: {
@@ -33,9 +33,9 @@ const ComponentBundleTag = t.taggedUnion('type', [
     t.interface({
       type: t.literal('device'),
       family: t.string,
-      platform: t.array(t.string),
     }),
     t.partial({
+      platform: t.array(t.string),
       isNative: t.literal(true),
     }),
   ]),
@@ -71,6 +71,7 @@ class AppPackageManifestTransform extends Transform {
     super({ objectMode: true });
   }
 
+  // tslint:disable-next-line:cognitive-complexity
   private transformComponentBundle(file: Vinyl) {
     const bundleInfo = getBundleInfo(file);
 
@@ -106,9 +107,12 @@ class AppPackageManifestTransform extends Transform {
       }
 
       this.components.watch[bundleInfo.family] = {
-        platform: bundleInfo.platform,
         filename: file.relative,
       };
+
+      if (bundleInfo.platform) {
+        this.components.watch[bundleInfo.family].platform = bundleInfo.platform;
+      }
     } else {
       if (this.components[bundleInfo.type] !== undefined) {
         throwDuplicateComponent(this.components[bundleInfo.type]!.filename);

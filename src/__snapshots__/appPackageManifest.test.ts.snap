@@ -8,9 +8,6 @@ Object {
     "watch": Object {
       "higgs": Object {
         "filename": "device-higgs.zip",
-        "platform": Array [
-          "30.1.2+",
-        ],
       },
     },
   },
@@ -38,9 +35,6 @@ Object {
     "watch": Object {
       "higgs": Object {
         "filename": "device-higgs.zip",
-        "platform": Array [
-          "30.1.2+",
-        ],
       },
     },
   },
@@ -68,9 +62,6 @@ Object {
     "watch": Object {
       "higgs": Object {
         "filename": "device-higgs.zip",
-        "platform": Array [
-          "30.1.2+",
-        ],
       },
     },
   },
@@ -91,9 +82,6 @@ Object {
     "watch": Object {
       "higgs": Object {
         "filename": "device-higgs.zip",
-        "platform": Array [
-          "30.1.2+",
-        ],
       },
     },
   },
@@ -117,15 +105,9 @@ Object {
     "watch": Object {
       "higgs": Object {
         "filename": "device-higgs.zip",
-        "platform": Array [
-          "30.1.2+",
-        ],
       },
       "meson": Object {
         "filename": "device-meson.zip",
-        "platform": Array [
-          "32.4.18+",
-        ],
       },
     },
   },
@@ -143,13 +125,11 @@ Object {
 }
 `;
 
-exports[`emits an error if a component bundle tag has a device type but invalid platform 1`] = `"Unknown bundle component tag: Invalid value \\"1.1.1+\\" supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
+exports[`emits an error if a component bundle tag has a device type but invalid platform 1`] = `"Unknown bundle component tag: Invalid value \\"1.1.1+\\" supplied to : (({ type: \\"device\\", family: string } & Partial<{ platform: Array<string>, isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string } & Partial<{ platform: Array<string>, isNative: true }>)/1: Partial<{ platform: Array<string>, isNative: true }>/platform: Array<string>"`;
 
-exports[`emits an error if a component bundle tag has a device type but missing family 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/family: string"`;
+exports[`emits an error if a component bundle tag has a device type but missing family 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : (({ type: \\"device\\", family: string } & Partial<{ platform: Array<string>, isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string } & Partial<{ platform: Array<string>, isNative: true }>)/0: { type: \\"device\\", family: string }/family: string"`;
 
-exports[`emits an error if a component bundle tag has a device type but missing platform 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
-
-exports[`emits an error if a component bundle tag has an invalid type field 1`] = `"Unknown bundle component tag: Invalid value {\\"type\\":\\"__invalid__\\"} supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })"`;
+exports[`emits an error if a component bundle tag has an invalid type field 1`] = `"Unknown bundle component tag: Invalid value {\\"type\\":\\"__invalid__\\"} supplied to : (({ type: \\"device\\", family: string } & Partial<{ platform: Array<string>, isNative: true }>) | { type: \\"companion\\" })"`;
 
 exports[`emits an error if both JS and native device components are present 1`] = `"Cannot bundle mixed native/JS device components"`;
 
