@@ -2,8 +2,9 @@ import path from 'path';
 import { Transform, TransformCallback } from 'stream';
 
 import * as t from 'io-ts';
-import * as fp from 'fp-ts';
 import { failure } from 'io-ts/lib/PathReporter';
+import { pipe } from 'fp-ts/lib/pipeable';
+import { fold } from 'fp-ts/lib/Either';
 import lodash from 'lodash';
 import PluginError from 'plugin-error';
 import Vinyl from 'vinyl';
@@ -46,15 +47,18 @@ const ComponentBundleTag = t.taggedUnion('type', [
 type ComponentBundleTag = t.TypeOf<typeof ComponentBundleTag>;
 
 function getBundleInfo(file: Vinyl): ComponentBundleTag {
-  return fp.pipeable.pipe(
+  return pipe(
     ComponentBundleTag.decode(file.componentBundle),
-    fp.either.fold((errors) => {
-      throw new PluginError(
-        PLUGIN_NAME,
-        `Unknown bundle component tag: ${failure(errors).join('\n')}`,
-        { fileName: file.relative },
-      );
-    }, fp.function.identity),
+    fold(
+      (errors) => {
+        throw new PluginError(
+          PLUGIN_NAME,
+          `Unknown bundle component tag: ${failure(errors).join('\n')}`,
+          { fileName: file.relative },
+        );
+      },
+      (tag) => tag,
+    ),
   );
 }
 
