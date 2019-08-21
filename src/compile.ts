@@ -13,6 +13,7 @@ import {
   logDiagnosticToConsole,
 } from './diagnostics';
 import rollupToVinyl from './rollupToVinyl';
+import sdkVersion from './sdkVersion';
 
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
 import i18nPolyfill from './plugins/i18nPolyfill';
@@ -20,6 +21,7 @@ import platformExternals from './plugins/platformExternals';
 import polyfill, { PolyfillMap } from './plugins/polyfill';
 import polyfillDevice from './plugins/polyfillDevice';
 import resourceImports from './plugins/resourceImports';
+import workaroundRequireScope from './plugins/workaroundRequireScope';
 import terser from './plugins/terser';
 import typescript from './plugins/typescript';
 import rollupWarningHandler from './rollupWarningHandler';
@@ -33,7 +35,7 @@ const tsconfigOverrides = {
   noEmit: false,
   inlineSourceMap: false,
   moduleResolution: ts.ModuleResolutionKind.NodeJs,
-  module: ts.ModuleKind.ES2015,
+  module: ts.ModuleKind.ESNext,
   suppressOutputPathCheck: true,
 };
 
@@ -101,6 +103,8 @@ export default function compile({
             inputSourceMap: false as any,
           }),
         ),
+        // Must come before terser in order not to wrap strict directive
+        ...pluginIf(sdkVersion().major >= 4, workaroundRequireScope),
         terser({
           ecma,
           // We still support iOS 10, which ships Safari 10
@@ -126,7 +130,9 @@ export default function compile({
           ? { UNRESOLVED_IMPORT: DiagnosticCategory.Warning }
           : undefined,
       }),
-      inlineDynamicImports: true,
+      // Companion/Settings have no FS and therefore can't use code splitting
+      inlineDynamicImports:
+        sdkVersion().major < 4 || component !== ComponentType.DEVICE,
     },
     {
       dir: outputDir,

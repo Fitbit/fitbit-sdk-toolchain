@@ -82,6 +82,22 @@ function t(i){return this instanceof t?(this.v=i,this):new t(i)}t()
 "
 `;
 
+exports[`does not allow JSON imports 1`] = `"Unexpected token (Note that you need rollup-plugin-json to import JSON files)"`;
+
+exports[`emits ES5 code for device 1`] = `
+"\\"use strict\\"
+var o=function(){return\\"foo\\"}
+console.log(o())
+"
+`;
+
+exports[`emits ES6 code 1`] = `
+"\\"use strict\\"
+const o=()=>\\"foo\\"
+console.log(o())
+"
+`;
+
 exports[`emits diagnostics given JS code with bad syntax 1`] = `
 Array [
   Object {
@@ -126,6 +142,19 @@ Array [
 ]
 `;
 
+exports[`emits multiple chunks when dynamic import are used 1`] = `
+"\\"use strict\\"
+new Promise(function(n){n(require(\\"./chunkB-b146ad81.js\\"))}).then(function(n){var e=n.chunkB
+e()})
+"
+`;
+
+exports[`emits multiple chunks when dynamic import are used 2`] = `
+"(function(){\\"use strict\\"
+function o(){console.log(\\"Hello code splitting!\\")}exports.chunkB=o})()
+"
+`;
+
 exports[`emits sourcemaps with source paths relative to the project root 1`] = `
 Array [
   "src/__test__/compile/sourcemap/foo.js",
@@ -166,21 +195,5 @@ exports[`when compiling a module with statements above an import declaration bui
 require(\\"util\\")
 foo()
 console.log(\\"Hello!\\")
-"
-`;
-
-exports[`when targeting SDK 4.0 does not allow JSON imports 1`] = `"Unexpected token (Note that you need rollup-plugin-json to import JSON files)"`;
-
-exports[`when targeting SDK 4.0 emits ES5 code for device 1`] = `
-"\\"use strict\\"
-var o=function(){return\\"foo\\"}
-console.log(o())
-"
-`;
-
-exports[`when targeting SDK 4.0 emits ES6 code 1`] = `
-"\\"use strict\\"
-const o=()=>\\"foo\\"
-console.log(o())
 "
 `;

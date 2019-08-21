@@ -7,6 +7,7 @@ import Vinyl from 'vinyl';
 import compile from './compile';
 import sdkVersion from './sdkVersion';
 import getFileFromStream from './testUtils/getFileFromStream';
+import getFilesFromStream from './testUtils/getFilesFromStream';
 import getVinylContents from './testUtils/getVinylContents';
 import { ComponentType } from './componentTargets';
 
@@ -22,7 +23,7 @@ const mockSDKVersion = sdkVersion as jest.Mock;
 
 beforeEach(() => {
   mockDiagnosticHandler = jest.fn();
-  mockSDKVersion.mockReturnValue({ major: 2, minor: 0 });
+  mockSDKVersion.mockReturnValue({ major: 4, minor: 0 });
 
   // We don't want to load the actual tsconfig.json for this project
   // during unit tests. Using a real tsconfig.json located within
@@ -106,39 +107,33 @@ it.each([ComponentType.DEVICE, ComponentType.COMPANION])(
     expect(compileFile('importImage.js', { component })).rejects.toThrowError(),
 );
 
-describe('when targeting SDK 4.0', () => {
-  beforeEach(() => mockSDKVersion.mockReturnValue({ major: 4, minor: 0 }));
+it('does not allow JSON imports', () =>
+  expect(
+    compileFile('importJSON.js').then(getVinylContents),
+  ).rejects.toThrowErrorMatchingSnapshot());
 
-  it('does not allow JSON imports', () =>
-    expect(
-      compileFile('importJSON.js').then(getVinylContents),
-    ).rejects.toThrowErrorMatchingSnapshot());
+it('does not allow unintentionally non-relative imports', () =>
+  expect(
+    compileFile('incorrectlyNonRelativeImport.js').then(getVinylContents),
+  ).rejects.toThrowError());
 
-  it('does not allow unintentionally non-relative imports', () =>
-    expect(
-      compileFile('incorrectlyNonRelativeImport.js').then(getVinylContents),
-    ).rejects.toThrowError());
+it('emits ES6 code', () =>
+  expect(
+    compileFile('ES6.js').then(getVinylContents),
+  ).resolves.toMatchSnapshot());
 
-  it('emits ES6 code', () =>
-    expect(
-      compileFile('ES6.js').then(getVinylContents),
-    ).resolves.toMatchSnapshot());
+it('emits ES5 code for device', () =>
+  expect(
+    compileFile('ES6.js', { component: ComponentType.DEVICE }).then(
+      getVinylContents,
+    ),
+  ).resolves.toMatchSnapshot());
 
-  it('emits ES5 code for device', () =>
-    expect(
-      compileFile('ES6.js', { component: ComponentType.DEVICE }).then(
-        getVinylContents,
-      ),
-    ).resolves.toMatchSnapshot());
-
-  it.each([ComponentType.DEVICE, ComponentType.COMPANION])(
-    'does not allow importing image files when building %s',
-    (component: ComponentType) =>
-      expect(
-        compileFile('importImage.js', { component }),
-      ).rejects.toBeDefined(),
-  );
-});
+it.each([ComponentType.DEVICE, ComponentType.COMPANION])(
+  'does not allow importing image files when building %s',
+  (component: ComponentType) =>
+    expect(compileFile('importImage.js', { component })).rejects.toBeDefined(),
+);
 
 it.each([
   ['an unrecognized binary file is imported', 'importBinary.js'],
@@ -224,4 +219,21 @@ it('applies specified polyfills', () => {
       },
     }).then(getVinylContents),
   ).resolves.toMatchSnapshot();
+});
+
+it('emits multiple chunks when dynamic import are used', async () => {
+  const buildStream = compile({
+    component: ComponentType.DEVICE,
+    outputDir: 'app',
+    entryPoint: testResourcePath('chunkA.js'),
+    onDiagnostic: mockDiagnosticHandler,
+    defaultLanguage: 'en-US',
+  });
+
+  const files = await getFilesFromStream(buildStream);
+
+  const entryJS = await getVinylContents(files[0]);
+  const chunkJS = await getVinylContents(files[1]);
+  expect(entryJS).toMatchSnapshot();
+  expect(chunkJS).toMatchSnapshot();
 });
