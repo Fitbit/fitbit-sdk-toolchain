@@ -77,7 +77,7 @@
     "gulp-zip": "^5.0.0",
     "humanize-list": "^1.0.1",
     "indent-string": "^4.0.0",
-    "inquirer": "^6.5.1",
+    "inquirer": "^7.0.0",
     "io-ts": "2.0.1",
     "lazystream": "^1.0.0",
     "lodash": "^4.17.15",
