@@ -7,7 +7,7 @@ import { normalizeToPOSIX } from '../../pathUtils';
 import { parseTsConfig } from './parse-tsconfig';
 import { default as tslib } from './tslib.const';
 
-import { Diagnostic } from '../../diagnostics';
+import { Diagnostic, DiagnosticMessage } from '../../diagnostics';
 
 type Filter = RegExp | RegExp[];
 
@@ -32,17 +32,20 @@ const generateMessage = (tsDiagnostic: ts.Diagnostic) => {
       messageText: tsDiagnostic.messageText,
     });
   }
-  const messages = [];
-  for (
-    let tsChain = tsDiagnostic.messageText;
-    tsChain.next;
-    tsChain = tsChain.next
-  ) {
-    messages.push({
-      messageText: formatTSDiagMessage(tsChain),
-      category: tsChain.category,
-    });
+  const messages: DiagnosticMessage[] = [];
+
+  function convertMessageChain(tsChains: ts.DiagnosticMessageChain[]) {
+    for (const tsChain of tsChains) {
+      messages.push({
+        messageText: formatTSDiagMessage(tsChain),
+        category: tsChain.category,
+      });
+      if (tsChain.next) convertMessageChain(tsChain.next);
+    }
   }
+
+  convertMessageChain([tsDiagnostic.messageText]);
+
   return messages;
 };
 
