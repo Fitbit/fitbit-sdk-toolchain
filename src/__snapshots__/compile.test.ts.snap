@@ -144,8 +144,8 @@ Array [
 
 exports[`emits multiple chunks when dynamic import are used 1`] = `
 "\\"use strict\\"
-new Promise(function(n){n(require(\\"./chunkB-b146ad81.js\\"))}).then(function(n){var e=n.chunkB
-e()})
+new Promise((function(n){n(require(\\"./chunkB-f4207ce1.js\\"))})).then((function(n){var e=n.chunkB
+e()}))
 "
 `;
 
