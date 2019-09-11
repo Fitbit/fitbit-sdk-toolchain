@@ -42,6 +42,12 @@ const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
       `,
     },
   },
+  mira: {
+    displayName: 'Fitbit Versa 2',
+    platform: ['68.9.12+'],
+    minSDKVersion: '4.0.0',
+    resourceFilterTag: '300x300',
+  },
 };
 
 let extraBuildTargets: typeof baseBuildTargets | undefined;
