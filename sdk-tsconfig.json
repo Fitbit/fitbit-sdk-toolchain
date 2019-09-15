@@ -12,7 +12,7 @@
     "allowJs": true,
     "jsx": "react",
     "jsxFactory": "createComponent",
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "noEmitOnError": true,
     "downlevelIteration": true,
     "sourceMap": true,
