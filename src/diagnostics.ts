@@ -2,7 +2,8 @@ import { relative } from 'path';
 
 import chalk from 'chalk';
 import dateformat from 'dateformat';
-import indentString from 'indent-string';
+
+import indentString from './util/indentString';
 
 interface LineAndCharacter {
   line: number;

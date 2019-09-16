@@ -696,13 +696,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/indent-string@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@types/indent-string/-/indent-string-4.0.1.tgz#fb4e6b8cdd8e94f70c105e78fb5d357a767b7193"
-  integrity sha512-cIe4VIMWLlX9ugJRULZMgKoh88+AdD+6e7K9Y0s5QkbEJujoyVfKcmO2y9hbOU8ma/tbyHFaJN1+hQ0SyWo2iA==
-  dependencies:
-    indent-string "*"
-
 "@types/inquirer@^6.5.0":
   version "6.5.0"
   resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-6.5.0.tgz#b83b0bf30b88b8be7246d40e51d32fe9d10e09be"
@@ -2717,11 +2710,6 @@ imurmurhash@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/imurmurhash/-/imurmurhash-0.1.4.tgz#9218b9b2b928a238b13dc4fb6b6d576f231453ea"
   integrity sha1-khi5srkoojixPcT7a21XbyMUU+o=
-
-indent-string@*, indent-string@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/indent-string/-/indent-string-4.0.0.tgz#624f8f4497d619b2d9768531d58f4122854d7251"
-  integrity sha512-EdDDZu4A2OyIK7Lr/2zG+w5jmbuk1DVBnEwREQvBzspBJkCEbRa8GxU1lghYcaGJCnRWibjDXlq779X1/y5xwg==
 
 indent-string@^3.0.0:
   version "3.2.0"
