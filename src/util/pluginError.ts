@@ -1,4 +1,3 @@
-import indentString from 'indent-string';
 import PluginError from 'plugin-error';
 
 import {
@@ -6,6 +5,7 @@ import {
   DiagnosticCategory,
   DiagnosticTarget,
 } from '../diagnostics';
+import indentString from './indentString';
 
 export function isPluginError(value: unknown): value is PluginError {
   // We can't just do an instanceof check as the error object might be
