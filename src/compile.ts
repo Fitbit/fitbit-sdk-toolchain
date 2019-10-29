@@ -18,7 +18,7 @@ import sdkVersion from './sdkVersion';
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
 import i18nPolyfill from './plugins/i18nPolyfill';
 import platformExternals from './plugins/platformExternals';
-import polyfill, { PolyfillMap } from './plugins/polyfill';
+import polyfill from './plugins/polyfill';
 import polyfillDevice from './plugins/polyfillDevice';
 import resourceImports from './plugins/resourceImports';
 import workaroundRequireScope from './plugins/workaroundRequireScope';
@@ -50,7 +50,6 @@ export default function compile({
   defaultLanguage,
   allowUnknownExternals = false,
   onDiagnostic = logDiagnosticToConsole,
-  polyfills = {},
 }: {
   component: ComponentType;
   entryPoint: string;
@@ -58,7 +57,6 @@ export default function compile({
   defaultLanguage: string;
   allowUnknownExternals?: boolean;
   onDiagnostic?: DiagnosticHandler;
-  polyfills?: PolyfillMap;
 }) {
   const ecma = component !== ComponentType.DEVICE ? 6 : 5;
   const { translationsGlob } = componentTargets[component];
@@ -66,8 +64,6 @@ export default function compile({
     {
       input: entryPoint,
       plugins: [
-        // Polyfills must come before platform externals
-        polyfill(polyfills),
         ...pluginIf(component === ComponentType.DEVICE, polyfillDevice),
         ...pluginIf(component !== ComponentType.DEVICE, () =>
           polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
