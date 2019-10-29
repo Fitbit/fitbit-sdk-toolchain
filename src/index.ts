@@ -210,12 +210,9 @@ export function buildDeviceComponents({
     // before building the resources for each component.
     ...projectConfig.buildTargets.map((family) =>
       lazyObjectReadable(() => {
-        const {
-          platform,
-          displayName,
-          polyfills,
-          maxDeviceBundleSize,
-        } = buildTargets[family];
+        const { displayName, polyfills, maxDeviceBundleSize } = buildTargets[
+          family
+        ];
         onDiagnostic({
           messageText: `Building app for ${displayName}`,
           category: DiagnosticCategory.Message,
@@ -275,7 +272,6 @@ export function buildDeviceComponents({
           gulpSetProperty({
             componentBundle: {
               family,
-              platform,
               type: 'device',
             },
           }),

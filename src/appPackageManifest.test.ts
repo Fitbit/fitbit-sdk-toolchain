@@ -2,7 +2,6 @@ import { Readable } from 'stream';
 
 import Vinyl from 'vinyl';
 import appPackageManifest from './appPackageManifest';
-import buildTargets from './buildTargets';
 import { ComponentType } from './componentTargets';
 import ProjectConfiguration, {
   AppType,
@@ -74,7 +73,6 @@ function expectValidPackageManifest(options?: {
         componentBundle: {
           type: 'device',
           family: platform,
-          platform: buildTargets[platform].platform,
           ...(nativeApp && { isNative: true }),
         },
       }),
@@ -129,7 +127,6 @@ it('emits an error if both JS and native device components are present', () => {
       componentBundle: {
         type: 'device',
         family: 'foo',
-        platform: ['1.1.1+'],
       },
       path: 'bundle.zip',
       contents: Buffer.alloc(0),
@@ -164,7 +161,6 @@ it('emits an error if multiple bundles are present for the same device family', 
         componentBundle: {
           type: 'device',
           family: 'foo',
-          platform: ['1.1.1+'],
         },
         path: `bundle${i}.zip`,
         contents: Buffer.alloc(0),
@@ -190,7 +186,6 @@ it('builds a package manifest with a native device component and companion', () 
 
 it.each<[string, any]>([
   ['has an invalid type field', { type: '__invalid__' }],
-  ['has a device type but missing platform', { type: 'device', family: 'foo' }],
   [
     'has a device type but missing family',
     { type: 'device', platform: ['1.1.1+'] },
