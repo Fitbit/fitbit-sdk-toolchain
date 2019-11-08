@@ -26,7 +26,7 @@ export function apiVersions(
     return { deviceApi: '5.0.0', companionApi: '3.0.0' };
   }
   if (major === 4 && minor === 1) {
-    return { deviceApi: '5.1.0', companionApi: '3.0.0' };
+    return { deviceApi: '5.1.0', companionApi: '3.1.0' };
   }
   throw new BuildError(
     `No known API versions for SDK package version ${major}.${minor}`,

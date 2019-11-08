@@ -42,13 +42,17 @@ const device = [
 
 const companion = [
   'app-cluster-storage',
+  'calendar',
   'companion',
   'external-app',
   'image',
   'local-storage',
+  'mobile-notifications',
   'peer',
   'secure-exchange',
   'settings',
+  'user-water',
+  'user-weight',
 ].concat(common);
 
 const settings = ['user-settings'];
