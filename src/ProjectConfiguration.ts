@@ -65,7 +65,9 @@ enum Locales {
 
 enum Permission {
   ACCESS_ACTIVITY = 'access_activity',
+  ACCESS_AOD = 'access_aod',
   ACCESS_APP_CLUSTER_STORAGE = 'access_app_cluster_storage',
+  ACCESS_CALENDAR = 'access_calendar',
   ACCESS_EXERCISE = 'access_exercise',
   ACCESS_HEART_RATE = 'access_heart_rate',
   ACCESS_INTERNET = 'access_internet',
@@ -127,6 +129,13 @@ const permissionTypes = [
       'Application may access storage shared by other applications from the same developer.',
     sdkVersion: '>=4.0.0',
   },
+  {
+    key: Permission.ACCESS_CALENDAR,
+    name: 'Calendars',
+    description:
+      'Application may access calendar data stored on the mobile device',
+    sdkVersion: '>=4.1.0',
+  },
 ];
 
 const restrictedPermissionTypes = [
@@ -145,6 +154,13 @@ const restrictedPermissionTypes = [
     key: Permission.ACCESS_SECURE_EXCHANGE,
     name: '[Restricted] Secure Exchange',
     description: 'Allows securing any data and verifying that data was secured',
+  },
+  {
+    key: Permission.ACCESS_AOD,
+    name: '[Restricted] Always-on Display',
+    description:
+      'Application may stay active whilst always-on display mode is active.',
+    sdkVersion: '>=4.1.0',
   },
 ];
 
