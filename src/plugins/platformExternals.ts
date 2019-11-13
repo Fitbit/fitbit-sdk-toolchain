@@ -42,7 +42,7 @@ const device = [
 
 const companion = [
   'app-cluster-storage',
-  'calendar',
+  'calendars',
   'companion',
   'external-app',
   'image',
