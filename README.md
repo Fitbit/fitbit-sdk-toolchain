@@ -2,6 +2,7 @@ Fitbit SDK Toolchain
 =====================
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/Fitbit/fitbit-sdk-toolchain.svg)](https://greenkeeper.io/)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FFitbit%2Ffitbit-sdk-toolchain.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FFitbit%2Ffitbit-sdk-toolchain?ref=badge_shield)
 
 [![Coverage Status](https://coveralls.io/repos/github/Fitbit/fitbit-sdk-toolchain/badge.svg?branch=master)](https://coveralls.io/github/Fitbit/fitbit-sdk-toolchain?branch=master)
 
@@ -18,3 +19,7 @@ The toolchain can be used to generate a new appID for your project. This is usef
 ### Help
 For help regarding the tools please consult the [Fitbit Developer Portal](https://dev.fitbit.com) or
 [Fitbit SDK Forums](https://community.fitbit.com/t5/SDK-Development/bd-p/sdk)
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FFitbit%2Ffitbit-sdk-toolchain.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FFitbit%2Ffitbit-sdk-toolchain?ref=badge_large)
