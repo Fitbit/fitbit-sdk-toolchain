@@ -68,7 +68,7 @@
     "chalk": "^3.0.0",
     "dateformat": "^3.0.3",
     "drop-stream": "^1.0.0",
-    "elfy": "^0.1.0",
+    "elfy": "^1.0.0",
     "events-intercept": "^2.0.0",
     "fp-ts": "^2.0.5",
     "fs-extra": "^8.1.0",
