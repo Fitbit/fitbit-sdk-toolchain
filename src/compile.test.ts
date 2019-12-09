@@ -99,7 +99,10 @@ it('allows importing image files when building settings', () =>
     ),
   ).resolves.toMatchSnapshot());
 
-it.each([ComponentType.DEVICE, ComponentType.COMPANION])(
+it.each([
+  ComponentType.DEVICE,
+  ComponentType.COMPANION,
+])(
   'allows importing image files when building %s',
   (component: ComponentType) =>
     expect(compileFile('importImage.js', { component })).rejects.toThrowError(),
@@ -127,7 +130,10 @@ it('emits ES5 code for device', () =>
     ),
   ).resolves.toMatchSnapshot());
 
-it.each([ComponentType.DEVICE, ComponentType.COMPANION])(
+it.each([
+  ComponentType.DEVICE,
+  ComponentType.COMPANION,
+])(
   'does not allow importing image files when building %s',
   (component: ComponentType) =>
     expect(compileFile('importImage.js', { component })).rejects.toBeDefined(),

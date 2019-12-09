@@ -1,5 +1,5 @@
 import humanizeList from 'humanize-list';
-import { isHexColor, isUUID } from 'validator';
+import validator from 'validator';
 import lodash from 'lodash';
 import semver from 'semver';
 
@@ -357,7 +357,10 @@ export function validateProjectDisplayName(config: ProjectConfiguration) {
 
 export function validateWipeColor(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
-  if (config.appType !== AppType.CLOCKFACE && !isHexColor(config.wipeColor)) {
+  if (
+    config.appType !== AppType.CLOCKFACE &&
+    !validator.isHexColor(config.wipeColor)
+  ) {
     diagnostics.pushFatalError('Wipe color must be a valid hex color');
   }
   return diagnostics;
@@ -449,7 +452,7 @@ export function validateSupportedLocales({ i18n }: ProjectConfiguration) {
 
 export function validateAppUUID({ appUUID }: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
-  if (!isUUID(String(appUUID))) {
+  if (!validator.isUUID(String(appUUID))) {
     diagnostics.pushFatalError(
       'appUUID must be a valid UUID, run "npx fitbit-build generate-appid" to fix',
     );
@@ -504,7 +507,7 @@ export function validateStorageGroup(config: ProjectConfiguration) {
       diagnostics.pushFatalError(
         'Developer ID must be set when the App Cluster Storage permission is requested',
       );
-    } else if (!isUUID(String(config.developerID))) {
+    } else if (!validator.isUUID(String(config.developerID))) {
       diagnostics.pushFatalError('Developer ID must be a valid UUID');
     }
   } else if (
