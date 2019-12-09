@@ -70,7 +70,9 @@ describe('when no .po files are piped in', () => {
       .on('error', done.fail)
       .on('data', (file: Vinyl) => files.set(file.relative, file))
       .on('end', () => {
-        expect(files).toEqual(new Map<string, Vinyl>([['en.po.txt', file]]));
+        expect(files).toEqual(
+          new Map<string, Vinyl>([['en.po.txt', file]]),
+        );
         done();
       })
       .end(file);

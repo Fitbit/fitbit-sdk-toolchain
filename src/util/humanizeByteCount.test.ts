@@ -1,12 +1,13 @@
 import humanizeByteCount from './humanizeByteCount';
 
 describe('humanizeByteCount', () => {
-  it.each<[number, number]>([[0, 0], [0, 3], [0, -1]])(
-    'handles 0 bytes accordingly',
-    (byteCount, decimalCount) => {
-      expect(humanizeByteCount(byteCount, decimalCount)).toBe('0 B');
-    },
-  );
+  it.each<[number, number]>([
+    [0, 0],
+    [0, 3],
+    [0, -1],
+  ])('handles 0 bytes accordingly', (byteCount, decimalCount) => {
+    expect(humanizeByteCount(byteCount, decimalCount)).toBe('0 B');
+  });
 
   it.each<[number, number | undefined]>([
     [5, 0],

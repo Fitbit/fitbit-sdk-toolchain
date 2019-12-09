@@ -86,11 +86,9 @@ describe('convertToDiagnostic', () => {
 
   describe('when the error has lineNumber and columnNumber set but no fileName', () => {
     it('does not copy any position info', () => {
-      const error: PluginError<{ columnNumber?: number }> = new PluginError(
-        'foo',
-        'bar',
-        { lineNumber: 7 },
-      );
+      const error: PluginError<{
+        columnNumber?: number;
+      }> = new PluginError('foo', 'bar', { lineNumber: 7 });
       error.columnNumber = 5;
       expect(pluginError.convertToDiagnostic(error)).not.toHaveProperty('file');
     });
@@ -99,11 +97,9 @@ describe('convertToDiagnostic', () => {
   describe('when the error has all the position info set', () => {
     it('converts the position info', () => {
       const fileName = 'companion/bar.js';
-      const error: PluginError<{ columnNumber?: number }> = new PluginError(
-        'foo',
-        'bar',
-        { fileName, lineNumber: 7 },
-      );
+      const error: PluginError<{
+        columnNumber?: number;
+      }> = new PluginError('foo', 'bar', { fileName, lineNumber: 7 });
       error.columnNumber = 5;
       expect(pluginError.convertToDiagnostic(error)).toHaveProperty('file', {
         path: fileName,
