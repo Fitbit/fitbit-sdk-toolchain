@@ -77,6 +77,7 @@ enum Permission {
   FITBIT_TOKEN = 'fitbit_token',
   RUN_BACKGROUND = 'run_background',
   EXTERNAL_APP_COMMUNICATION = 'external_app_communication',
+  MOBILE_NOTIFICATIONS = 'mobile_notifications',
 }
 
 const permissionTypes = [
@@ -85,48 +86,48 @@ const permissionTypes = [
     name: 'Activity',
     // tslint:disable-next-line:max-line-length
     description:
-      'Read user activities for today (distance, calories, steps, elevation and active minutes), and daily goals.',
+      'Read user activities for today (distance, calories, steps, elevation and active minutes), and daily goals',
   },
   {
     key: Permission.ACCESS_USER_PROFILE,
     name: 'User Profile',
     // tslint:disable-next-line:max-line-length
     description:
-      'Read non-identifiable personal information (gender, age, height, weight, resting HR, basal metabolic rate, stride, HR zones).',
+      'Read non-identifiable personal information (gender, age, height, weight, resting HR, basal metabolic rate, stride, HR zones)',
   },
   {
     key: Permission.ACCESS_HEART_RATE,
     name: 'Heart Rate',
-    description: 'Application may read the heart-rate sensor in real-time.',
+    description: 'Application may read the heart-rate sensor in real-time',
   },
   {
     key: Permission.ACCESS_LOCATION,
     name: 'Location',
-    description: 'Application and companion may use GPS.',
+    description: 'Application and companion may use GPS',
   },
   {
     key: Permission.ACCESS_INTERNET,
     name: 'Internet',
     description:
-      'Companion may communicate with the Internet using your phone data connection.',
+      'Companion may communicate with the Internet using your phone data connection',
   },
   {
     key: Permission.RUN_BACKGROUND,
     name: 'Run in background',
     description:
-      'Companion may run even when the application is not actively in use.',
+      'Companion may run even when the application is not actively in use',
   },
   {
     key: Permission.ACCESS_EXERCISE,
     name: 'Exercise Tracking',
-    description: 'Application may track an exercise.',
+    description: 'Application may track an exercise',
     sdkVersion: '>=3.0.0',
   },
   {
     key: Permission.ACCESS_APP_CLUSTER_STORAGE,
     name: 'App Cluster Storage',
     description:
-      'Application may access storage shared by other applications from the same developer.',
+      'Application may access storage shared by other applications from the same developer',
     sdkVersion: '>=4.0.0',
   },
   {
@@ -142,13 +143,13 @@ const restrictedPermissionTypes = [
   {
     key: Permission.FITBIT_TOKEN,
     name: '[Restricted] Fitbit Token',
-    description: 'Access Fitbit API token.',
+    description: 'Access Fitbit API token',
   },
   {
     key: Permission.EXTERNAL_APP_COMMUNICATION,
     name: '[Restricted] External Application Communication',
     description:
-      'Allows communication between external mobile applications and companion.',
+      'Allows communication between external mobile applications and companion',
   },
   {
     key: Permission.ACCESS_SECURE_EXCHANGE,
@@ -159,7 +160,13 @@ const restrictedPermissionTypes = [
     key: Permission.ACCESS_AOD,
     name: '[Restricted] Always-on Display',
     description:
-      'Application may stay active whilst always-on display mode is active.',
+      'Application may stay active whilst always-on display mode is active',
+    sdkVersion: '>=4.1.0',
+  },
+  {
+    key: Permission.MOBILE_NOTIFICATIONS,
+    name: '[Restricted] Mobile Notifications',
+    description: 'Application may display notifications on the mobile device',
     sdkVersion: '>=4.1.0',
   },
 ];
