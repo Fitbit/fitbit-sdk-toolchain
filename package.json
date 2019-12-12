@@ -99,7 +99,7 @@
     "terser": "^4.4.2",
     "tslib": "^1.10.0",
     "typescript": "^3.7.3",
-    "update-notifier": "^3.0.1",
+    "update-notifier": "^4.0.0",
     "uuid": "^3.3.3",
     "validator": "^12.1.0",
     "vinyl": "^2.2.0",
