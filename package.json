@@ -77,7 +77,7 @@
     "gulp-zip": "^5.0.1",
     "humanize-list": "^1.0.1",
     "inquirer": "^7.0.0",
-    "io-ts": "2.0.1",
+    "io-ts": "2.0.2",
     "lazystream": "^1.0.0",
     "lodash": "^4.17.15",
     "magic-string": "^0.25.4",
