@@ -92,7 +92,7 @@
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-pluginutils": "^2.8.2",
-    "semver": "^6.3.0",
+    "semver": "^7.0.0",
     "simple-random": "^1.0.3",
     "source-map": "^0.7.3",
     "source-map-compactor": "^1.0.1",
