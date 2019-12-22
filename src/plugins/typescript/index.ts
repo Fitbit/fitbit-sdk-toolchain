@@ -161,9 +161,7 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
 
       emitDiagnostics(service.getSyntacticDiagnostics(id));
       emitDiagnostics(service.getSemanticDiagnostics(id));
-      if (output.emitSkipped) {
-        this.error(`Failed to compile ${id}`);
-      }
+      if (output.emitSkipped) this.error(`Failed to compile ${id}`);
 
       return {
         code: output.outputFiles.filter((e) => e.name.endsWith('.js'))[0].text,
