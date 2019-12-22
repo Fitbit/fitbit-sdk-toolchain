@@ -1,6 +1,7 @@
 import { Plugin } from 'rollup';
 import { createFilter } from 'rollup-pluginutils';
 import ts from 'typescript';
+import path from 'path';
 
 import LanguageServiceHost from './LanguageServiceHost';
 import { normalizeToPOSIX } from '../../pathUtils';
@@ -161,7 +162,9 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
 
       emitDiagnostics(service.getSyntacticDiagnostics(id));
       emitDiagnostics(service.getSemanticDiagnostics(id));
-      if (output.emitSkipped) this.error(`Failed to compile ${id}`);
+      if (output.emitSkipped) {
+        this.error(`Failed to compile ${path.normalize(id)}`);
+      }
 
       return {
         code: output.outputFiles.filter((e) => e.name.endsWith('.js'))[0].text,

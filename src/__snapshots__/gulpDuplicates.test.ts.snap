@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`emits an error when a file is duplicated twice 1`] = `"One or more files in the build output were duplicates: app/index.js"`;
-
-exports[`emits an error when two files are duplicated 1`] = `"One or more files in the build output were duplicates: app/index.js and resources/icon.png.txi"`;

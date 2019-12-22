@@ -13,9 +13,12 @@ import { ComponentType } from './componentTargets';
 
 jest.mock('./sdkVersion');
 
+const normalizePath = (val: string) => val.replace(/[/\\]/g, '/');
+const cwd = normalizePath(process.cwd());
+
 expect.addSnapshotSerializer({
-  test: (val) => typeof val === 'string' && val.includes(process.cwd()),
-  print: (val) => val.replace(process.cwd(), '<cwd>'),
+  test: (val) => typeof val === 'string' && normalizePath(val).includes(cwd),
+  print: (val) => normalizePath(val).replace(cwd, '<cwd>'),
 });
 
 let mockDiagnosticHandler: jest.Mock;
@@ -81,7 +84,7 @@ it('emits files in a specified output directory', () =>
     compileFile(
       'basic.js',
       { outputDir: 'some_directory' },
-      'some_directory/basic.js',
+      path.join('some_directory', 'basic.js'),
     ),
   ).resolves.toBeDefined());
 
@@ -140,12 +143,45 @@ it.each([
 );
 
 it.each([
-  ['an unrecognized binary file is imported', 'importBinary.js'],
-  ['a non-existent relative import is specified', 'relativeImportNotFound.js'],
-  ['unknown external imports are used', 'unknownExternalImport.js'],
-  ['an absolute import is specified', 'absoluteImport.js'],
-])('build fails when %s', (_, filename) =>
-  expect(compileFile(filename)).rejects.toThrowErrorMatchingSnapshot(),
+  [
+    'an unrecognized binary file is imported',
+    'importBinary.js',
+    `Failed to compile ${path.join(
+      process.cwd(),
+      'src',
+      '__test__',
+      'compile',
+      'randomData.js',
+    )}`,
+  ],
+  [
+    'a non-existent relative import is specified',
+    'relativeImportNotFound.js',
+    `Could not resolve './__doesNotExist.js' from ${path.join(
+      'src',
+      '__test__',
+      'compile',
+      'relativeImportNotFound.js',
+    )}`,
+  ],
+  [
+    'unknown external imports are used',
+    'unknownExternalImport.js',
+    `Compile failed.`,
+  ],
+  [
+    'an absolute import is specified',
+    'absoluteImport.js',
+    `/foo.js is imported by ${path.join(
+      process.cwd(),
+      'src',
+      '__test__',
+      'compile',
+      'absoluteImport.js',
+    )}, but absolute imports are disallowed`,
+  ],
+])('build fails when %s', (_, filename, errorMessage) =>
+  expect(compileFile(filename)).rejects.toThrowError(errorMessage),
 );
 
 it.each([
@@ -190,7 +226,19 @@ describe('when allowUnknownExternals is enabled', () => {
         allowUnknownExternals: true,
       }).then(getVinylContents),
     ).resolves.toMatchSnapshot();
-    expect(mockDiagnosticHandler.mock.calls).toMatchSnapshot();
+    expect(mockDiagnosticHandler.mock.calls).toEqual([
+      [
+        {
+          category: 0,
+          messageText: `_never_exists_ is imported by ${path.join(
+            'src',
+            '__test__',
+            'compile',
+            'unknownExternalImport.js',
+          )}, but could not be resolved`,
+        },
+      ],
+    ]);
   });
 });
 

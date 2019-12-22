@@ -1,4 +1,5 @@
 import { Readable } from 'stream';
+import path from 'path';
 
 import Vinyl from 'vinyl';
 import gulpDuplicates from './gulpDuplicates';
@@ -33,10 +34,12 @@ it('does not emit an error when no files are duplicated', () =>
   ]).resolves.toBeUndefined());
 
 it('emits an error when a file is duplicated twice', () =>
-  expectStreamPromise([
-    'app/index.js',
-    'app/index.js',
-  ]).rejects.toThrowErrorMatchingSnapshot());
+  expectStreamPromise(['app/index.js', 'app/index.js']).rejects.toThrowError(
+    `One or more files in the build output were duplicates: ${path.join(
+      'app',
+      'index.js',
+    )}`,
+  ));
 
 it('emits an error when two files are duplicated', () =>
   expectStreamPromise([
@@ -44,4 +47,9 @@ it('emits an error when two files are duplicated', () =>
     'app/index.js',
     'resources/icon.png.txi',
     'resources/icon.png.txi',
-  ]).rejects.toThrowErrorMatchingSnapshot());
+  ]).rejects.toThrowError(
+    `One or more files in the build output were duplicates: ${path.join(
+      'app',
+      'index.js',
+    )} and ${path.join('resources', 'icon.png.txi')}`,
+  ));

@@ -1,4 +1,5 @@
 import { Duplex, Readable } from 'stream';
+import path from 'path';
 
 import { advanceTo } from 'jest-date-mock';
 import Vinyl from 'vinyl';
@@ -180,10 +181,10 @@ describe('when there is a device entry point present', () => {
         .on('data', (file: Vinyl) => files.push(file.relative))
         .on('end', () => {
           expect(files).toEqual([
-            'device/index.js',
-            'lang/english',
-            'spanish/language',
-            'manifest.json',
+            path.join('device', 'index.js'),
+            path.join('lang', 'english'),
+            path.join('spanish', 'language'),
+            path.join('manifest.json'),
           ]);
           done();
         });

@@ -9,15 +9,6 @@ PluginError {
 }
 `;
 
-exports[`bails when multiple .po files of the same name are present 1`] = `
-PluginError {
-  "fileName": "a/en-US.po",
-  "message": "Language 'en-US' already loaded",
-  "name": "Error",
-  "plugin": "compileTranslations",
-}
-`;
-
 exports[`bails when the default langugage is not present 1`] = `
 PluginError {
   "message": "No translation file found for default language \\"es-ES\\"",

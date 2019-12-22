@@ -2,15 +2,20 @@ import path from 'path';
 
 import companionTranslations from './companionTranslations';
 
-const basePath = path.join(__dirname, '__test__', 'companionTranslations');
+const normalizePath = (val: string) => val.replace(/[/\\]/g, '/');
+const basePath = normalizePath(
+  path.join(__dirname, '__test__', 'companionTranslations'),
+);
 
 expect.addSnapshotSerializer({
   test(val) {
-    return val instanceof Error && val.message.includes(basePath);
+    return (
+      val instanceof Error && normalizePath(val.message).includes(basePath)
+    );
   },
 
   print(val, serialize) {
-    val.message = val.message.replace(basePath, '<base>');
+    val.message = normalizePath(val.message).replace(basePath, '<base>');
     return serialize(val);
   },
 });
