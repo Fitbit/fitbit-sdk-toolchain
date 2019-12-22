@@ -146,12 +146,8 @@ it.each([
   [
     'an unrecognized binary file is imported',
     'importBinary.js',
-    `Failed to compile ${path.join(
-      process.cwd(),
-      'src',
-      '__test__',
-      'compile',
-      'randomData.js',
+    `Failed to compile ${normalizePath(
+      [process.cwd(), 'src', '__test__', 'compile', 'randomData.js'].join('/'),
     )}`,
   ],
   [
