@@ -11,8 +11,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
-        node_version: [12, 13]
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        node_version: [10, 12]
     name: CI on NodeJS v${{ matrix.node_version }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -21,6 +21,10 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node_version }}
-      - run: npm run lint
-      - run: npm run checkstyle
-      - run: npm run test:coveralls
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Code style
+        run: yarn lint
+        run: yarn checkstyle
+      - name: Test
+        run: yarn test:coveralls
