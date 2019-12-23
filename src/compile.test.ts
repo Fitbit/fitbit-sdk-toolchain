@@ -11,16 +11,11 @@ import getFilesFromStream from './testUtils/getFilesFromStream';
 import getVinylContents from './testUtils/getVinylContents';
 import { ComponentType } from './componentTargets';
 import { DiagnosticCategory } from './diagnostics';
+import { cwdSerializer, normalizeSlash } from './jestSnapshotSerializers';
 
 jest.mock('./sdkVersion');
 
-const normalizePath = (val: string) => val.replace(/[/\\]/g, '/');
-const cwd = normalizePath(process.cwd());
-
-expect.addSnapshotSerializer({
-  test: (val) => typeof val === 'string' && normalizePath(val).includes(cwd),
-  print: (val) => normalizePath(val).replace(cwd, '<cwd>'),
-});
+expect.addSnapshotSerializer(cwdSerializer);
 
 let mockDiagnosticHandler: jest.Mock;
 const mockSDKVersion = sdkVersion as jest.Mock;
@@ -147,7 +142,7 @@ it.each([
   [
     'an unrecognized binary file is imported',
     'importBinary.js',
-    `Failed to compile ${normalizePath(
+    `Failed to compile ${normalizeSlash(
       [process.cwd(), 'src', '__test__', 'compile', 'randomData.js'].join('/'),
     )}`,
   ],
