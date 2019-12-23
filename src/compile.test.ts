@@ -10,6 +10,7 @@ import getFileFromStream from './testUtils/getFileFromStream';
 import getFilesFromStream from './testUtils/getFilesFromStream';
 import getVinylContents from './testUtils/getVinylContents';
 import { ComponentType } from './componentTargets';
+import { DiagnosticCategory } from './diagnostics';
 
 jest.mock('./sdkVersion');
 
@@ -225,7 +226,7 @@ describe('when allowUnknownExternals is enabled', () => {
     expect(mockDiagnosticHandler.mock.calls).toEqual([
       [
         {
-          category: 0,
+          category: DiagnosticCategory.Warning,
           messageText: `_never_exists_ is imported by ${path.join(
             'src',
             '__test__',
