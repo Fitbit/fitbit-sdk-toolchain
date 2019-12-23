@@ -1,39 +1,41 @@
 import { writeArray } from 'event-stream';
 import Vinyl from 'vinyl';
-import path from 'path';
 
 import filterResourceTag from './filterResourceTag';
+import path from 'path';
 
 const projectDir = new Map<string, Vinyl>();
 
 [
-  path.normalize('/app/index.js'),
+  '/app/index.js',
 
-  path.normalize('/app/lib/foo~bar.js'),
-  path.normalize('/app/lib/foo.js'),
-  path.normalize('/app/lib/foo~quux.js'),
+  '/app/lib/foo~bar.js',
+  '/app/lib/foo.js',
+  '/app/lib/foo~quux.js',
 
-  path.normalize('/resources/resources.json'),
-  path.normalize('/resources/index.gui'),
-  path.normalize('/resources/index~higgs.gui'),
-  path.normalize('/resources/index~asdf.gui'),
-  path.normalize('/resources/widgets~higgs.gui'),
-  path.normalize('/resources/widgets~foo.gui'),
-  path.normalize('/resources/no~fallback.txt'),
-  path.normalize('/resources/exclude~me.txt'),
-  path.normalize('/resources/exclude~this.txt'),
+  '/resources/resources.json',
+  '/resources/index.gui',
+  '/resources/index~higgs.gui',
+  '/resources/index~asdf.gui',
+  '/resources/widgets~higgs.gui',
+  '/resources/widgets~foo.gui',
+  '/resources/no~fallback.txt',
+  '/resources/exclude~me.txt',
+  '/resources/exclude~this.txt',
 
-  path.normalize('/resources/images/icon~higgs.png'),
-  path.normalize('/resources/images/icon.png'),
-].forEach((path) =>
-  projectDir.set(
-    path,
-    new Vinyl({
+  '/resources/images/icon~higgs.png',
+  '/resources/images/icon.png',
+]
+  .map(path.normalize)
+  .forEach((path) =>
+    projectDir.set(
       path,
-      contents: Buffer.from(`content of ${path}`, 'utf8'),
-    }),
-  ),
-);
+      new Vinyl({
+        path,
+        contents: Buffer.from(`content of ${path}`, 'utf8'),
+      }),
+    ),
+  );
 
 const fs = new Map<string, Vinyl>();
 const paths: string[] = [];

@@ -7,6 +7,14 @@ console.log(A)
 "
 `;
 
+exports[`build fails when a non-existent relative import is specified 1`] = `"Could not resolve './__doesNotExist.js' from src/__test__/compile/relativeImportNotFound.js"`;
+
+exports[`build fails when an absolute import is specified 1`] = `"/foo.js is imported by <cwd>/src/__test__/compile/absoluteImport.js, but absolute imports are disallowed"`;
+
+exports[`build fails when an unrecognized binary file is imported 1`] = `"Failed to compile <cwd>/src/__test__/compile/randomData.js"`;
+
+exports[`build fails when unknown external imports are used 1`] = `"Compile failed."`;
+
 exports[`build passes when building a minimal app 1`] = `
 "\\"use strict\\"
 console.log(\\"hello world!\\")
@@ -115,7 +123,7 @@ Array [
   Object {
     "category": 1,
     "file": Object {
-      "path": <cwd>/src/__test__/compile/badSyntax.js,
+      "path": "<cwd>/src/__test__/compile/badSyntax.js",
       "position": Object {
         "end": Object {
           "character": 17,
@@ -137,7 +145,7 @@ Array [
   Object {
     "category": 1,
     "file": Object {
-      "path": <cwd>/src/__test__/compile/typeError.ts,
+      "path": "<cwd>/src/__test__/compile/typeError.ts",
       "position": Object {
         "end": Object {
           "character": 5,
@@ -180,6 +188,17 @@ exports[`when allowUnknownExternals is enabled successfully builds an app with u
 function e(e){return e&&typeof e===\\"object\\"&&\\"default\\"in e?e[\\"default\\"]:e}var t=e(require(\\"_never_exists_\\"))
 t()
 "
+`;
+
+exports[`when allowUnknownExternals is enabled successfully builds an app with unknown external imports 2`] = `
+Array [
+  Array [
+    Object {
+      "category": 0,
+      "messageText": "_never_exists_ is imported by src/__test__/compile/unknownExternalImport.js, but could not be resolved",
+    },
+  ],
+]
 `;
 
 exports[`when building a device component which uses gettext polyfills gettext on device 1`] = `

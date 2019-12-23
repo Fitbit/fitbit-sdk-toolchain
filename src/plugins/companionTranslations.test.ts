@@ -1,21 +1,23 @@
 import path from 'path';
 
 import companionTranslations from './companionTranslations';
-import { normalizeSlash } from '../jestSnapshotSerializers';
+import {
+  errorMessageSerializer,
+  normalizeSlash,
+} from '../jestSnapshotSerializers';
 
 const basePath = normalizeSlash(
   path.join(__dirname, '__test__', 'companionTranslations'),
 );
 
+expect.addSnapshotSerializer(errorMessageSerializer);
 expect.addSnapshotSerializer({
   test(val) {
-    return (
-      val instanceof Error && normalizeSlash(val.message).includes(basePath)
-    );
+    return val instanceof Error && val.message.includes(basePath);
   },
 
   print(val, serialize) {
-    val.message = normalizeSlash(val.message).replace(basePath, '<base>');
+    val.message = val.message.replace(basePath, '<base>');
     return serialize(val);
   },
 });

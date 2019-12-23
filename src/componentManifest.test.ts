@@ -1,5 +1,4 @@
 import { Duplex, Readable } from 'stream';
-import path from 'path';
 
 import { advanceTo } from 'jest-date-mock';
 import Vinyl from 'vinyl';
@@ -17,6 +16,7 @@ import getFileFromStream from './testUtils/getFileFromStream';
 import getJSONFileFromStream from './testUtils/getJSONFileFromStream';
 import getVinylContents from './testUtils/getVinylContents';
 import makeReadStream from './testUtils/makeReadStream';
+import path from 'path';
 
 jest.mock('./packageVersion.const');
 
@@ -181,10 +181,10 @@ describe('when there is a device entry point present', () => {
         .on('data', (file: Vinyl) => files.push(file.relative))
         .on('end', () => {
           expect(files).toEqual([
-            path.join('device', 'index.js'),
-            path.join('lang', 'english'),
-            path.join('spanish', 'language'),
-            path.join('manifest.json'),
+            path.normalize('device/index.js'),
+            path.normalize('lang/english'),
+            path.normalize('spanish/language'),
+            path.normalize('manifest.json'),
           ]);
           done();
         });

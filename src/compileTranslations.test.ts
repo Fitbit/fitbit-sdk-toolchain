@@ -1,9 +1,8 @@
 import Vinyl from 'vinyl';
-import path from 'path';
 
 import compileTranslations from './compileTranslations';
 import { PassThrough, Writable } from 'stream';
-import PluginError from 'plugin-error';
+import path from 'path';
 
 const translationContents = 'msgid "foo"\nmsgstr "foo"';
 
@@ -88,23 +87,11 @@ it('grabs .po files from any directory', (done) => {
     .pipe(expectTranslationsForLanguages(done, 'en-US', 'es-ES', 'fr-FR'));
 });
 
-function compileExpectError(
-  defaultLanguage: string,
-  done: jest.DoneCallback,
-  // tslint:disable-next-line: max-union-size
-  expectedError?: Pick<PluginError, 'fileName' | 'message' | 'name' | 'plugin'>,
-) {
+function compileExpectError(defaultLanguage: string, done: jest.DoneCallback) {
   return compileTranslations(defaultLanguage)
     .on('data', () => done.fail('got unexpected data'))
-    .on('error', (error: PluginError) => {
-      if (expectedError) {
-        expect(error.fileName).toBe(expectedError.fileName);
-        expect(error.message).toBe(expectedError.message);
-        expect(error.name).toBe(expectedError.name);
-        expect(error.plugin).toBe(expectedError.plugin);
-      } else {
-        expect(error).toMatchSnapshot();
-      }
+    .on('error', (error) => {
+      expect(error).toMatchSnapshot();
       done();
     });
 }
@@ -127,12 +114,7 @@ describe('rejects .po files whose names are not acceptable language tags', () =>
 
 it('bails when multiple .po files of the same name are present', (done) => {
   translationFileSource('en-US.po', 'a/en-US.po').pipe(
-    compileExpectError('en-US', done, {
-      fileName: path.join('a', 'en-US.po'),
-      message: "Language 'en-US' already loaded",
-      name: 'Error',
-      plugin: 'compileTranslations',
-    }),
+    compileExpectError('en-US', done),
   );
 });
 
@@ -162,7 +144,7 @@ it('renames the transformed file, replacing the whole relative path', (done) => 
   translationFileSource('a/b/c/en-US.po')
     .pipe(compileTranslations('en-US'))
     .on('data', (file: Vinyl) => {
-      expect(file.relative).toBe(path.join('l', 'en-US'));
+      expect(file.relative).toBe(path.normalize('l/en-US'));
       done();
     })
     .on('error', done.fail);

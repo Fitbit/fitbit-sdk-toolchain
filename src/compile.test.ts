@@ -10,8 +10,7 @@ import getFileFromStream from './testUtils/getFileFromStream';
 import getFilesFromStream from './testUtils/getFilesFromStream';
 import getVinylContents from './testUtils/getVinylContents';
 import { ComponentType } from './componentTargets';
-import { DiagnosticCategory } from './diagnostics';
-import { cwdSerializer, normalizeSlash } from './jestSnapshotSerializers';
+import { cwdSerializer } from './jestSnapshotSerializers';
 
 jest.mock('./sdkVersion');
 
@@ -139,41 +138,12 @@ it.each([
 );
 
 it.each([
-  [
-    'an unrecognized binary file is imported',
-    'importBinary.js',
-    `Failed to compile ${normalizeSlash(
-      [process.cwd(), 'src', '__test__', 'compile', 'randomData.js'].join('/'),
-    )}`,
-  ],
-  [
-    'a non-existent relative import is specified',
-    'relativeImportNotFound.js',
-    `Could not resolve './__doesNotExist.js' from ${path.join(
-      'src',
-      '__test__',
-      'compile',
-      'relativeImportNotFound.js',
-    )}`,
-  ],
-  [
-    'unknown external imports are used',
-    'unknownExternalImport.js',
-    `Compile failed.`,
-  ],
-  [
-    'an absolute import is specified',
-    'absoluteImport.js',
-    `/foo.js is imported by ${path.join(
-      process.cwd(),
-      'src',
-      '__test__',
-      'compile',
-      'absoluteImport.js',
-    )}, but absolute imports are disallowed`,
-  ],
-])('build fails when %s', (_, filename, errorMessage) =>
-  expect(compileFile(filename)).rejects.toThrowError(errorMessage),
+  ['an unrecognized binary file is imported', 'importBinary.js'],
+  ['a non-existent relative import is specified', 'relativeImportNotFound.js'],
+  ['unknown external imports are used', 'unknownExternalImport.js'],
+  ['an absolute import is specified', 'absoluteImport.js'],
+])('build fails when %s', (_, filename) =>
+  expect(compileFile(filename)).rejects.toThrowErrorMatchingSnapshot(),
 );
 
 it.each([
@@ -218,19 +188,7 @@ describe('when allowUnknownExternals is enabled', () => {
         allowUnknownExternals: true,
       }).then(getVinylContents),
     ).resolves.toMatchSnapshot();
-    expect(mockDiagnosticHandler.mock.calls).toEqual([
-      [
-        {
-          category: DiagnosticCategory.Warning,
-          messageText: `_never_exists_ is imported by ${path.join(
-            'src',
-            '__test__',
-            'compile',
-            'unknownExternalImport.js',
-          )}, but could not be resolved`,
-        },
-      ],
-    ]);
+    expect(mockDiagnosticHandler.mock.calls).toMatchSnapshot();
   });
 });
 
