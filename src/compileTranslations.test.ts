@@ -1,8 +1,8 @@
+import path from 'path';
 import Vinyl from 'vinyl';
 
 import compileTranslations from './compileTranslations';
 import { PassThrough, Writable } from 'stream';
-import path from 'path';
 
 const translationContents = 'msgid "foo"\nmsgstr "foo"';
 

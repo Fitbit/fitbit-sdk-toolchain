@@ -1,6 +1,7 @@
 import { Duplex, Readable } from 'stream';
 
 import { advanceTo } from 'jest-date-mock';
+import path from 'path';
 import Vinyl from 'vinyl';
 
 import { makeDeviceManifest, makeCompanionManifest } from './componentManifest';
@@ -16,7 +17,6 @@ import getFileFromStream from './testUtils/getFileFromStream';
 import getJSONFileFromStream from './testUtils/getJSONFileFromStream';
 import getVinylContents from './testUtils/getVinylContents';
 import makeReadStream from './testUtils/makeReadStream';
-import path from 'path';
 
 jest.mock('./packageVersion.const');
 
