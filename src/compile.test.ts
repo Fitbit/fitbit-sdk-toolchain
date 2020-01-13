@@ -10,13 +10,11 @@ import getFileFromStream from './testUtils/getFileFromStream';
 import getFilesFromStream from './testUtils/getFilesFromStream';
 import getVinylContents from './testUtils/getVinylContents';
 import { ComponentType } from './componentTargets';
+import { cwdSerializer } from './jestSnapshotSerializers';
 
 jest.mock('./sdkVersion');
 
-expect.addSnapshotSerializer({
-  test: (val) => typeof val === 'string' && val.includes(process.cwd()),
-  print: (val) => val.replace(process.cwd(), '<cwd>'),
-});
+expect.addSnapshotSerializer(cwdSerializer);
 
 let mockDiagnosticHandler: jest.Mock;
 const mockSDKVersion = sdkVersion as jest.Mock;
@@ -81,7 +79,7 @@ it('emits files in a specified output directory', () =>
     compileFile(
       'basic.js',
       { outputDir: 'some_directory' },
-      'some_directory/basic.js',
+      path.join('some_directory', 'basic.js'),
     ),
   ).resolves.toBeDefined());
 

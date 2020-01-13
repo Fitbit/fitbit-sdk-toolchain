@@ -1,9 +1,16 @@
 import path from 'path';
 
 import companionTranslations from './companionTranslations';
+import {
+  errorMessageSerializer,
+  normalizeSlash,
+} from '../jestSnapshotSerializers';
 
-const basePath = path.join(__dirname, '__test__', 'companionTranslations');
+const basePath = normalizeSlash(
+  path.join(__dirname, '__test__', 'companionTranslations'),
+);
 
+expect.addSnapshotSerializer(errorMessageSerializer);
 expect.addSnapshotSerializer({
   test(val) {
     return val instanceof Error && val.message.includes(basePath);

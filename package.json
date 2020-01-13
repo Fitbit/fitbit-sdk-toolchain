@@ -10,12 +10,12 @@
   },
   "homepage": "https://github.com/Fitbit/fitbit-sdk-toolchain#readme",
   "scripts": {
-    "build": "rm -rf lib && tsc -p tsconfig.build.json",
+    "build": "rimraf lib && tsc -p tsconfig.build.json",
     "test": "jest",
     "test:coveralls": "jest --runInBand --coverage --coverageReporters=text-lcov | coveralls",
     "lint": "tsc --noEmit --noUnusedLocals && tslint --project . --format codeFrame",
     "depcheck": "depcheck --ignores='@types/*,tslint-config-airbnb' --ignore-dirs='toolchain,__test__'",
-    "checkstyle": "prettier --list-different '**/*.{js,jsx,ts,tsx,json}'",
+    "checkstyle": "prettier --list-different \"**/*.{js,jsx,ts,tsx,json}\"",
     "prepublishOnly": "npm run test && npm run build"
   },
   "devDependencies": {
@@ -50,6 +50,7 @@
     "jest-date-mock": "^1.0.7",
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1",
+    "rimraf": "^3.0.0",
     "ts-jest": "^24.2.0",
     "tslint": "^5.20.1",
     "tslint-config-airbnb": "^5.11.2",
@@ -78,6 +79,7 @@
     "humanize-list": "^1.0.1",
     "inquirer": "^7.0.0",
     "io-ts": "2.0.1",
+    "jest-serializer-path": "^0.1.15",
     "lazystream": "^1.0.0",
     "lodash": "^4.17.15",
     "magic-string": "^0.25.4",

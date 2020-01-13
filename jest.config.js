@@ -13,4 +13,5 @@ module.exports = {
   clearMocks: true,
   restoreMocks: true,
   setupFilesAfterEnv: ['./setupTests.ts'],
+  snapshotSerializers: ['jest-serializer-path'],
 };
