@@ -23,7 +23,7 @@ const mockSDKVersion = sdkVersion as jest.Mock;
 
 beforeEach(() => {
   mockDiagnosticHandler = jest.fn();
-  mockSDKVersion.mockReturnValue({ major: 4, minor: 0 });
+  mockSDKVersion.mockReturnValue({ major: 4, minor: 1 });
 
   // We don't want to load the actual tsconfig.json for this project
   // during unit tests. Using a real tsconfig.json located within
@@ -194,17 +194,33 @@ describe('when allowUnknownExternals is enabled', () => {
   });
 });
 
-describe('when building a device component which uses gettext', () => {
+describe('when building a device component which uses the gettext polyfill', () => {
   let file: string;
 
   beforeEach(async () => {
-    mockSDKVersion.mockReturnValue({ major: 3, minor: 1 });
     file = await compileFile('i18n.js', {
       component: ComponentType.DEVICE,
     }).then(getVinylContents);
   });
 
   it('polyfills gettext on device', () => expect(file).toMatchSnapshot());
+
+  it('builds without diagnostic messages', () =>
+    expect(mockDiagnosticHandler).not.toBeCalled());
+});
+
+describe('when building a device component which uses the i18n API without requiring a polyfill', () => {
+  let file: string;
+
+  beforeEach(async () => {
+    mockSDKVersion.mockReturnValue({ major: 4, minor: 2 });
+    file = await compileFile('i18n.js', {
+      component: ComponentType.DEVICE,
+    }).then(getVinylContents);
+  });
+
+  it('does not polyfill gettext on device', () =>
+    expect(file).toMatchSnapshot());
 
   it('builds without diagnostic messages', () =>
     expect(mockDiagnosticHandler).not.toBeCalled());

@@ -1,17 +1,41 @@
+import { satisfies } from 'semver';
+
 import polyfill from './polyfill';
+import sdkVersion from '../sdkVersion';
 
-const modules = {
-  i18n: `
-import { getResource } from 'resources';
-
-export function gettext(msgid) {
-  var resource = getResource('text', '_' + msgid);
-  if (resource === null) return String(msgid);
-  return resource;
+interface PolyfillSpec {
+  implementation: string;
+  appliesTo?: string;
 }
-`,
+
+const availablePolyfills: Record<string, PolyfillSpec> = {
+  i18n: {
+    implementation: `
+    import { getResource } from 'resources';
+
+    export function gettext(msgid) {
+      var resource = getResource('text', '_' + msgid);
+      if (resource === null) return String(msgid);
+      return resource;
+    }
+    `,
+    appliesTo: '<4.2.0',
+  },
 };
 
 export default function polyfillDevice() {
-  return polyfill(modules);
+  const applicablePolyfills: Record<string, string> = {};
+  for (const [module, { implementation, appliesTo }] of Object.entries(
+    availablePolyfills,
+  )) {
+    const { major, minor } = sdkVersion();
+    if (
+      appliesTo === undefined ||
+      satisfies(`${major}.${minor}.0`, appliesTo)
+    ) {
+      applicablePolyfills[module] = implementation;
+    }
+  }
+
+  return polyfill(applicablePolyfills);
 }
