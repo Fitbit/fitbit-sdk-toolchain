@@ -2,8 +2,8 @@ import path from 'path';
 
 import * as rollup from 'rollup';
 import rollupPluginBabel from 'rollup-plugin-babel';
-import rollupPluginCommonjs from 'rollup-plugin-commonjs';
-import rollupPluginNodeResolve from 'rollup-plugin-node-resolve';
+import pluginCommonjs from '@rollup/plugin-commonjs';
+import pluginNodeResolve from '@rollup/plugin-node-resolve';
 import ts from 'typescript';
 
 import componentTargets, { ComponentType } from './componentTargets';
@@ -78,8 +78,8 @@ export default function compile({
         }),
         ...pluginIf(component === ComponentType.SETTINGS, resourceImports),
         forbidAbsoluteImport(),
-        rollupPluginNodeResolve({ preferBuiltins: false }),
-        rollupPluginCommonjs({ include: ['node_modules/**'] }),
+        pluginNodeResolve({ preferBuiltins: false }),
+        pluginCommonjs({ include: ['node_modules/**'] }),
         ...pluginIf(ecma === 5, () =>
           rollupPluginBabel({
             plugins: [

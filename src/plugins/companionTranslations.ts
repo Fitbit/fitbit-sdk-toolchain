@@ -5,7 +5,7 @@ import { LanguageTable, MessageTable } from '@fitbit-sdk/companion-gettext';
 import { default as _glob } from 'glob';
 import humanizeList from 'humanize-list';
 import pofile from 'pofile';
-import { dataToEsm } from 'rollup-pluginutils';
+import { dataToEsm } from '@rollup/pluginutils';
 
 import BuildError from '../util/BuildError';
 import { validateLanguageTag, supportedTags } from '../languageTag';
