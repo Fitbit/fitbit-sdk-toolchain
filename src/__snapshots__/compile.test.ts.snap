@@ -9,9 +9,9 @@ console.log(A)
 
 exports[`build fails when a non-existent relative import is specified 1`] = `"Could not resolve './__doesNotExist.js' from src/__test__/compile/relativeImportNotFound.js"`;
 
-exports[`build fails when an absolute import is specified 1`] = `"/foo.js is imported by <cwd>/src/__test__/compile/absoluteImport.js, but absolute imports are disallowed"`;
+exports[`build fails when an absolute import is specified 1`] = `"/foo.js is imported by <PROJECT_ROOT>/src/__test__/compile/absoluteImport.js, but absolute imports are disallowed"`;
 
-exports[`build fails when an unrecognized binary file is imported 1`] = `"Failed to compile <cwd>/src/__test__/compile/randomData.js"`;
+exports[`build fails when an unrecognized binary file is imported 1`] = `"Failed to compile <PROJECT_ROOT>/src/__test__/compile/randomData.js"`;
 
 exports[`build fails when unknown external imports are used 1`] = `"Compile failed."`;
 
@@ -102,7 +102,7 @@ and limitations under the License.
 "
 `;
 
-exports[`does not allow JSON imports 1`] = `"Unexpected token (Note that you need rollup-plugin-json to import JSON files)"`;
+exports[`does not allow JSON imports 1`] = `"Unexpected token (Note that you need @rollup/plugin-json to import JSON files)"`;
 
 exports[`emits ES5 code for device 1`] = `
 "\\"use strict\\"
@@ -123,7 +123,7 @@ Array [
   Object {
     "category": 1,
     "file": Object {
-      "path": "<cwd>/src/__test__/compile/badSyntax.js",
+      "path": "<PROJECT_ROOT>/src/__test__/compile/badSyntax.js",
       "position": Object {
         "end": Object {
           "character": 17,
@@ -145,7 +145,7 @@ Array [
   Object {
     "category": 1,
     "file": Object {
-      "path": "<cwd>/src/__test__/compile/typeError.ts",
+      "path": "<PROJECT_ROOT>/src/__test__/compile/typeError.ts",
       "position": Object {
         "end": Object {
           "character": 5,

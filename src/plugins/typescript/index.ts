@@ -1,5 +1,5 @@
 import { Plugin } from 'rollup';
-import { createFilter } from 'rollup-pluginutils';
+import { createFilter } from '@rollup/pluginutils';
 import ts from 'typescript';
 
 import LanguageServiceHost from './LanguageServiceHost';
@@ -139,7 +139,7 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
     load(id) {
       /**
        * We treat tslib specially so that we are not dependent on
-       * rollup-plugin-node-resolve to load tslib. Even if that plugin
+       * @rollup/plugin-node-resolve to load tslib. Even if that plugin
        * is present, we cannot rely on it to resolve tslib: the tslib
        * package is a dependency of the package containing this plugin,
        * not the project being built. The user's package manager could

@@ -8,7 +8,7 @@ export const cwdSerializer: jest.SnapshotSerializerPlugin = {
   test: (val) =>
     typeof val === 'string' && normalizeSlash(val).includes(normalizedCwd),
   print: (val, serialize) =>
-    serialize(normalizeSlash(val).replace(normalizedCwd, '<cwd>')),
+    serialize(normalizeSlash(val).replace(normalizedCwd, '<PROJECT_ROOT>')),
 };
 
 export const errorMessageSerializer: jest.SnapshotSerializerPlugin = {
