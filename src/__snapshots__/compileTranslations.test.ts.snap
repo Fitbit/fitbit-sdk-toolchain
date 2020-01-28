@@ -38,7 +38,7 @@ PluginError {
 exports[`rejects .po files whose names are not acceptable language tags e.po 1`] = `
 PluginError {
   "fileName": "e.po",
-  "message": "Translation file e.po has a bad name. Translation files must be named de-DE.po, en-US.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po or zh-TW.po.",
+  "message": "Translation file e.po has a bad name. Translation files must be named en-US.po, de-DE.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po, zh-TW.po, pt-BR.po, id-ID.po, ro-RO.po, ru-RU.po, pl-PL.po or cs-CZ.po.",
   "name": "Error",
   "plugin": "compileTranslations",
 }
@@ -47,7 +47,7 @@ PluginError {
 exports[`rejects .po files whose names are not acceptable language tags en-USA.po 1`] = `
 PluginError {
   "fileName": "en-USA.po",
-  "message": "Translation file en-USA.po has a bad name. Translation files must be named de-DE.po, en-US.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po or zh-TW.po.",
+  "message": "Translation file en-USA.po has a bad name. Translation files must be named en-US.po, de-DE.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po, zh-TW.po, pt-BR.po, id-ID.po, ro-RO.po, ru-RU.po, pl-PL.po or cs-CZ.po.",
   "name": "Error",
   "plugin": "compileTranslations",
 }
@@ -56,7 +56,7 @@ PluginError {
 exports[`rejects .po files whose names are not acceptable language tags sl-IT-nedis.po 1`] = `
 PluginError {
   "fileName": "sl-IT-nedis.po",
-  "message": "Translation file sl-IT-nedis.po has a bad name. Translation files must be named de-DE.po, en-US.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po or zh-TW.po.",
+  "message": "Translation file sl-IT-nedis.po has a bad name. Translation files must be named en-US.po, de-DE.po, es-ES.po, fr-FR.po, it-IT.po, ja-JP.po, ko-KR.po, nl-NL.po, sv-SE.po, zh-CN.po, zh-TW.po, pt-BR.po, id-ID.po, ro-RO.po, ru-RU.po, pl-PL.po or cs-CZ.po.",
   "name": "Error",
   "plugin": "compileTranslations",
 }

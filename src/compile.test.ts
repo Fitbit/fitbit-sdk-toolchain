@@ -1,5 +1,6 @@
 import path from 'path';
 
+import semver from 'semver';
 import { SourceMapConsumer } from 'source-map';
 import ts from 'typescript';
 import Vinyl from 'vinyl';
@@ -12,16 +13,19 @@ import getVinylContents from './testUtils/getVinylContents';
 import { ComponentType } from './componentTargets';
 import { cwdSerializer } from './jestSnapshotSerializers';
 
-jest.mock('./sdkVersion');
-
 expect.addSnapshotSerializer(cwdSerializer);
 
 let mockDiagnosticHandler: jest.Mock;
-const mockSDKVersion = sdkVersion as jest.Mock;
+
+jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('4.2.0')));
+
+function mockSDKVersion(version: string) {
+  (sdkVersion as jest.Mock).mockReturnValue(semver.parse(version));
+}
 
 beforeEach(() => {
   mockDiagnosticHandler = jest.fn();
-  mockSDKVersion.mockReturnValue({ major: 4, minor: 1 });
+  mockSDKVersion('4.2.0');
 
   // We don't want to load the actual tsconfig.json for this project
   // during unit tests. Using a real tsconfig.json located within
@@ -196,6 +200,7 @@ describe('when building a device component which uses the gettext polyfill', () 
   let file: string;
 
   beforeEach(async () => {
+    mockSDKVersion('4.1.0');
     file = await compileFile('i18n.js', {
       component: ComponentType.DEVICE,
     }).then(getVinylContents);
@@ -211,7 +216,6 @@ describe('when building a device component which uses the i18n API without requi
   let file: string;
 
   beforeEach(async () => {
-    mockSDKVersion.mockReturnValue({ major: 4, minor: 2 });
     file = await compileFile('i18n.js', {
       component: ComponentType.DEVICE,
     }).then(getVinylContents);
