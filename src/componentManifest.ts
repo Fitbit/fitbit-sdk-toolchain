@@ -13,34 +13,148 @@ import { apiVersions } from './sdkVersion';
 const PLUGIN_NAME = 'componentManifest';
 const manifestPath = 'manifest.json';
 
+/**
+ * Descriptor for localized resources.
+ */
 interface Locales {
+  /**
+   * Lower case locale name.
+   *
+   * On device, this field is capped at 20 bytes (not including the null char).
+   * @example 'en-us'
+   */
   [locale: string]: {
+    /**
+     * Localized name of the app.
+     *
+     * On device, this field is capped at 30 bytes (not including the null
+     * char).
+     */
     name?: string;
+
+    /**
+     * Path to the resources file for the locale, relative to the manifest file.
+     *
+     * This file is generated from the corresponding '.po' file using an
+     * internal, more compact format. On device, this field is capped at
+     * 256 bytes (not including the null char).
+     * @example 'l/en-US'
+     */
     resources?: string;
   };
 }
+
 interface ComponentManifest {
+  /**
+   * API version.
+   *
+   * On device, this field is capped at 32 bytes (not including the null char).
+   */
   apiVersion: string;
+
+  /**
+   * Build ID, represented by a hex-formatted 64 bit int, prefixed with '0x'.
+   *
+   * On device, this field is capped at 20 bytes (not including the null char).
+   * @example '0xcafecafecafecafe'
+   */
   buildId: string;
+
+  /**
+   * The date the bundle was generated, formatted according to the ISO 8601
+   * standard.
+   */
   bundleDate: string;
+
+  /**
+   * Default non-localized app name.
+   *
+   * On device, this field is capped at 30 bytes (not including the null char).
+   */
   name: string;
+
+  /**
+   * List of permissions required by the app.
+   *
+   * On device, each permission name is capped at 30 bytes (not including the
+   * null char).
+   */
   requestedPermissions?: string[];
+
+  /**
+   * Unique app ID.
+   *
+   * On device, this field is capped at 36 bytes (not including the null char).
+   */
   uuid: string;
 }
 
 interface DeviceManifest extends ComponentManifest {
+  /**
+   * The version of the manifest.
+   */
   appManifestVersion: 1;
-  // Enum values are hardcoded instead of reusing AppType since this
-  // interface describes the manifest as the device expects it,
-  // independent of data structures elsewhere. We want the build to
-  // fail if the AppType enum changes such that it becomes incompatible
-  // with what the device expects.
+
+  /**
+   * JS App type.
+   *
+   * If none is specified, it will default to 'app' for backwards compatibility.
+   * On device, this field is capped at 10 bytes (not including the null char).
+   *
+   * Enum values are hardcoded instead of reusing AppType since this
+   * interface describes the manifest as the device expects it,
+   * independent of data structures elsewhere. We want the build to
+   * fail if the AppType enum changes such that it becomes incompatible
+   * with what the device expects.
+   */
   appType: 'app' | 'clockface';
+
+  /**
+   * List of localized resources.
+   *
+   * On device, when this field is read, the value of the `i18n` field is
+   * capped to 1024 bytes (not including the null char).
+   */
   i18n: Locales;
+
+  /**
+   * Path to the app icon file.
+   *
+   * On device, this field is capped at 127 bytes (not including the null char).
+   * @example 'resources/icon.png'
+   */
   iconFile?: string;
+
+  /**
+   * Path to the main app script.
+   *
+   * On device, this field is capped at 256 bytes (not including the null char).
+   * @example 'app/index.js'
+   */
   main: string;
+
+  /**
+   * Path to the main SVG file.
+   *
+   * On device, this field is capped at 256 bytes (not including the null char).
+   * @example 'resources/index.gui'
+   */
   svgMain: string;
+
+  /**
+   * Path to the widgets SVG file.
+   *
+   * On device, this field is capped at 256 bytes (not including the null char).
+   * @example 'resources/widgets.gui'
+   */
   svgWidgets: string;
+
+  /**
+   * Wipe color to use for the app.
+   *
+   * On device, this field is capped at 7 bytes (not including the null char).
+   * @example '#00b0b9'
+   */
   wipeColor?: string;
 }
 
