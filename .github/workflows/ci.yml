@@ -23,8 +23,12 @@ jobs:
           node-version: ${{ matrix.node_version }}
       - name: Install dependencies
         run: yarn --frozen-lockfile
-      - name: Code style
+      - name: Check code style
         run: yarn lint |
              yarn checkstyle
-      - name: Test
-        run: yarn test:coveralls
+      - name: Run tests
+        run: yarn test --runInBand --coverage
+      - name: Upload coverage
+        uses: coverallsapp/github-action@v1.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

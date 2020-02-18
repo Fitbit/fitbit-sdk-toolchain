@@ -9,9 +9,10 @@ module.exports = {
   moduleFileExtensions: ['ts', 'js', 'json'],
   testRegex: '.*\\.test\\.ts$',
   coverageDirectory: '<rootDir>/../coverage',
-  collectCoverageFrom: ['**/*.ts', '!**/*.d.ts', '!src/__test__/**/*'],
+  collectCoverageFrom: ['**/*.ts', '!**/*.d.ts'],
   clearMocks: true,
   restoreMocks: true,
   setupFilesAfterEnv: ['./setupTests.ts'],
   snapshotSerializers: ['jest-serializer-path'],
+  coverageReporters: ['text', 'lcov'],
 };
