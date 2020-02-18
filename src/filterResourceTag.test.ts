@@ -2,6 +2,7 @@ import { writeArray } from 'event-stream';
 import Vinyl from 'vinyl';
 
 import filterResourceTag from './filterResourceTag';
+import path from 'path';
 
 const projectDir = new Map<string, Vinyl>();
 
@@ -24,15 +25,17 @@ const projectDir = new Map<string, Vinyl>();
 
   '/resources/images/icon~higgs.png',
   '/resources/images/icon.png',
-].forEach((path) =>
-  projectDir.set(
-    path,
-    new Vinyl({
+]
+  .map(path.normalize)
+  .forEach((path) =>
+    projectDir.set(
       path,
-      contents: Buffer.from(`content of ${path}`, 'utf8'),
-    }),
-  ),
-);
+      new Vinyl({
+        path,
+        contents: Buffer.from(`content of ${path}`, 'utf8'),
+      }),
+    ),
+  );
 
 const fs = new Map<string, Vinyl>();
 const paths: string[] = [];
@@ -81,8 +84,8 @@ it.each([
 ])(
   'prefers the tagged file %s over the untagged %s',
   (tagged: string, untagged: string) => {
-    expect(fs.get('/resources/' + untagged)!.contents).toEqual(
-      projectDir.get('/resources/' + tagged)!.contents,
+    expect(fs.get(path.normalize('/resources/' + untagged))!.contents).toEqual(
+      projectDir.get(path.normalize('/resources/' + tagged))!.contents,
     );
   },
 );

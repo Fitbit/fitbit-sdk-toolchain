@@ -1,3 +1,4 @@
+import path from 'path';
 import Vinyl from 'vinyl';
 
 import compileTranslations from './compileTranslations';
@@ -143,7 +144,7 @@ it('renames the transformed file, replacing the whole relative path', (done) => 
   translationFileSource('a/b/c/en-US.po')
     .pipe(compileTranslations('en-US'))
     .on('data', (file: Vinyl) => {
-      expect(file.relative).toBe('l/en-US');
+      expect(file.relative).toBe(path.normalize('l/en-US'));
       done();
     })
     .on('error', done.fail);

@@ -1,5 +1,6 @@
 import path from 'path';
 
+import semver from 'semver';
 import { SourceMapConsumer } from 'source-map';
 import ts from 'typescript';
 import Vinyl from 'vinyl';
@@ -10,20 +11,21 @@ import getFileFromStream from './testUtils/getFileFromStream';
 import getFilesFromStream from './testUtils/getFilesFromStream';
 import getVinylContents from './testUtils/getVinylContents';
 import { ComponentType } from './componentTargets';
+import { cwdSerializer } from './jestSnapshotSerializers';
 
-jest.mock('./sdkVersion');
-
-expect.addSnapshotSerializer({
-  test: (val) => typeof val === 'string' && val.includes(process.cwd()),
-  print: (val) => val.replace(process.cwd(), '<cwd>'),
-});
+expect.addSnapshotSerializer(cwdSerializer);
 
 let mockDiagnosticHandler: jest.Mock;
-const mockSDKVersion = sdkVersion as jest.Mock;
+
+jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('4.2.0')));
+
+function mockSDKVersion(version: string) {
+  (sdkVersion as jest.Mock).mockReturnValue(semver.parse(version));
+}
 
 beforeEach(() => {
   mockDiagnosticHandler = jest.fn();
-  mockSDKVersion.mockReturnValue({ major: 4, minor: 0 });
+  mockSDKVersion('4.2.0');
 
   // We don't want to load the actual tsconfig.json for this project
   // during unit tests. Using a real tsconfig.json located within
@@ -81,7 +83,7 @@ it('emits files in a specified output directory', () =>
     compileFile(
       'basic.js',
       { outputDir: 'some_directory' },
-      'some_directory/basic.js',
+      path.join('some_directory', 'basic.js'),
     ),
   ).resolves.toBeDefined());
 
@@ -194,17 +196,33 @@ describe('when allowUnknownExternals is enabled', () => {
   });
 });
 
-describe('when building a device component which uses gettext', () => {
+describe('when building a device component which uses the gettext polyfill', () => {
   let file: string;
 
   beforeEach(async () => {
-    mockSDKVersion.mockReturnValue({ major: 3, minor: 1 });
+    mockSDKVersion('4.1.0');
     file = await compileFile('i18n.js', {
       component: ComponentType.DEVICE,
     }).then(getVinylContents);
   });
 
   it('polyfills gettext on device', () => expect(file).toMatchSnapshot());
+
+  it('builds without diagnostic messages', () =>
+    expect(mockDiagnosticHandler).not.toBeCalled());
+});
+
+describe('when building a device component which uses the i18n API without requiring a polyfill', () => {
+  let file: string;
+
+  beforeEach(async () => {
+    file = await compileFile('i18n.js', {
+      component: ComponentType.DEVICE,
+    }).then(getVinylContents);
+  });
+
+  it('does not polyfill gettext on device', () =>
+    expect(file).toMatchSnapshot());
 
   it('builds without diagnostic messages', () =>
     expect(mockDiagnosticHandler).not.toBeCalled());

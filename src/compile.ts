@@ -2,8 +2,8 @@ import path from 'path';
 
 import * as rollup from 'rollup';
 import rollupPluginBabel from 'rollup-plugin-babel';
-import rollupPluginCommonjs from 'rollup-plugin-commonjs';
-import rollupPluginNodeResolve from 'rollup-plugin-node-resolve';
+import pluginCommonjs from '@rollup/plugin-commonjs';
+import pluginNodeResolve from '@rollup/plugin-node-resolve';
 import ts from 'typescript';
 
 import componentTargets, { ComponentType } from './componentTargets';
@@ -13,7 +13,6 @@ import {
   logDiagnosticToConsole,
 } from './diagnostics';
 import rollupToVinyl from './rollupToVinyl';
-import sdkVersion from './sdkVersion';
 
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
 import i18nPolyfill from './plugins/i18nPolyfill';
@@ -79,8 +78,8 @@ export default function compile({
         }),
         ...pluginIf(component === ComponentType.SETTINGS, resourceImports),
         forbidAbsoluteImport(),
-        rollupPluginNodeResolve({ preferBuiltins: false }),
-        rollupPluginCommonjs({ include: ['node_modules/**'] }),
+        pluginNodeResolve({ preferBuiltins: false }),
+        pluginCommonjs({ include: ['node_modules/**'] }),
         ...pluginIf(ecma === 5, () =>
           rollupPluginBabel({
             plugins: [
@@ -100,7 +99,7 @@ export default function compile({
           }),
         ),
         // Must come before terser in order not to wrap strict directive
-        ...pluginIf(sdkVersion().major >= 4, workaroundRequireScope),
+        workaroundRequireScope(),
         terser({
           ecma,
           // We still support iOS 10, which ships Safari 10
@@ -127,8 +126,7 @@ export default function compile({
           : undefined,
       }),
       // Companion/Settings have no FS and therefore can't use code splitting
-      inlineDynamicImports:
-        sdkVersion().major < 4 || component !== ComponentType.DEVICE,
+      inlineDynamicImports: component !== ComponentType.DEVICE,
     },
     {
       dir: outputDir,

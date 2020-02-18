@@ -1,6 +1,7 @@
 import { Duplex, Readable } from 'stream';
 
 import { advanceTo } from 'jest-date-mock';
+import path from 'path';
 import Vinyl from 'vinyl';
 
 import { makeDeviceManifest, makeCompanionManifest } from './componentManifest';
@@ -180,10 +181,10 @@ describe('when there is a device entry point present', () => {
         .on('data', (file: Vinyl) => files.push(file.relative))
         .on('end', () => {
           expect(files).toEqual([
-            'device/index.js',
-            'lang/english',
-            'spanish/language',
-            'manifest.json',
+            path.normalize('device/index.js'),
+            path.normalize('lang/english'),
+            path.normalize('spanish/language'),
+            path.normalize('manifest.json'),
           ]);
           done();
         });

@@ -5,10 +5,11 @@ import { LanguageTable, MessageTable } from '@fitbit-sdk/companion-gettext';
 import { default as _glob } from 'glob';
 import humanizeList from 'humanize-list';
 import pofile from 'pofile';
-import { dataToEsm } from 'rollup-pluginutils';
+import { dataToEsm } from '@rollup/pluginutils';
 
 import BuildError from '../util/BuildError';
-import { validateLanguageTag, supportedTags } from '../languageTag';
+import { validateLanguageTag } from '../languageTag';
+import { Locales } from '../ProjectConfiguration';
 
 const glob = promisify(_glob);
 const loadPOFile = promisify(pofile.load);
@@ -43,7 +44,7 @@ export default function companionTranslations(
       if (!validateLanguageTag(languageTag)) {
         throw new BuildError(
           `Translation file "${filePath}" has a bad name. Translation files must be named ${humanizeList(
-            supportedTags.map((tag) => tag + '.po'),
+            Object.keys(Locales).map((tag) => tag + '.po'),
             { conjunction: 'or' },
           )}.`,
         );

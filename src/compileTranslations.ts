@@ -6,7 +6,8 @@ import humanizeList from 'humanize-list';
 import PluginError from 'plugin-error';
 import Vinyl from 'vinyl';
 
-import { validateLanguageTag, supportedTags } from './languageTag';
+import { validateLanguageTag } from './languageTag';
+import { Locales } from './ProjectConfiguration';
 
 const PLUGIN_NAME = 'compileTranslations';
 
@@ -36,7 +37,7 @@ export default function compileTranslations(defaultLanguage: string) {
             `Translation file ${
               file.basename
             } has a bad name. Translation files must be named ${humanizeList(
-              supportedTags.map((tag) => tag + '.po'),
+              Object.keys(Locales).map((tag) => tag + '.po'),
               { conjunction: 'or' },
             )}.`,
             { fileName: file.relative },

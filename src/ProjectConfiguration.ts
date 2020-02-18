@@ -5,7 +5,7 @@ import semver from 'semver';
 
 import buildTargets from './buildTargets';
 import DiagnosticList from './DiagnosticList';
-import { supportedTags, validateLanguageTag } from './languageTag';
+import { validateLanguageTag } from './languageTag';
 import sdkVersion from './sdkVersion';
 
 const knownBuildTargets = Object.keys(buildTargets);
@@ -49,7 +49,7 @@ export default ProjectConfiguration;
 
 export const MAX_DISPLAY_NAME_LENGTH = 30;
 
-enum Locales {
+export enum Locales {
   'en-US' = 'English (US)',
   'de-DE' = 'German',
   'es-ES' = 'Spanish',
@@ -61,7 +61,15 @@ enum Locales {
   'sv-SE' = 'Swedish',
   'zh-CN' = 'Chinese (Simplified)',
   'zh-TW' = 'Chinese (Traditional)',
+  'pt-BR' = 'Portuguese (Brazillian)',
+  'id-ID' = 'Indonesian (Bahasa)',
+  'ro-RO' = 'Romanian',
+  'ru-RU' = 'Russian',
+  'pl-PL' = 'Polish',
+  'cs-CZ' = 'Czech',
 }
+
+const languageTags = Object.keys(Locales);
 
 enum Permission {
   ACCESS_ACTIVITY = 'access_activity',
@@ -249,18 +257,10 @@ export function normalizeLocales(locales: LocalesConfig) {
    * for all languages they'll quickly exceed this. This code merges the language
    * tag into a locale tag unless one is present.
    */
-  const localeMapping: Record<string, string | undefined> = {
-    en: 'en-US',
-    de: 'de-DE',
-    it: 'it-IT',
-    es: 'es-ES',
-    fr: 'fr-FR',
-    ja: 'ja-JP',
-    ko: 'ko-KR',
-    nl: 'nl-NL',
-    sv: 'sv-SE',
-  };
-
+  const localeMapping: Record<string, string | undefined> = lodash.mapKeys(
+    Object.keys(Locales),
+    (tag) => tag.split('-')[0],
+  );
   const normalizedLocales: LocalesConfig = {};
 
   for (const [locale, localeConfig] of Object.entries(locales)) {
@@ -474,7 +474,7 @@ export function validateDefaultLanguage(config: ProjectConfiguration) {
     diagnostics.pushFatalError(
       `Default language is an invalid language tag: ${
         config.defaultLanguage
-      }. Must be ${humanizeList(supportedTags, { conjunction: 'or' })}.`,
+      }. Must be ${humanizeList(languageTags, { conjunction: 'or' })}.`,
     );
   }
   return diagnostics;

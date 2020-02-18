@@ -29,6 +29,7 @@ const device = [
   'gyroscope',
   'haptics',
   'heart-rate',
+  'i18n',
   'jpeg',
   'orientation',
   'power',
