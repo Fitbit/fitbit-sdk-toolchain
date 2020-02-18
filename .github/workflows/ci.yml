@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
       - name: Code style
-        run: yarn lint
-        run: yarn checkstyle
+        run: yarn lint |
+             yarn checkstyle
       - name: Test
         run: yarn test:coveralls
