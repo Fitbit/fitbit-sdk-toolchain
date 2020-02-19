@@ -14,4 +14,5 @@ module.exports = {
   restoreMocks: true,
   setupFilesAfterEnv: ['./setupTests.ts'],
   snapshotSerializers: ['jest-serializer-path'],
+  coverageReporters: ['text', 'lcov'],
 };

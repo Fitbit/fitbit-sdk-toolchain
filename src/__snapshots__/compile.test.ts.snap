@@ -149,11 +149,11 @@ Array [
       "position": Object {
         "end": Object {
           "character": 5,
-          "line": 0,
+          "line": 1,
         },
         "start": Object {
           "character": 4,
-          "line": 0,
+          "line": 1,
         },
       },
     },
