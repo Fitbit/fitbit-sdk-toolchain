@@ -1,7 +1,7 @@
 import os from 'os';
 
 import fsExtra from 'fs-extra';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 import generateAppID from './generateAppID';
 

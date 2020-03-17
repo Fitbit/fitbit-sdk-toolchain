@@ -32,9 +32,10 @@ export default function rollupToVinyl(
   function emitAsset({ fileName, source }: rollup.OutputAsset) {
     stream.push(
       new Vinyl({
-        contents: Buffer.isBuffer(source)
-          ? source
-          : Buffer.from(source, 'utf8'),
+        contents:
+          source instanceof Uint8Array
+            ? Buffer.from(source)
+            : Buffer.from(source, 'utf8'),
         path: resolve(process.cwd(), generatePath(fileName)),
       }),
     );
