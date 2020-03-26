@@ -4,7 +4,7 @@
     "noEmitHelpers": false,
     "importHelpers": true,
     "noResolve": false,
-    "noEmit": false,
+    "noEmit": true,
     "inlineSourceMap": false,
     "moduleResolution": "node",
     "target": "es5",
