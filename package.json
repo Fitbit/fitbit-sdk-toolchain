@@ -69,7 +69,7 @@
     "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@rollup/pluginutils": "^3.0.8",
-    "chalk": "^3.0.0",
+    "chalk": "^4.0.0",
     "dateformat": "^3.0.3",
     "drop-stream": "^1.0.0",
     "elfy": "^1.0.0",
