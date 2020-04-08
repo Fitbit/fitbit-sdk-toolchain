@@ -36,7 +36,7 @@
     "@types/semver": "^7.1.0",
     "@types/update-notifier": "^4.1.0",
     "@types/uuid": "^7.0.2",
-    "@types/validator": "^12.0.1",
+    "@types/validator": "^13.0.0",
     "@types/vinyl": "^2.0.4",
     "@types/vinyl-buffer": "^1.0.0",
     "@types/vinyl-fs": "^2.4.10",
