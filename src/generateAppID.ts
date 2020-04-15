@@ -2,7 +2,7 @@ import os from 'os';
 
 import fsExtra from 'fs-extra';
 import lodash from 'lodash';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 export default function generateAppID() {
   const configPath = 'package.json';

@@ -7,7 +7,7 @@ import path from 'path';
 import fsExtra from 'fs-extra';
 import inquirer from 'inquirer';
 import lodash from 'lodash';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 import buildTargets from './buildTargets';
 import {

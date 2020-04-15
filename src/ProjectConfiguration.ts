@@ -17,6 +17,8 @@ export enum AppType {
 
 export const VALID_APP_TYPES = Object.values(AppType);
 
+export const MAX_LENGTH_APP_CLUSTER_ID = 64;
+
 export type LocalesConfig = { [locale: string]: { name: string } };
 
 export interface BaseProjectConfiguration {
@@ -71,7 +73,7 @@ export enum Locales {
 
 const languageTags = Object.keys(Locales);
 
-enum Permission {
+export enum Permission {
   ACCESS_ACTIVITY = 'access_activity',
   ACCESS_AOD = 'access_aod',
   ACCESS_APP_CLUSTER_STORAGE = 'access_app_cluster_storage',
@@ -179,16 +181,25 @@ const restrictedPermissionTypes = [
   },
 ];
 
-function getAllPermissionTypes(enableProposedAPI: boolean) {
+export function getAllPermissionTypes(options: {
+  enableProposedAPI?: boolean;
+  includeRestrictedPermissions?: boolean;
+}) {
+  const { enableProposedAPI, includeRestrictedPermissions } = {
+    enableProposedAPI: false,
+    includeRestrictedPermissions: true,
+    ...options,
+  };
+
   return [
-    ...restrictedPermissionTypes,
-    ...permissionTypes.filter(
-      (permission) =>
-        !permission.sdkVersion ||
-        semver.satisfies(sdkVersion(), permission.sdkVersion) ||
-        enableProposedAPI,
-    ),
-  ];
+    ...permissionTypes,
+    ...(includeRestrictedPermissions ? restrictedPermissionTypes : []),
+  ].filter(
+    (permission) =>
+      !permission.sdkVersion ||
+      semver.satisfies(sdkVersion(), permission.sdkVersion) ||
+      enableProposedAPI,
+  );
 }
 
 function constrainedSetDiagnostics({
@@ -379,9 +390,9 @@ export function validateRequestedPermissions({
 }: ProjectConfiguration) {
   return constrainedSetDiagnostics({
     actualValues: requestedPermissions,
-    knownValues: getAllPermissionTypes(!!enableProposedAPI).map(
-      (permission) => permission.key,
-    ),
+    knownValues: getAllPermissionTypes({
+      enableProposedAPI: !!enableProposedAPI,
+    }).map((permission) => permission.key),
     valueTypeNoun: 'requested permissions',
     notFoundIsFatal: false,
   });
@@ -483,9 +494,9 @@ export function validateDefaultLanguage(config: ProjectConfiguration) {
 export function validateStorageGroup(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
 
-  const hasRequestedPermission = getAllPermissionTypes(
-    !!config.enableProposedAPI,
-  )
+  const hasRequestedPermission = getAllPermissionTypes({
+    enableProposedAPI: !!config.enableProposedAPI,
+  })
     .map((permission) => permission.key)
     .filter((permission) =>
       (config.requestedPermissions || []).includes(permission),
@@ -499,7 +510,7 @@ export function validateStorageGroup(config: ProjectConfiguration) {
       );
     } else if (
       config.appClusterID.length < 1 ||
-      config.appClusterID.length > 64
+      config.appClusterID.length > MAX_LENGTH_APP_CLUSTER_ID
     ) {
       diagnostics.pushFatalError(
         'App Cluster ID must be between 1-64 characters',

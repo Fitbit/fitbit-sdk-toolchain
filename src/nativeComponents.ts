@@ -91,9 +91,7 @@ function readMetadata(elfPath: string) {
     path: elfPath,
     data: elfData,
     appID: formatUUID(appIDData),
-    buildID: `0x${Buffer.from(buildIDData)
-      .swap64()
-      .toString('hex')}`,
+    buildID: `0x${Buffer.from(buildIDData).swap64().toString('hex')}`,
     family: findSection('appfamily').toString(),
   };
 }
