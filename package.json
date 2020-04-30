@@ -102,7 +102,7 @@
     "tslib": "^1.11.1",
     "typescript": "^3.8.3",
     "update-notifier": "^4.1.0",
-    "uuid": "^7.0.2",
+    "uuid": "^8.0.0",
     "validator": "^13.0.0",
     "vinyl": "^2.2.0",
     "vinyl-buffer": "^1.0.1",
