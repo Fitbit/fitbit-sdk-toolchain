@@ -17,8 +17,9 @@ expect.addSnapshotSerializer({
   },
 
   print(val, serialize) {
-    val.message = val.message.replace(basePath, '<base>');
-    return serialize(val);
+    const err = val as Error;
+    err.message = err.message.replace(basePath, '<base>');
+    return serialize(err);
   },
 });
 

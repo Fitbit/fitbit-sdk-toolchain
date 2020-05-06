@@ -8,13 +8,16 @@ export const cwdSerializer: jest.SnapshotSerializerPlugin = {
   test: (val) =>
     typeof val === 'string' && normalizeSlash(val).includes(normalizedCwd),
   print: (val, serialize) =>
-    serialize(normalizeSlash(val).replace(normalizedCwd, '<PROJECT_ROOT>')),
+    serialize(
+      normalizeSlash(val as string).replace(normalizedCwd, '<PROJECT_ROOT>'),
+    ),
 };
 
 export const errorMessageSerializer: jest.SnapshotSerializerPlugin = {
   test: (val) => val instanceof Error && shouldNormalizeSlash(val.message),
-  print: (val: Error, serialize) => {
-    val.message = normalizeSlash(val.message);
-    return serialize(val);
+  print: (val, serialize) => {
+    const err = val as Error;
+    err.message = normalizeSlash(err.message);
+    return serialize(err);
   },
 };

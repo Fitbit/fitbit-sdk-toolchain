@@ -5,7 +5,9 @@ expect.addSnapshotSerializer({
   test(val: any) {
     return val instanceof Error && 'plugin' in val;
   },
-  print(val: PluginError, serialize, indent, opts) {
+  print(val, serialize, indent, opts) {
+    const err = val as PluginError;
+
     // List of props that PluginError allows one to override, excluding
     // those that we wouldn't want to include in a snapshot:
     // showProperties, showStack, stack.
@@ -20,7 +22,7 @@ expect.addSnapshotSerializer({
     });
 
     props.forEach((prop) => {
-      if (prop in val) newObj[prop] = (val as any)[prop];
+      if (prop in err) newObj[prop] = (err as any)[prop];
     });
 
     return serialize(newObj);
