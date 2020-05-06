@@ -1,6 +1,6 @@
 {
   "name": "@fitbit/sdk",
-  "version": "4.2.0-pre.4",
+  "version": "5.0.0-pre.0",
   "description": "Toolchain for building Fitbit apps",
   "author": "Fitbit, Inc.",
   "license": "BSD-3-Clause",
