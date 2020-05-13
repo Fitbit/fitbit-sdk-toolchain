@@ -40,7 +40,7 @@
     "@types/vinyl": "^2.0.4",
     "@types/vinyl-buffer": "^1.0.0",
     "@types/vinyl-fs": "^2.4.10",
-    "@types/yargs": "^15.0.4",
+    "@types/yargs": "^15.0.5",
     "concat-stream": "^2.0.0",
     "coveralls": "^3.1.0",
     "depcheck": "^0.9.2",
