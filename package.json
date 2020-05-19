@@ -28,7 +28,7 @@
     "@types/gulp-zip": "^4.0.1",
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^25.2.1",
-    "@types/lodash": "^4.14.150",
+    "@types/lodash": "^4.14.152",
     "@types/merge-stream": "^1.1.1",
     "@types/multistream": "^2.1.1",
     "@types/plugin-error": "^0.1.0",
