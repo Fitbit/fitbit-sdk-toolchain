@@ -81,7 +81,7 @@
     "gulp-zip": "^5.0.1",
     "humanize-list": "^1.0.1",
     "inquirer": "^7.1.0",
-    "io-ts": "2.2.2",
+    "io-ts": "2.2.4",
     "jest-serializer-path": "^0.1.15",
     "lazystream": "^1.0.0",
     "lodash": "^4.17.15",
