@@ -74,7 +74,7 @@
     "drop-stream": "^1.0.0",
     "elfy": "^1.0.0",
     "events-intercept": "^2.0.0",
-    "fp-ts": "^2.5.4",
+    "fp-ts": "^2.6.2",
     "fs-extra": "^9.0.0",
     "glob": "^7.1.6",
     "gulp-file": "^0.4.0",
