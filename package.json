@@ -92,7 +92,7 @@
     "plugin-error": "^1.0.1",
     "pofile": "^1.1.0",
     "pumpify": "^2.0.1",
-    "rollup": "^2.8.0",
+    "rollup": "^2.11.2",
     "rollup-plugin-babel": "^4.4.0",
     "semver": "^7.3.2",
     "simple-random": "^1.0.3",
