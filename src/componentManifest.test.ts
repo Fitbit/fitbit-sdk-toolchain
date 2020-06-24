@@ -65,6 +65,7 @@ function makeDeviceManifestStream(
     makeDeviceManifest({
       buildId,
       projectConfig,
+      targetDevice: 'mira',
     }),
   );
 }
@@ -135,6 +136,16 @@ describe('when there is a device entry point present', () => {
 
   it('builds a device manifest for a clock', () =>
     expectManifestJSON(makeDeviceManifestStream()).resolves.toMatchSnapshot());
+
+  it('includes supported screen sizes for a clock', () => {
+    const projectConfig = {
+      ...makeClockfaceProjectConfig(),
+      enableProposedAPI: true,
+    } as ProjectConfiguration;
+    expectManifestJSON(
+      makeDeviceManifestStream(projectConfig),
+    ).resolves.toMatchSnapshot();
+  });
 
   it('builds a device manifest for an app', () =>
     expectManifestJSON(

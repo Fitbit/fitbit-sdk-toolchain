@@ -4,6 +4,7 @@ import lodash from 'lodash';
 import PluginError from 'plugin-error';
 import Vinyl from 'vinyl';
 
+import { SupportedDeviceCapabilities } from './capabilities';
 import { ComponentType } from './componentTargets';
 import { normalizeToPOSIX } from './pathUtils';
 import ProjectConfiguration, { AppType } from './ProjectConfiguration';
@@ -156,6 +157,11 @@ interface DeviceManifest extends ComponentManifest {
    * @example '#00b0b9'
    */
   wipeColor?: string;
+
+  /**
+   * Features supported by the application.
+   */
+  supports?: SupportedDeviceCapabilities;
 }
 
 interface CompanionManifest extends ComponentManifest {
@@ -192,9 +198,11 @@ function makeCommonManifest({
 export function makeDeviceManifest({
   projectConfig,
   buildId,
+  targetDevice,
 }: {
   projectConfig: ProjectConfiguration;
   buildId: string;
+  targetDevice: string;
 }) {
   const locales: Locales = projectConfig.i18n;
   let entryPoint: string | undefined;
@@ -250,6 +258,12 @@ export function makeDeviceManifest({
         );
       }
 
+      const { deviceApi } = apiVersions(projectConfig);
+      const supports = SupportedDeviceCapabilities.create(
+        deviceApi,
+        targetDevice,
+      );
+
       const manifest: DeviceManifest = {
         appManifestVersion: 1,
         main: entryPoint,
@@ -259,8 +273,9 @@ export function makeDeviceManifest({
         ...makeCommonManifest({
           projectConfig,
           buildId,
-          apiVersion: apiVersions(projectConfig).deviceApi,
+          apiVersion: deviceApi,
         }),
+        ...(supports && { supports }),
         // FW is case sensitive for locales, it insists on everything being lowercase
         // Doing this too early means the casing won't match the developers defaultLanguage
         // setting, so do it as late as possible
