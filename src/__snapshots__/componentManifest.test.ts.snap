@@ -158,6 +158,36 @@ Object {
 
 exports[`when there is a device entry point present builds a device manifest for an app 1`] = `
 Object {
+  "apiVersion": "*",
+  "appManifestVersion": 1,
+  "appType": "clockface",
+  "buildId": "0x0f75775f470c1585",
+  "bundleDate": "2018-06-27T00:00:00.000Z",
+  "i18n": Object {
+    "en-us": Object {
+      "name": "My App",
+    },
+    "fr-fr": Object {
+      "name": "Mon application",
+    },
+  },
+  "main": "device/index.js",
+  "name": "My App",
+  "requestedPermissions": Array [],
+  "supports": Object {
+    "screenSize": Object {
+      "h": 300,
+      "w": 300,
+    },
+  },
+  "svgMain": "resources/index.gui",
+  "svgWidgets": "resources/widgets.gui",
+  "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+}
+`;
+
+exports[`when there is a device entry point present builds a device manifest for an app 2`] = `
+Object {
   "apiVersion": "5.0.0",
   "appManifestVersion": 1,
   "appType": "app",

@@ -1,40 +1,58 @@
-import semver from 'semver';
+import semver, { SemVer } from 'semver';
 
 import BuildError from './util/BuildError';
 import packageVersionConst from './packageVersion.const';
 
-export default function sdkVersion(toolchainVersion = packageVersionConst) {
+interface ApiVersions {
+  deviceApi: string;
+  companionApi: string;
+}
+
+interface WithProposedAPI {
+  enableProposedAPI?: boolean;
+}
+
+const apiBySdk: Record<string, ApiVersions> = {
+  '4.0': { deviceApi: '5.0.0', companionApi: '3.0.0' },
+  '4.1': { deviceApi: '5.1.0', companionApi: '3.1.0' },
+  '4.2': { deviceApi: '6.0.0', companionApi: '3.1.0' },
+  '5.0': { deviceApi: '7.0.0', companionApi: '3.1.0' },
+};
+
+export default function sdkVersion(
+  toolchainVersion = packageVersionConst,
+): SemVer {
   const version = semver.parse(toolchainVersion);
+
   if (version === null) {
     throw new Error(`Invalid SDK package version: ${toolchainVersion}`);
   }
+
   // SDK versions do not have a patch or prerelease. Strip them out.
   version.patch = 0;
   version.prerelease = [];
   version.format(); // Side effect: updates the version.version property.
+
   return version;
 }
 
 export function apiVersions(
-  { enableProposedAPI }: { enableProposedAPI?: boolean } = {},
+  projectConfig: WithProposedAPI = {},
   toolchainVersion = packageVersionConst,
-) {
-  if (enableProposedAPI) return { deviceApi: '*', companionApi: '*' };
+): ApiVersions {
+  if (projectConfig.enableProposedAPI) {
+    return { deviceApi: '*', companionApi: '*' };
+  }
 
   const { major, minor } = sdkVersion(toolchainVersion);
-  if (major === 4 && minor === 0) {
-    return { deviceApi: '5.0.0', companionApi: '3.0.0' };
+  const sdk = `${major}.${minor}`;
+  const componentVersions = apiBySdk[sdk];
+
+  if (!componentVersions) {
+    throw new BuildError(
+      `No known API versions for SDK package version ${sdk}`,
+    );
   }
-  if (major === 4 && minor === 1) {
-    return { deviceApi: '5.1.0', companionApi: '3.1.0' };
-  }
-  if (major === 4 && minor === 2) {
-    return { deviceApi: '6.0.0', companionApi: '3.1.0' };
-  }
-  if (major === 5 && minor === 0) {
-    return { deviceApi: '7.0.0', companionApi: '3.1.0' };
-  }
-  throw new BuildError(
-    `No known API versions for SDK package version ${major}.${minor}`,
-  );
+
+  return componentVersions;
 }

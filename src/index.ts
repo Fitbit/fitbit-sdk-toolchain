@@ -270,7 +270,7 @@ export function buildDeviceComponents({
               compileTranslations(projectConfig.defaultLanguage),
             ),
           ),
-          makeDeviceManifest({ projectConfig, buildId }),
+          makeDeviceManifest({ projectConfig, buildId, targetDevice: family }),
           zip(bundleFilename),
           transformIf(
             maxDeviceBundleSize !== undefined,

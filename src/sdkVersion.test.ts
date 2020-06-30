@@ -5,6 +5,10 @@ it('throws if package version has no known mapping', () => {
   expect(() => apiVersions({}, '1000.0.0')).toThrowErrorMatchingSnapshot();
 });
 
+it('throws if package version is invalid', () => {
+  expect(() => apiVersions({}, '..')).toThrowErrorMatchingSnapshot();
+});
+
 it('provides a mapping for SDKv4.0', () => {
   expect(apiVersions({}, '4.0.0')).toEqual({
     deviceApi: '5.0.0',

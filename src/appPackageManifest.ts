@@ -9,6 +9,7 @@ import lodash from 'lodash';
 import PluginError from 'plugin-error';
 import Vinyl from 'vinyl';
 
+import { SupportedDeviceCapabilities } from './capabilities';
 import { normalizeToPOSIX } from './pathUtils';
 import ProjectConfiguration from './ProjectConfiguration';
 import { apiVersions } from './sdkVersion';
@@ -21,6 +22,7 @@ interface Components {
     [platform: string]: {
       filename: string;
       platform: string[];
+      supports?: SupportedDeviceCapabilities;
     };
   };
   companion?: {
@@ -109,9 +111,16 @@ class AppPackageManifestTransform extends Transform {
         );
       }
 
+      const { deviceApi } = apiVersions(this.projectConfig);
+      const supports = SupportedDeviceCapabilities.create(
+        deviceApi,
+        bundleInfo.family,
+      );
+
       this.components.watch[bundleInfo.family] = {
         platform: bundleInfo.platform,
         filename: file.relative,
+        ...(this.hasJS && supports && { supports }),
       };
     } else {
       if (this.components[bundleInfo.type] !== undefined) {

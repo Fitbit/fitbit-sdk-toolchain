@@ -12,6 +12,7 @@ jest.mock(
       },
       bar: {
         displayName: 'Bar',
+        specs: { screenSize: { width: 300, height: 300 } },
       },
       baz: {
         displayName: 'Baz',
@@ -35,6 +36,7 @@ it('merges the build target descriptors', () => {
       displayName: 'Fitbit Ionic',
       platform: expect.any(Array),
       resourceFilterTag: '348x250',
+      specs: { screenSize: { width: 348, height: 250 } },
     },
     // Unfortunately, due to the way that module mocking works, the
     // extra build targets constant cannot be deduped easily.
@@ -43,6 +45,7 @@ it('merges the build target descriptors', () => {
     },
     bar: {
       displayName: 'Bar',
+      specs: { screenSize: { width: 300, height: 300 } },
     },
   });
 });
