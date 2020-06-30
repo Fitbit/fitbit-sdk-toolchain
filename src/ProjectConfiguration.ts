@@ -304,7 +304,7 @@ export function normalizeLocales(locales: LocalesConfig) {
  */
 export function normalizeProjectConfig(
   config: any,
-  defaults?: Partial<AppProjectConfiguration & ClockProjectConfiguration>,
+  defaults?: Partial<AppProjectConfiguration | ClockProjectConfiguration>,
 ): ProjectConfiguration {
   if (!lodash.isPlainObject(config)) {
     throw new TypeError('Project configuration root must be an object');
