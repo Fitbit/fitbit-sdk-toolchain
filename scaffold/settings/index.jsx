@@ -7,10 +7,7 @@ registerSettingsPage(({ settings }) => (
         </Text>
       }
     >
-      <Text>
-        This is a very basic demo settings page to show off some of the current
-        capabilities of the Companion Settings library.
-      </Text>
+      <Text>Hello world!</Text>
     </Section>
   </Page>
 ));

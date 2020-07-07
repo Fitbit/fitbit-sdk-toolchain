@@ -138,7 +138,7 @@ interface DeviceManifest extends ComponentManifest {
    * Path to the main SVG file.
    *
    * On device, this field is capped at 256 bytes (not including the null char).
-   * @example 'resources/index.gui'
+   * @example 'resources/index.view'
    */
   svgMain: string;
 
@@ -146,7 +146,7 @@ interface DeviceManifest extends ComponentManifest {
    * Path to the widgets SVG file.
    *
    * On device, this field is capped at 256 bytes (not including the null char).
-   * @example 'resources/widgets.gui'
+   * @example 'resources/widgets.defs'
    */
   svgWidgets: string;
 

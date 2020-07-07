@@ -138,7 +138,7 @@ it('emits an error if both JS and native device components are present', () => {
     new Vinyl({
       componentBundle: {
         type: 'device',
-        family: 'foo',
+        family: 'mira',
         platform: ['1.1.1+'],
       },
       path: 'bundle.zip',
@@ -149,7 +149,7 @@ it('emits an error if both JS and native device components are present', () => {
     new Vinyl({
       componentBundle: {
         type: 'device',
-        family: 'bar',
+        family: 'higgs',
         platform: ['1.1.1+'],
         isNative: true,
       },
@@ -175,7 +175,7 @@ it.each(['device', 'companion'])(
         new Vinyl({
           componentBundle: {
             type: component,
-            family: 'foo',
+            family: 'mira',
             platform: ['1.1.1+'],
           },
           path: `bundle${i}.zip`,
@@ -203,14 +203,17 @@ it('builds a package manifest with a native device component and companion', () 
 
 it.each<[string, any]>([
   ['has an invalid type field', { type: '__invalid__' }],
-  ['has a device type but missing platform', { type: 'device', family: 'foo' }],
+  [
+    'has a device type but missing platform',
+    { type: 'device', family: 'mira' },
+  ],
   [
     'has a device type but missing family',
     { type: 'device', platform: ['1.1.1+'] },
   ],
   [
     'has a device type but invalid platform',
-    { type: 'device', family: 'foo', platform: '1.1.1+' },
+    { type: 'device', family: 'mira', platform: '1.1.1+' },
   ],
 ])('emits an error if a component bundle tag %s', (_, componentBundle) => {
   const projectConfig = makeProjectConfig();

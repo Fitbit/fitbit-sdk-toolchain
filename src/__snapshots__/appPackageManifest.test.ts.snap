@@ -11,13 +11,19 @@ Object {
         "platform": Array [
           "30.1.2+",
         ],
+        "supports": Object {
+          "screenSize": Object {
+            "h": 250,
+            "w": 348,
+          },
+        },
       },
     },
   },
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "deviceApi": "5.0.0",
+    "deviceApi": "7.0.0",
   },
   "sourceMaps": Object {
     "device": Object {
@@ -41,14 +47,20 @@ Object {
         "platform": Array [
           "30.1.2+",
         ],
+        "supports": Object {
+          "screenSize": Object {
+            "h": 250,
+            "w": 348,
+          },
+        },
       },
     },
   },
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "companionApi": "3.0.0",
-    "deviceApi": "5.0.0",
+    "companionApi": "3.1.0",
+    "deviceApi": "7.0.0",
   },
   "sourceMaps": Object {
     "companion": "sourceMaps/companion/companion.js.json",
@@ -100,7 +112,7 @@ Object {
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "companionApi": "3.0.0",
+    "companionApi": "3.1.0",
   },
   "sourceMaps": Object {
     "companion": "sourceMaps/companion/companion.js.json",
@@ -120,19 +132,31 @@ Object {
         "platform": Array [
           "30.1.2+",
         ],
+        "supports": Object {
+          "screenSize": Object {
+            "h": 250,
+            "w": 348,
+          },
+        },
       },
       "meson": Object {
         "filename": "device-meson.zip",
         "platform": Array [
           "32.4.18+",
         ],
+        "supports": Object {
+          "screenSize": Object {
+            "h": 300,
+            "w": 300,
+          },
+        },
       },
     },
   },
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "deviceApi": "5.0.0",
+    "deviceApi": "7.0.0",
   },
   "sourceMaps": Object {
     "device": Object {
@@ -201,4 +225,4 @@ exports[`emits an error if both JS and native device components are present 1`] 
 
 exports[`emits an error if multiple companion bundles are present for the same device family 1`] = `"Duplicate companion component bundles: bundle1.zip / bundle0.zip"`;
 
-exports[`emits an error if multiple device bundles are present for the same device family 1`] = `"Duplicate device/foo component bundles: bundle1.zip / bundle0.zip"`;
+exports[`emits an error if multiple device bundles are present for the same device family 1`] = `"Duplicate device/mira component bundles: bundle1.zip / bundle0.zip"`;
