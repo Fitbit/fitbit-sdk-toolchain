@@ -14,11 +14,11 @@ const projectDir = new Map<string, Vinyl>();
   '/app/lib/foo~quux.js',
 
   '/resources/resources.json',
-  '/resources/index.gui',
-  '/resources/index~higgs.gui',
-  '/resources/index~asdf.gui',
-  '/resources/widgets~higgs.gui',
-  '/resources/widgets~foo.gui',
+  '/resources/index.view',
+  '/resources/index~higgs.view',
+  '/resources/index~asdf.view',
+  '/resources/widgets~higgs.defs',
+  '/resources/widgets~foo.defs',
   '/resources/no~fallback.txt',
   '/resources/exclude~me.txt',
   '/resources/exclude~this.txt',
@@ -65,10 +65,10 @@ it.each(['/app/index.js', '/resources/resources.json'])(
 );
 
 it.each([
-  'index~higgs.gui',
-  'index~asdf.gui',
-  'widgets~higgs.gui',
-  'widgets~foo.gui',
+  'index~higgs.view',
+  'index~asdf.view',
+  'widgets~higgs.defs',
+  'widgets~foo.defs',
   'no~fallback.txt',
   'exclude~me.txt',
   'exclude~this.txt',
@@ -78,8 +78,8 @@ it.each([
 );
 
 it.each([
-  ['index~higgs.gui', 'index.gui'],
-  ['widgets~higgs.gui', 'widgets.gui'],
+  ['index~higgs.view', 'index.view'],
+  ['widgets~higgs.defs', 'widgets.defs'],
   ['images/icon~higgs.png', 'images/icon.png'],
 ])(
   'prefers the tagged file %s over the untagged %s',

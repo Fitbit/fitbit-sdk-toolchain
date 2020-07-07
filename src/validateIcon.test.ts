@@ -113,7 +113,7 @@ describe('in buffered mode', () => {
         } as any,
       }),
       new Vinyl({
-        path: 'resources/index.gui',
+        path: 'resources/index.view',
         contents: Buffer.of(),
       }),
       new Vinyl({

@@ -15,6 +15,7 @@ import {
   normalizeProjectConfig,
   validateDisplayName,
 } from './ProjectConfiguration';
+import sdkVersion from './sdkVersion';
 
 interface ProjectCreationArgs {
   appType: AppType;
@@ -28,8 +29,16 @@ interface ProjectCreationArgs {
  * Copies file/folders from the scaffold directory to the CWD.
  * @param scaffold: File/directory within the scaffold folder to be copied
  */
-function scaffoldDirectory(scaffold: string) {
-  const scaffoldPath = path.join(__dirname, '..', 'scaffold', scaffold);
+function scaffoldDirectory(
+  scaffold: string,
+  sourceScaffoldOverride = scaffold,
+) {
+  const scaffoldPath = path.join(
+    __dirname,
+    '..',
+    'scaffold',
+    sourceScaffoldOverride,
+  );
   fsExtra.copySync(scaffoldPath, scaffold);
 }
 
@@ -90,7 +99,10 @@ export default async function newProject() {
 
   console.log('Creating device component');
   scaffoldDirectory('app');
-  scaffoldDirectory('resources');
+  scaffoldDirectory(
+    'resources',
+    sdkVersion().major < 5 ? 'resources_4.x' : undefined,
+  );
   scaffoldDirectory('tsconfig.json');
 
   if (withCompanion) {
