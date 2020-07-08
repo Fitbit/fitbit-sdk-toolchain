@@ -17,8 +17,8 @@ const projectDir = new Map<string, Vinyl>();
   '/resources/index.view',
   '/resources/index~higgs.view',
   '/resources/index~asdf.view',
-  '/resources/widgets~higgs.defs',
-  '/resources/widgets~foo.defs',
+  '/resources/widget~higgs.defs',
+  '/resources/widget~foo.defs',
   '/resources/no~fallback.txt',
   '/resources/exclude~me.txt',
   '/resources/exclude~this.txt',
@@ -67,8 +67,8 @@ it.each(['/app/index.js', '/resources/resources.json'])(
 it.each([
   'index~higgs.view',
   'index~asdf.view',
-  'widgets~higgs.defs',
-  'widgets~foo.defs',
+  'widget~higgs.defs',
+  'widget~foo.defs',
   'no~fallback.txt',
   'exclude~me.txt',
   'exclude~this.txt',
@@ -79,7 +79,7 @@ it.each([
 
 it.each([
   ['index~higgs.view', 'index.view'],
-  ['widgets~higgs.defs', 'widgets.defs'],
+  ['widget~higgs.defs', 'widget.defs'],
   ['images/icon~higgs.png', 'images/icon.png'],
 ])(
   'prefers the tagged file %s over the untagged %s',
