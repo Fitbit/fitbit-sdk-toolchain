@@ -259,10 +259,7 @@ export function makeDeviceManifest({
       }
 
       const { deviceApi } = apiVersions(projectConfig);
-      const supports = SupportedDeviceCapabilities.create(
-        deviceApi,
-        targetDevice,
-      );
+      const supports = SupportedDeviceCapabilities.create(targetDevice);
 
       const manifest: DeviceManifest = {
         appManifestVersion: 1,

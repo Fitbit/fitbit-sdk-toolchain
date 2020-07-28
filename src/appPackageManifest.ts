@@ -111,11 +111,7 @@ class AppPackageManifestTransform extends Transform {
         );
       }
 
-      const { deviceApi } = apiVersions(this.projectConfig);
-      const supports = SupportedDeviceCapabilities.create(
-        deviceApi,
-        bundleInfo.family,
-      );
+      const supports = SupportedDeviceCapabilities.create(bundleInfo.family);
 
       this.components.watch[bundleInfo.family] = {
         platform: bundleInfo.platform,

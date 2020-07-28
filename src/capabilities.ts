@@ -1,5 +1,3 @@
-import semver from 'semver';
-
 import buildTargets from './buildTargets';
 
 /**
@@ -19,12 +17,6 @@ export interface SupportedDeviceCapabilities {
 
 export namespace SupportedDeviceCapabilities {
   /**
-   * Device capabilities supported by the application being built will not be
-   * included into the manifest when targeting a JS API version lower than this.
-   */
-  export const presentSince = '7.0.0';
-
-  /**
    * Creates and populates an object describing the supported device capabilities.
    * @param targetJsApiVersion The JS API version required by the application.
    * @param targetDevice Device family name.
@@ -37,34 +29,15 @@ export namespace SupportedDeviceCapabilities {
    * @returns an instance of `SupportedDeviceCapabilities` or `undefined`
    */
   export function create(
-    targetJsApiVersion: string,
     targetDevice: string,
   ): SupportedDeviceCapabilities | undefined {
-    let isVersionEligibleForCaps = false;
+    const { screenSize } = buildTargets[targetDevice].specs;
 
-    if (targetJsApiVersion === '*') {
-      isVersionEligibleForCaps = true;
-    } else {
-      const parsedDeviceApi = semver.parse(targetJsApiVersion);
-
-      if (!parsedDeviceApi) {
-        throw new Error(`Failed to parse version "${targetJsApiVersion}".`);
-      }
-
-      isVersionEligibleForCaps = semver.gte(parsedDeviceApi, presentSince);
-    }
-
-    if (isVersionEligibleForCaps) {
-      const { screenSize } = buildTargets[targetDevice].specs;
-
-      return {
-        [DeviceCapability.SCREEN_SIZE]: {
-          w: screenSize.width,
-          h: screenSize.height,
-        },
-      };
-    }
-
-    return undefined;
+    return {
+      [DeviceCapability.SCREEN_SIZE]: {
+        w: screenSize.width,
+        h: screenSize.height,
+      },
+    };
   }
 }
