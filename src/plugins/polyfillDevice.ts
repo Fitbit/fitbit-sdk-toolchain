@@ -21,6 +21,17 @@ const availablePolyfills: Record<string, PolyfillSpec> = {
     `,
     appliesTo: '<4.2.0',
   },
+  sleep: {
+    implementation: `
+    import { me } from 'appbit';
+    import sleep from 'sleep';
+
+    var sleepPolyfill = (sleep && me.permissions.granted('access_sleep')) ? sleep : undefined;
+    export default sleepPolyfill;
+    export { sleepPolyfill as sleep };
+    `,
+    appliesTo: '<5.0.0',
+  },
 };
 
 export default function polyfillDevice() {
