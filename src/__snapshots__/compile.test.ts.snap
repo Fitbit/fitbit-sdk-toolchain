@@ -217,6 +217,15 @@ console.log(e.gettext(\\"hello\\"))
 "
 `;
 
+exports[`when building a device component which uses the sleep API requiring a polyfill polyfills sleep module on device 1`] = `
+"\\"use strict\\"
+function e(e){return e&&typeof e===\\"object\\"&&\\"default\\"in e?e[\\"default\\"]:e}var r=require(\\"appbit\\")
+var s=e(require(\\"sleep\\"))
+var t=s&&r.me.permissions.granted(\\"access_sleep\\")?s:undefined
+console.log(t)
+"
+`;
+
 exports[`when compiling a module with statements above an import declaration builds 1`] = `
 "\\"use strict\\"
 require(\\"util\\")

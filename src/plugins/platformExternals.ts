@@ -36,6 +36,7 @@ const device = [
   'scientific',
   'scientific/signal',
   'sensors',
+  'sleep',
   'system',
   'user-activity',
   'user-profile',
