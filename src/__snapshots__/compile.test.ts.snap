@@ -37,13 +37,13 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
 LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */var o=function(t,n){o=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(o,t){o.__proto__=t}||function(o,t){for(var n in t)if(t.hasOwnProperty(n))o[n]=t[n]}
-return o(t,n)}
-function t(t,n){o(t,n)
-function r(){this.constructor=t}t.prototype=n===null?Object.create(n):(r.prototype=n.prototype,new r)}var n=function(){function o(){}o.prototype.doFoo=function(){}
-return o}()
-var r=function(o){t(n,o)
-function n(){return o!==null&&o.apply(this,arguments)||this}n.prototype.doBar=function(){console.log(\\"foo\\")}
+***************************************************************************** */var t=function(o,n){t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,o){t.__proto__=o}||function(t,o){for(var n in o)if(Object.prototype.hasOwnProperty.call(o,n))t[n]=o[n]}
+return t(o,n)}
+function o(o,n){t(o,n)
+function r(){this.constructor=o}o.prototype=n===null?Object.create(n):(r.prototype=n.prototype,new r)}var n=function(){function t(){}t.prototype.doFoo=function(){}
+return t}()
+var r=function(t){o(n,t)
+function n(){return t!==null&&t.apply(this,arguments)||this}n.prototype.doBar=function(){console.log(\\"foo\\")}
 return n}(n)
 var e=new r
 e.doBar()
