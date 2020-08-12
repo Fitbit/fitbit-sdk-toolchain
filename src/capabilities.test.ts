@@ -1,5 +1,3 @@
-import semver from 'semver';
-
 import { SupportedDeviceCapabilities } from './capabilities';
 
 describe('SupportedDeviceCapabilities', () => {

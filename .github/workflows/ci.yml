@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - run: git config --global core.autocrlf false
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node_version }}
@@ -34,12 +34,13 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install dependencies
         run: yarn --frozen-lockfile
-      - name: Check code style
-        run: yarn lint |
-             yarn checkstyle
+      - name: Check code style (tsc + tslint)
+        run: yarn lint
+      - name: Check code style (Prettier)
+        run: yarn checkstyle
       - name: Run tests
         run: yarn test --coverage
       - name: Upload coverage
-        uses: coverallsapp/github-action@v1.0.1
+        uses: coverallsapp/github-action@v1.1.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
