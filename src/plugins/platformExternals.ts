@@ -59,9 +59,9 @@ const companion = [
 
 const settings = ['user-settings'];
 
-const externals = { device, companion, settings };
+export const externals = { device, companion, settings };
 
-export default function platformExternals(component: ComponentType): Plugin {
+export function plugin(component: ComponentType): Plugin {
   return {
     name: 'platform-externals',
 
