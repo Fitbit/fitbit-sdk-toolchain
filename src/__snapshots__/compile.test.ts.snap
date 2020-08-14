@@ -2,8 +2,7 @@
 
 exports[`allows importing image files when building settings 1`] = `
 "\\"use strict\\"
-var A=\\"data:image/png;base64,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\\"
-console.log(A)
+console.log(\\"data:image/png;base64,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\\")
 "
 `;
 
@@ -37,48 +36,25 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
 LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */var t=function(o,n){t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,o){t.__proto__=o}||function(t,o){for(var n in o)if(Object.prototype.hasOwnProperty.call(o,n))t[n]=o[n]}
-return t(o,n)}
-function o(o,n){t(o,n)
-function r(){this.constructor=o}o.prototype=n===null?Object.create(n):(r.prototype=n.prototype,new r)}var n=function(){function t(){}t.prototype.doFoo=function(){}
-return t}()
-var r=function(t){o(n,t)
-function n(){return t!==null&&t.apply(this,arguments)||this}n.prototype.doBar=function(){console.log(\\"foo\\")}
-return n}(n)
-var e=new r
-e.doBar()
+***************************************************************************** */var t=function(o,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,o){t.__proto__=o}||function(t,o){for(var n in o)Object.prototype.hasOwnProperty.call(o,n)&&(t[n]=o[n])})(o,n)};(new(function(o){function n(){return null!==o&&o.apply(this,arguments)||this}return function(o,n){function r(){this.constructor=o}t(o,n),o.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}(n,o),n.prototype.doBar=function(){console.log(\\"foo\\")},n}(function(){function t(){}return t.prototype.doFoo=function(){},t}()))).doBar()
 "
 `;
 
 exports[`build passes when compiles a JS file with tslib helpers inline 1`] = `
 "\\"use strict\\"
-var t=undefined&&undefined.__extends||function(){var t=function(n,o){t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,n){t.__proto__=n}||function(t,n){for(var o in n){if(n.hasOwnProperty(o))t[o]=n[o]}}
-return t(n,o)}
-return function(n,o){t(n,o)
-function r(){this.constructor=n}n.prototype=o===null?Object.create(o):(r.prototype=o.prototype,new r)}}()
-var n=function(){function t(){}t.prototype.doFoo=function(){}
-return t}()
-var o=function(n){t(o,n)
-function o(){return n!==null&&n.apply(this,arguments)||this}o.prototype.doBar=function(){console.log(\\"foo\\")}
-return o}(n)
-var r=new o
-r.doBar()
+var o,t=(o=function(t,n){return(o=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(o,t){o.__proto__=t}||function(o,t){for(var n in t)t.hasOwnProperty(n)&&(o[n]=t[n])})(t,n)},function(t,n){function r(){this.constructor=t}o(t,n),t.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)});(new(function(o){function n(){return null!==o&&o.apply(this,arguments)||this}return t(n,o),n.prototype.doBar=function(){console.log(\\"foo\\")},n}(function(){function o(){}return o.prototype.doFoo=function(){},o}()))).doBar()
 "
 `;
 
 exports[`build passes when known external imports are used 1`] = `
 "\\"use strict\\"
-function e(e){return e&&typeof e===\\"object\\"&&\\"default\\"in e?e[\\"default\\"]:e}var t=e(require(\\"cbor\\"))
-t()
+var e;((e=require(\\"cbor\\"))&&\\"object\\"==typeof e&&\\"default\\"in e?e.default:e)()
 "
 `;
 
 exports[`build passes when require calls are unmodified 1`] = `
 "\\"use strict\\"
-var r=require(\\"cbor\\")
-r()
-var e=require(\\"./foo.js\\")
-e()
+require(\\"cbor\\")(),require(\\"./foo.js\\")()
 "
 `;
 
@@ -98,7 +74,7 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
 LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */function t(i){return this instanceof t?(this.v=i,this):new t(i)}t()
+***************************************************************************** */!function t(i){return this instanceof t?(this.v=i,this):new t(i)}()
 "
 `;
 
@@ -106,15 +82,13 @@ exports[`does not allow JSON imports 1`] = `"Unexpected token (Note that you nee
 
 exports[`emits ES5 code for device 1`] = `
 "\\"use strict\\"
-var o=function(){return\\"foo\\"}
-console.log(o())
+console.log(\\"foo\\")
 "
 `;
 
 exports[`emits ES6 code 1`] = `
 "\\"use strict\\"
-const o=()=>\\"foo\\"
-console.log(o())
+console.log(\\"foo\\")
 "
 `;
 
@@ -164,14 +138,13 @@ Array [
 
 exports[`emits multiple chunks when dynamic import are used 1`] = `
 "\\"use strict\\"
-Promise.resolve().then((function(){return require(\\"./chunkB-f4207ce1.js\\")})).then((function(e){var n=e.chunkB
-n()}))
+Promise.resolve().then((function(){return require(\\"./chunkB-f4207ce1.js\\")})).then((function(e){(0,e.chunkB)()}))
 "
 `;
 
 exports[`emits multiple chunks when dynamic import are used 2`] = `
-"(function(){\\"use strict\\"
-function o(){console.log(\\"Hello code splitting!\\")}exports.chunkB=o})()
+"!function(){\\"use strict\\"
+exports.chunkB=function(){console.log(\\"Hello code splitting!\\")}}()
 "
 `;
 
@@ -179,14 +152,12 @@ exports[`emits sourcemaps with source paths relative to the project root 1`] = `
 Array [
   "src/__test__/compile/sourcemap/foo.js",
   "src/__test__/compile/sourcemap/bar.js",
-  "src/__test__/compile/sourcemap/index.js",
 ]
 `;
 
 exports[`when allowUnknownExternals is enabled successfully builds an app with unknown external imports 1`] = `
 "\\"use strict\\"
-function e(e){return e&&typeof e===\\"object\\"&&\\"default\\"in e?e[\\"default\\"]:e}var t=e(require(\\"_never_exists_\\"))
-t()
+var e;((e=require(\\"_never_exists_\\"))&&\\"object\\"==typeof e&&\\"default\\"in e?e.default:e)()
 "
 `;
 
@@ -203,10 +174,8 @@ Array [
 
 exports[`when building a device component which uses the gettext polyfill polyfills gettext on device 1`] = `
 "\\"use strict\\"
-var e=require(\\"resources\\")
-function r(r){var t=e.getResource(\\"text\\",\\"_\\"+r)
-if(t===null)return String(r)
-return t}console.log(r(\\"hello\\"))
+var e,l=require(\\"resources\\")
+console.log((\\"hello\\",null===(e=l.getResource(\\"text\\",\\"_hello\\"))?String(\\"hello\\"):e))
 "
 `;
 
@@ -219,17 +188,13 @@ console.log(e.gettext(\\"hello\\"))
 
 exports[`when building a device component which uses the sleep API requiring a polyfill polyfills sleep module on device 1`] = `
 "\\"use strict\\"
-function e(e){return e&&typeof e===\\"object\\"&&\\"default\\"in e?e[\\"default\\"]:e}var r=require(\\"appbit\\")
-var s=e(require(\\"sleep\\"))
-var t=s&&r.me.permissions.granted(\\"access_sleep\\")?s:undefined
-console.log(t)
+var e,s=require(\\"appbit\\"),i=(e=require(\\"sleep\\"))&&\\"object\\"==typeof e&&\\"default\\"in e?e.default:e,r=i&&s.me.permissions.granted(\\"access_sleep\\")?i:void 0
+console.log(r)
 "
 `;
 
 exports[`when compiling a module with statements above an import declaration builds 1`] = `
 "\\"use strict\\"
-require(\\"util\\")
-foo()
-console.log(\\"Hello!\\")
+require(\\"util\\"),foo(),console.log(\\"Hello!\\")
 "
 `;
