@@ -24,6 +24,7 @@ import workaroundRequireScope from './plugins/workaroundRequireScope';
 import terser from './plugins/terser';
 import typescript from './plugins/typescript';
 import rollupWarningHandler from './rollupWarningHandler';
+import sdkVersion from './sdkVersion';
 
 // TODO: emit a warning when any of these settings are
 // defined in the app's tsconfig
@@ -144,7 +145,9 @@ export default function compile({
           outputDir === undefined ? mapPath : path.join(outputDir, mapPath),
         ),
       interop: (id: string | null) =>
-        id === null || platformExternals.externals[component].indexOf(id) === -1
+        id === null ||
+        platformExternals.externals[component].indexOf(id) === -1 ||
+        (id === 'document' && sdkVersion().major < 5)
           ? 'auto'
           : 'esModule',
     },
