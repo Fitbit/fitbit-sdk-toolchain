@@ -228,22 +228,6 @@ describe('when building a device component which uses the i18n API without requi
     expect(mockDiagnosticHandler).not.toBeCalled());
 });
 
-describe('when building a device component which uses the sleep API requiring a polyfill', () => {
-  let file: string;
-
-  beforeEach(async () => {
-    mockSDKVersion('4.2.0');
-    file = await compileFile('sleep.js', {
-      component: ComponentType.DEVICE,
-    }).then(getVinylContents);
-  });
-
-  it('polyfills sleep module on device', () => expect(file).toMatchSnapshot());
-
-  it('builds without diagnostic messages', () =>
-    expect(mockDiagnosticHandler).not.toBeCalled());
-});
-
 it('emits sourcemaps with source paths relative to the project root', async () => {
   const file = await compileFile('sourcemap/index.js', { outputDir: 'app' });
   expect(file.sourceMap.sources).toMatchSnapshot();

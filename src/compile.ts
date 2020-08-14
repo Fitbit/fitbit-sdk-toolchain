@@ -16,7 +16,7 @@ import rollupToVinyl from './rollupToVinyl';
 
 import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
 import i18nPolyfill from './plugins/i18nPolyfill';
-import platformExternals from './plugins/platformExternals';
+import * as platformExternals from './plugins/platformExternals';
 import polyfill from './plugins/polyfill';
 import polyfillDevice from './plugins/polyfillDevice';
 import resourceImports from './plugins/resourceImports';
@@ -67,7 +67,7 @@ export default function compile({
         ...pluginIf(component !== ComponentType.DEVICE, () =>
           polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
         ),
-        platformExternals(component),
+        platformExternals.plugin(component),
         typescript({
           onDiagnostic,
           tsconfigOverride: {
@@ -143,6 +143,10 @@ export default function compile({
         path.normalize(
           outputDir === undefined ? mapPath : path.join(outputDir, mapPath),
         ),
+      interop: (id: string | null) =>
+        id === null || platformExternals.externals[component].indexOf(id) === -1
+          ? 'auto'
+          : 'esModule',
     },
   );
 }

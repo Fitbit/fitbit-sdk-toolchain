@@ -48,7 +48,7 @@ var o,t=(o=function(t,n){return(o=Object.setPrototypeOf||{__proto__:[]}instanceo
 
 exports[`build passes when known external imports are used 1`] = `
 "\\"use strict\\"
-var e;((e=require(\\"cbor\\"))&&\\"object\\"==typeof e&&\\"default\\"in e?e.default:e)()
+require(\\"cbor\\").default()
 "
 `;
 
@@ -157,7 +157,7 @@ Array [
 
 exports[`when allowUnknownExternals is enabled successfully builds an app with unknown external imports 1`] = `
 "\\"use strict\\"
-var e;((e=require(\\"_never_exists_\\"))&&\\"object\\"==typeof e&&\\"default\\"in e?e.default:e)()
+function e(e){return e&&e.__esModule?e:{default:e}}e(require(\\"_never_exists_\\")).default()
 "
 `;
 
@@ -183,13 +183,6 @@ exports[`when building a device component which uses the i18n API without requir
 "\\"use strict\\"
 var e=require(\\"i18n\\")
 console.log(e.gettext(\\"hello\\"))
-"
-`;
-
-exports[`when building a device component which uses the sleep API requiring a polyfill polyfills sleep module on device 1`] = `
-"\\"use strict\\"
-var e,s=require(\\"appbit\\"),i=(e=require(\\"sleep\\"))&&\\"object\\"==typeof e&&\\"default\\"in e?e.default:e,r=i&&s.me.permissions.granted(\\"access_sleep\\")?i:void 0
-console.log(r)
 "
 `;
 
