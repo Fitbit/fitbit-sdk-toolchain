@@ -116,7 +116,12 @@ export default function compile({
           },
           // Compression produces bad source maps
           // https://github.com/mishoo/UglifyJS2#source-maps-and-debugging
-          compress: false,
+          compress: {
+            toplevel: true,
+            arrows: component !== ComponentType.DEVICE,
+            keep_infinity: component !== ComponentType.DEVICE,
+            passes: 2,
+          },
         }),
       ],
       onwarn: rollupWarningHandler({
