@@ -24,7 +24,6 @@ import workaroundRequireScope from './plugins/workaroundRequireScope';
 import terser from './plugins/terser';
 import typescript from './plugins/typescript';
 import rollupWarningHandler from './rollupWarningHandler';
-import sdkVersion from './sdkVersion';
 
 // TODO: emit a warning when any of these settings are
 // defined in the app's tsconfig
@@ -42,6 +41,19 @@ const tsconfigOverrides = {
 function pluginIf(condition: boolean, plugin: () => rollup.Plugin) {
   return condition ? [plugin()] : [];
 }
+
+const deviceModulesWithoutDefaultExports = new Set([
+  'crypto',
+  'document',
+  'fs',
+  'jpeg',
+  'power',
+  'scientific',
+  'scientific/signal',
+  'system',
+  'user-activity',
+  'user-settings',
+]);
 
 export default function compile({
   component,
@@ -144,12 +156,26 @@ export default function compile({
         path.normalize(
           outputDir === undefined ? mapPath : path.join(outputDir, mapPath),
         ),
-      interop: (id: string | null) =>
-        id === null ||
-        platformExternals.externals[component].indexOf(id) === -1 ||
-        (id === 'document' && sdkVersion().major < 5)
-          ? 'auto'
-          : 'esModule',
+      interop: (id: string | null) => {
+        if (id === null) {
+          return 'auto';
+        }
+
+        // If this is not a built-in module, use 'interop: auto'.
+        if (platformExternals.externals[component].indexOf(id) === -1) {
+          return 'auto';
+        }
+
+        // Some of the built-in modules do not have a default export.
+        if (
+          component === ComponentType.DEVICE &&
+          deviceModulesWithoutDefaultExports.has(id)
+        ) {
+          return 'auto';
+        }
+
+        return 'esModule';
+      },
     },
   );
 }

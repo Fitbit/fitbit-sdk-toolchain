@@ -249,3 +249,19 @@ it('emits multiple chunks when dynamic import are used', async () => {
   expect(entryJS).toMatchSnapshot();
   expect(chunkJS).toMatchSnapshot();
 });
+
+describe('when building a device component which uses a module without default exports', () => {
+  let file: string;
+
+  beforeEach(async () => {
+    file = await compileFile('noDefaultExport.js', {
+      component: ComponentType.DEVICE,
+    }).then(getVinylContents);
+  });
+
+  it('patches generated code to use the module namespace as the default export', () =>
+    expect(file).toMatchSnapshot());
+
+  it('builds without diagnostic messages', () =>
+    expect(mockDiagnosticHandler).not.toBeCalled());
+});

@@ -172,6 +172,14 @@ Array [
 ]
 `;
 
+exports[`when building a device component which uses a module without default exports patches generated code to use the module namespace as the default export 1`] = `
+"\\"use strict\\"
+var e=require(\\"crypto\\"),o=require(\\"document\\"),t=require(\\"fs\\"),f=require(\\"jpeg\\"),l=require(\\"power\\"),r=require(\\"scientific\\"),s=require(\\"scientific/signal\\"),u=require(\\"system\\"),i=require(\\"user-activity\\"),p=require(\\"user-settings\\")
+function y(e){return e&&e.__esModule?e:{default:e}}var c=y(e),n=y(o),a=y(t),g=y(f),d=y(l),q=y(r),m=y(s),v=y(u),j=y(i),w=y(p)
+console.log(\\"typeof crypto: \\"+typeof c.default),console.log(\\"typeof document: \\"+typeof n.default),console.log(\\"typeof fs: \\"+typeof a.default),console.log(\\"typeof jpeg: \\"+typeof g.default),console.log(\\"typeof power: \\"+typeof d.default),console.log(\\"typeof scientific: \\"+typeof q.default),console.log(\\"typeof signal: \\"+typeof m.default),console.log(\\"typeof system: \\"+typeof v.default),console.log(\\"typeof userActivity: \\"+typeof j.default),console.log(\\"typeof userSettings: \\"+typeof w.default)
+"
+`;
+
 exports[`when building a device component which uses the gettext polyfill polyfills gettext on device 1`] = `
 "\\"use strict\\"
 var e,l=require(\\"resources\\")
