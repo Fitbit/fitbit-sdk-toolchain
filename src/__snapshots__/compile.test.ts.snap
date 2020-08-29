@@ -46,11 +46,11 @@ return t}()))).doBar()
 
 exports[`build passes when compiles a JS file with tslib helpers inline 1`] = `
 "\\"use strict\\"
-var o,t=(o=function(t,n){return(o=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(o,t){o.__proto__=t}||function(o,t){for(var n in t)t.hasOwnProperty(n)&&(o[n]=t[n])})(t,n)},function(t,n){o(t,n)
-function r(){this.constructor=t}t.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)});(new(function(o){t(n,o)
-function n(){return null!==o&&o.apply(this,arguments)||this}n.prototype.doBar=function(){console.log(\\"foo\\")}
-return n}(function(){function o(){}o.prototype.doFoo=function(){}
-return o}()))).doBar()
+var t,o=(t=function(o,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,o){t.__proto__=o}||function(t,o){for(var n in o)Object.prototype.hasOwnProperty.call(o,n)&&(t[n]=o[n])})(o,n)},function(o,n){t(o,n)
+function r(){this.constructor=o}o.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)});(new(function(t){o(n,t)
+function n(){return null!==t&&t.apply(this,arguments)||this}n.prototype.doBar=function(){console.log(\\"foo\\")}
+return n}(function(){function t(){}t.prototype.doFoo=function(){}
+return t}()))).doBar()
 "
 `;
 
@@ -140,7 +140,7 @@ Array [
         },
       },
     },
-    "messageText": "TS2322: Type '1' is not assignable to type 'string'.",
+    "messageText": "TS2322: Type 'number' is not assignable to type 'string'.",
   },
 ]
 `;
