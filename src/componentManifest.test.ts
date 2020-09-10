@@ -10,6 +10,7 @@ import ProjectConfiguration, {
   AppProjectConfiguration,
   AppType,
   ClockProjectConfiguration,
+  ServiceProjectConfiguration,
 } from './ProjectConfiguration';
 import { apiVersions } from './sdkVersion';
 
@@ -39,6 +40,11 @@ const makeAppProjectConfig = (): AppProjectConfiguration => ({
   appType: AppType.APP,
   wipeColor: '#ffaabb',
   iconFile: 'resources/icon.png',
+});
+
+const makeServiceProjectConfig = (): ServiceProjectConfiguration => ({
+  ...makeClockfaceProjectConfig(),
+  appType: AppType.SERVICE,
 });
 
 let buildStream: Readable;
@@ -150,6 +156,11 @@ describe('when there is a device entry point present', () => {
   it('builds a device manifest for an app', () =>
     expectManifestJSON(
       makeDeviceManifestStream(makeAppProjectConfig()),
+    ).resolves.toMatchSnapshot());
+
+  it('builds a device manifest for a service', () =>
+    expectManifestJSON(
+      makeDeviceManifestStream(makeServiceProjectConfig()),
     ).resolves.toMatchSnapshot());
 
   it('sets apiVersion in app manifest', () =>

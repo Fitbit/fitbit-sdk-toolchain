@@ -13,6 +13,7 @@ const knownBuildTargets = Object.keys(buildTargets);
 export enum AppType {
   APP = 'app',
   CLOCKFACE = 'clockface',
+  SERVICE = 'service',
 }
 
 export const VALID_APP_TYPES = Object.values(AppType);
@@ -49,7 +50,15 @@ export interface ClockProjectConfiguration extends BaseProjectConfiguration {
   appType: AppType.CLOCKFACE;
 }
 
-type ProjectConfiguration = AppProjectConfiguration | ClockProjectConfiguration;
+export interface ServiceProjectConfiguration extends BaseProjectConfiguration {
+  appType: AppType.SERVICE;
+}
+
+type ProjectConfiguration =
+  | AppProjectConfiguration
+  | ClockProjectConfiguration
+  | ServiceProjectConfiguration;
+
 export default ProjectConfiguration;
 
 export const MAX_DISPLAY_NAME_LENGTH = 30;
@@ -314,7 +323,7 @@ export function normalizeLocales(locales: LocalesConfig) {
  */
 export function normalizeProjectConfig(
   config: any,
-  defaults?: Partial<AppProjectConfiguration | ClockProjectConfiguration>,
+  defaults?: Partial<ProjectConfiguration>,
 ): ProjectConfiguration {
   if (!lodash.isPlainObject(config)) {
     throw new TypeError('Project configuration root must be an object');
@@ -386,7 +395,7 @@ export function validateProjectDisplayName(config: ProjectConfiguration) {
 export function validateWipeColor(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
   if (
-    config.appType !== AppType.CLOCKFACE &&
+    config.appType === AppType.APP &&
     !validator.isHexColor(config.wipeColor)
   ) {
     diagnostics.pushFatalError('Wipe color must be a valid hex color');

@@ -35,6 +35,7 @@ import findEntryPoint from './findEntryPoint';
 import nativeComponents from './nativeComponents';
 import pluginError from './util/pluginError';
 import ProjectConfiguration, {
+  AppType,
   normalizeProjectConfig,
   validate,
 } from './ProjectConfiguration';
@@ -240,35 +241,39 @@ export function buildDeviceComponents({
         // Split so that JS doesn't pass through resource filtering
         return new pumpify.obj(
           mergeStream(
-            new pumpify.obj(
-              processedJS.newReadableSide({ objectMode: true }),
-              sourceMap.collector(ComponentType.DEVICE, family),
-            ),
-            new pumpify.obj(
-              // Things can start glitching out if multiple vinylFS.src()
-              // streams with the same glob pattern are in use
-              // concurrently. (IPD-102519)
-              // We're serializing the execution of the pipelines, so
-              // there should not be any opportunity for glitches as only
-              // one vinylFS stream is active at a time. Wrapping the
-              // vinylFS stream in a playbackStream would be safer, but
-              // would buffer all the resources into memory at once with
-              // no backpressure. We like our users and don't want to eat
-              // all their RAM, so we just have to be careful not to
-              // introduce a regression when modifying this code.
-              vinylFS.src('./resources/**', { base: '.' }),
-              buildDeviceResources(
-                projectConfig,
-                buildTargets[family],
-                onDiagnostic,
+            ...([
+              new pumpify.obj(
+                processedJS.newReadableSide({ objectMode: true }),
+                sourceMap.collector(ComponentType.DEVICE, family),
               ),
-            ),
-            new pumpify.obj(
-              vinylFS.src(componentTargets.device.translationsGlob, {
-                base: '.',
-              }),
-              compileTranslations(projectConfig.defaultLanguage),
-            ),
+              projectConfig.appType === AppType.SERVICE
+                ? undefined
+                : new pumpify.obj(
+                    // Things can start glitching out if multiple vinylFS.src()
+                    // streams with the same glob pattern are in use
+                    // concurrently. (IPD-102519)
+                    // We're serializing the execution of the pipelines, so
+                    // there should not be any opportunity for glitches as only
+                    // one vinylFS stream is active at a time. Wrapping the
+                    // vinylFS stream in a playbackStream would be safer, but
+                    // would buffer all the resources into memory at once with
+                    // no backpressure. We like our users and don't want to eat
+                    // all their RAM, so we just have to be careful not to
+                    // introduce a regression when modifying this code.
+                    vinylFS.src('./resources/**', { base: '.' }),
+                    buildDeviceResources(
+                      projectConfig,
+                      buildTargets[family],
+                      onDiagnostic,
+                    ),
+                  ),
+              new pumpify.obj(
+                vinylFS.src(componentTargets.device.translationsGlob, {
+                  base: '.',
+                }),
+                compileTranslations(projectConfig.defaultLanguage),
+              ),
+            ].filter(Boolean) as readonly NodeJS.ReadableStream[]),
           ),
           makeDeviceManifest({ projectConfig, buildId, targetDevice: family }),
           zip(bundleFilename),

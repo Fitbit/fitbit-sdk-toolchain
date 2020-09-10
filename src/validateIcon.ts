@@ -40,7 +40,7 @@ export default function validateIcon({
   projectConfig: ProjectConfiguration;
   onDiagnostic: DiagnosticHandler;
 }) {
-  if (projectConfig.appType === AppType.CLOCKFACE) {
+  if (projectConfig.appType !== AppType.APP) {
     return new stream.PassThrough({ objectMode: true });
   }
 
