@@ -83,6 +83,7 @@ export enum Permission {
   ACCESS_INTERNET = 'access_internet',
   ACCESS_LOCATION = 'access_location',
   ACCESS_SECURE_EXCHANGE = 'access_secure_exchange',
+  ACCESS_SLEEP = 'access_sleep',
   ACCESS_USER_PROFILE = 'access_user_profile',
   FITBIT_TOKEN = 'fitbit_token',
   RUN_BACKGROUND = 'run_background',
@@ -146,6 +147,12 @@ const permissionTypes = [
     description:
       'Application may access calendar data stored on the mobile device',
     sdkVersion: '>=4.1.0',
+  },
+  {
+    key: Permission.ACCESS_SLEEP,
+    name: 'Sleep',
+    description: 'Application may detect whether the user is sleeping or not',
+    sdkVersion: '>=4.2.0',
   },
 ];
 
