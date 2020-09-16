@@ -19,6 +19,8 @@ export const VALID_APP_TYPES = Object.values(AppType);
 
 export const MAX_LENGTH_APP_CLUSTER_ID = 64;
 
+const MIN_COMPANION_DEFAULT_WAKE_INTERVAL_MS = 300000;
+
 export type LocalesConfig = { [locale: string]: { name: string } };
 
 export interface BaseProjectConfiguration {
@@ -34,6 +36,7 @@ export interface BaseProjectConfiguration {
   enableProposedAPI?: true;
   appClusterID?: string;
   developerID?: string;
+  companionDefaultWakeInterval?: number;
 }
 
 export interface AppProjectConfiguration extends BaseProjectConfiguration {
@@ -547,6 +550,25 @@ export function validateStorageGroup(config: ProjectConfiguration) {
   return diagnostics;
 }
 
+export function validateCompanionDefaultWakeInterval(
+  config: ProjectConfiguration,
+) {
+  const diagnostics = new DiagnosticList();
+
+  if (
+    typeof config.companionDefaultWakeInterval !== 'undefined' &&
+    (!Number.isInteger(config.companionDefaultWakeInterval) ||
+      config.companionDefaultWakeInterval <
+        MIN_COMPANION_DEFAULT_WAKE_INTERVAL_MS)
+  ) {
+    diagnostics.pushFatalError(
+      `Default companion wake interval must be an integer value greater than or equal to ${MIN_COMPANION_DEFAULT_WAKE_INTERVAL_MS}`,
+    );
+  }
+
+  return diagnostics;
+}
+
 interface ValidationOptions {
   hasNativeComponents?: boolean;
 }
@@ -571,6 +593,7 @@ export function validate(
     validateLocaleDisplayNames,
     validateDefaultLanguage,
     validateStorageGroup,
+    validateCompanionDefaultWakeInterval,
   ].forEach((validator) => diagnostics.extend(validator(config)));
   diagnostics.extend(validateBuildTarget(config, { hasNativeComponents }));
   return diagnostics;

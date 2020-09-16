@@ -286,6 +286,14 @@ describe('when there is a companion entry point present', () => {
       }),
     ).resolves.toMatchSnapshot());
 
+  it('sets default companion wake interval if configured', () =>
+    expectManifestJSON(
+      makeCompanionManifestStream(false, {
+        ...makeClockfaceProjectConfig(),
+        companionDefaultWakeInterval: 300000,
+      }),
+    ).resolves.toMatchSnapshot());
+
   it('emits an error if project has settings but no settings entry point', () =>
     expectManifestJSON(
       makeCompanionManifestStream(true),
