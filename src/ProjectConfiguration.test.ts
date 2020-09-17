@@ -286,6 +286,7 @@ it('validationErrors() validates all fields', () => {
       'fr-FR': { name: '' },
     },
     defaultLanguage: '_invalid_',
+    companionDefaultWakeInterval: '_invalid_',
   };
   expect(config.validate(configFile).diagnostics).toEqual([
     expect.objectContaining({
@@ -325,6 +326,11 @@ it('validationErrors() validates all fields', () => {
       category: DiagnosticCategory.Error,
       messageText:
         'Default language is an invalid language tag: _invalid_. Must be en-US, de-DE, es-ES, fr-FR, it-IT, ja-JP, ko-KR, nl-NL, sv-SE, zh-CN, zh-TW, pt-BR, id-ID, ro-RO, ru-RU, pl-PL or cs-CZ.',
+    }),
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText:
+        'Default companion wake interval must be an integer value greater than or equal to 300000',
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Error,

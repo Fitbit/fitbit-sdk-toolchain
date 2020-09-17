@@ -174,6 +174,7 @@ interface CompanionManifest extends ComponentManifest {
   };
   appClusters?: string[];
   developerProfileId?: string;
+  defaultWakeInterval?: number;
 }
 
 function makeCommonManifest({
@@ -391,6 +392,11 @@ export function makeCompanionManifest({
 
       if (projectConfig.developerID) {
         manifest.developerProfileId = projectConfig.developerID;
+      }
+
+      if (projectConfig.companionDefaultWakeInterval) {
+        manifest.defaultWakeInterval =
+          projectConfig.companionDefaultWakeInterval;
       }
 
       done(
