@@ -17,32 +17,36 @@ const manifestPath = 'manifest.json';
 /**
  * Descriptor for localized resources.
  */
-interface Locales {
+interface Locale {
+  /**
+   * Localized name of the app.
+   *
+   * On device, this field is capped at 30 bytes (not including the null
+   * char).
+   */
+  name?: string;
+}
+
+interface DeviceLocale extends Locale {
+  /**
+   * Path to the resources file for the locale, relative to the manifest file.
+   *
+   * This file is generated from the corresponding '.po' file using an
+   * internal, more compact format. On device, this field is capped at
+   * 256 bytes (not including the null char).
+   * @example 'l/en-US'
+   */
+  resources?: string;
+}
+
+interface Locales<LocaleType = Locale> {
   /**
    * Lower case locale name.
    *
    * On device, this field is capped at 20 bytes (not including the null char).
    * @example 'en-us'
    */
-  [locale: string]: {
-    /**
-     * Localized name of the app.
-     *
-     * On device, this field is capped at 30 bytes (not including the null
-     * char).
-     */
-    name?: string;
-
-    /**
-     * Path to the resources file for the locale, relative to the manifest file.
-     *
-     * This file is generated from the corresponding '.po' file using an
-     * internal, more compact format. On device, this field is capped at
-     * 256 bytes (not including the null char).
-     * @example 'l/en-US'
-     */
-    resources?: string;
-  };
+  [locale: string]: LocaleType;
 }
 
 interface ComponentManifest {
@@ -88,6 +92,14 @@ interface ComponentManifest {
    * On device, this field is capped at 36 bytes (not including the null char).
    */
   uuid: string;
+
+  /**
+   * List of localized resources.
+   *
+   * On device, when this field is read, the value of the `i18n` field is
+   * capped to 1024 bytes (not including the null char).
+   */
+  i18n: Locales;
 }
 
 interface DeviceManifest extends ComponentManifest {
@@ -116,7 +128,7 @@ interface DeviceManifest extends ComponentManifest {
    * On device, when this field is read, the value of the `i18n` field is
    * capped to 1024 bytes (not including the null char).
    */
-  i18n: Locales;
+  i18n: Locales<DeviceLocale>;
 
   /**
    * Path to the app icon file.
@@ -186,6 +198,13 @@ function makeCommonManifest({
   buildId: string;
   apiVersion: string;
 }): ComponentManifest {
+  // Ensure the default language is the first listed in the manifest
+  const locales: Locales<DeviceLocale> = projectConfig.i18n;
+  const {
+    [projectConfig.defaultLanguage]: defaultLanguage,
+    ...otherLocales
+  } = locales;
+
   return {
     apiVersion,
     buildId,
@@ -193,6 +212,16 @@ function makeCommonManifest({
     uuid: projectConfig.appUUID,
     name: projectConfig.appDisplayName,
     requestedPermissions: projectConfig.requestedPermissions,
+    // FW is case sensitive for locales, it insists on everything being lowercase
+    // Doing this too early means the casing won't match the developers defaultLanguage
+    // setting, so do it as late as possible
+    i18n: lodash.mapKeys(
+      {
+        [projectConfig.defaultLanguage]: defaultLanguage,
+        ...otherLocales,
+      },
+      (_, locale) => locale.toLowerCase(),
+    ),
   };
 }
 
@@ -205,7 +234,7 @@ export function makeDeviceManifest({
   buildId: string;
   targetDevice: string;
 }) {
-  const locales: Locales = projectConfig.i18n;
+  const locales: Locales<DeviceLocale> = projectConfig.i18n;
   let entryPoint: string | undefined;
 
   return new Transform({
@@ -244,12 +273,6 @@ export function makeDeviceManifest({
     },
 
     flush(done) {
-      // Ensure the default language is the first listed in the manifest
-      const {
-        [projectConfig.defaultLanguage]: defaultLanguage,
-        ...otherLocales
-      } = locales;
-
       if (!entryPoint) {
         return done(
           new PluginError(
@@ -274,16 +297,6 @@ export function makeDeviceManifest({
           apiVersion: deviceApi,
         }),
         ...(supports && { supports }),
-        // FW is case sensitive for locales, it insists on everything being lowercase
-        // Doing this too early means the casing won't match the developers defaultLanguage
-        // setting, so do it as late as possible
-        i18n: lodash.mapKeys(
-          {
-            [projectConfig.defaultLanguage]: defaultLanguage,
-            ...otherLocales,
-          },
-          (_, locale) => locale.toLowerCase(),
-        ),
         ...(projectConfig.appType !== AppType.CLOCKFACE && {
           iconFile: projectConfig.iconFile,
           wipeColor: projectConfig.wipeColor,
