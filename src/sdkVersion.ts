@@ -13,9 +13,6 @@ interface WithProposedAPI {
 }
 
 const apiBySdk: Record<string, ApiVersions> = {
-  '4.0': { deviceApi: '5.0.0', companionApi: '3.0.0' },
-  '4.1': { deviceApi: '5.1.0', companionApi: '3.1.0' },
-  '4.2': { deviceApi: '6.0.0', companionApi: '3.1.0' },
   '5.0': { deviceApi: '7.0.0', companionApi: '3.1.0' },
 };
 

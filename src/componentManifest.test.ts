@@ -29,7 +29,7 @@ const makeClockfaceProjectConfig = (): ClockProjectConfiguration => ({
     'en-US': { name: 'My App' },
     'fr-FR': { name: 'Mon application' },
   },
-  buildTargets: ['higgs'],
+  buildTargets: ['atlas'],
   requestedPermissions: [],
   defaultLanguage: 'en-US',
 });
@@ -65,7 +65,7 @@ function makeDeviceManifestStream(
     makeDeviceManifest({
       buildId,
       projectConfig,
-      targetDevice: 'mira',
+      targetDevice: 'atlas',
     }),
   );
 }

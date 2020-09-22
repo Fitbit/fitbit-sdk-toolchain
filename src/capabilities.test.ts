@@ -3,15 +3,15 @@ import { SupportedDeviceCapabilities } from './capabilities';
 describe('SupportedDeviceCapabilities', () => {
   describe('create()', () => {
     it('returns supported capabilities for * as JS API version', () => {
-      expect(SupportedDeviceCapabilities.create('mira')).toEqual(
+      expect(SupportedDeviceCapabilities.create('atlas')).toEqual(
         expect.objectContaining({
-          screenSize: { w: 300, h: 300 },
+          screenSize: { w: 336, h: 336 },
         }),
       );
 
-      expect(SupportedDeviceCapabilities.create('higgs')).toEqual(
+      expect(SupportedDeviceCapabilities.create('vulcan')).toEqual(
         expect.objectContaining({
-          screenSize: { w: 348, h: 250 },
+          screenSize: { w: 336, h: 336 },
         }),
       );
     });

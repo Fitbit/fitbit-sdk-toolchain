@@ -180,13 +180,6 @@ console.log(\\"typeof crypto: \\"+typeof c.default),console.log(\\"typeof docume
 "
 `;
 
-exports[`when building a device component which uses the gettext polyfill polyfills gettext on device 1`] = `
-"\\"use strict\\"
-var e,l=require(\\"resources\\")
-console.log((\\"hello\\",null===(e=l.getResource(\\"text\\",\\"_hello\\"))?String(\\"hello\\"):e))
-"
-`;
-
 exports[`when building a device component which uses the i18n API without requiring a polyfill does not polyfill gettext on device 1`] = `
 "\\"use strict\\"
 var e=require(\\"i18n\\")
