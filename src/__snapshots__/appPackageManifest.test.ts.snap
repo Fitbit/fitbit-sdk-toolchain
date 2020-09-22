@@ -6,15 +6,15 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "components": Object {
     "watch": Object {
-      "higgs": Object {
-        "filename": "device-higgs.zip",
+      "atlas": Object {
+        "filename": "device-atlas.zip",
         "platform": Array [
-          "30.1.2+",
+          "128.1.1+",
         ],
         "supports": Object {
           "screenSize": Object {
-            "h": 250,
-            "w": 348,
+            "h": 336,
+            "w": 336,
           },
         },
       },
@@ -27,7 +27,7 @@ Object {
   },
   "sourceMaps": Object {
     "device": Object {
-      "higgs": "sourceMaps/device/higgs/index.js.json",
+      "atlas": "sourceMaps/device/atlas/index.js.json",
     },
   },
 }
@@ -42,15 +42,15 @@ Object {
       "filename": "companion.zip",
     },
     "watch": Object {
-      "higgs": Object {
-        "filename": "device-higgs.zip",
+      "atlas": Object {
+        "filename": "device-atlas.zip",
         "platform": Array [
-          "30.1.2+",
+          "128.1.1+",
         ],
         "supports": Object {
           "screenSize": Object {
-            "h": 250,
-            "w": 348,
+            "h": 336,
+            "w": 336,
           },
         },
       },
@@ -65,7 +65,7 @@ Object {
   "sourceMaps": Object {
     "companion": "sourceMaps/companion/companion.js.json",
     "device": Object {
-      "higgs": "sourceMaps/device/higgs/index.js.json",
+      "atlas": "sourceMaps/device/atlas/index.js.json",
     },
     "settings": "sourceMaps/settings/settings.js.json",
   },
@@ -78,10 +78,10 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "components": Object {
     "watch": Object {
-      "higgs": Object {
-        "filename": "device-higgs.zip",
+      "atlas": Object {
+        "filename": "device-atlas.zip",
         "platform": Array [
-          "30.1.2+",
+          "128.1.1+",
         ],
       },
     },
@@ -101,10 +101,10 @@ Object {
       "filename": "companion.zip",
     },
     "watch": Object {
-      "higgs": Object {
-        "filename": "device-higgs.zip",
+      "atlas": Object {
+        "filename": "device-atlas.zip",
         "platform": Array [
-          "30.1.2+",
+          "128.1.1+",
         ],
       },
     },
@@ -127,27 +127,27 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "components": Object {
     "watch": Object {
-      "higgs": Object {
-        "filename": "device-higgs.zip",
+      "atlas": Object {
+        "filename": "device-atlas.zip",
         "platform": Array [
-          "30.1.2+",
+          "128.1.1+",
         ],
         "supports": Object {
           "screenSize": Object {
-            "h": 250,
-            "w": 348,
+            "h": 336,
+            "w": 336,
           },
         },
       },
-      "meson": Object {
-        "filename": "device-meson.zip",
+      "vulcan": Object {
+        "filename": "device-vulcan.zip",
         "platform": Array [
-          "32.4.18+",
+          "128.1.1+",
         ],
         "supports": Object {
           "screenSize": Object {
-            "h": 300,
-            "w": 300,
+            "h": 336,
+            "w": 336,
           },
         },
       },
@@ -160,8 +160,8 @@ Object {
   },
   "sourceMaps": Object {
     "device": Object {
-      "higgs": "sourceMaps/device/higgs/index.js.json",
-      "meson": "sourceMaps/device/meson/index.js.json",
+      "atlas": "sourceMaps/device/atlas/index.js.json",
+      "vulcan": "sourceMaps/device/vulcan/index.js.json",
     },
   },
 }
@@ -173,27 +173,27 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "components": Object {
     "watch": Object {
-      "higgs": Object {
-        "filename": "device-higgs.zip",
+      "atlas": Object {
+        "filename": "device-atlas.zip",
         "platform": Array [
-          "30.1.2+",
+          "128.1.1+",
         ],
         "supports": Object {
           "screenSize": Object {
-            "h": 250,
-            "w": 348,
+            "h": 336,
+            "w": 336,
           },
         },
       },
-      "meson": Object {
-        "filename": "device-meson.zip",
+      "vulcan": Object {
+        "filename": "device-vulcan.zip",
         "platform": Array [
-          "32.4.18+",
+          "128.1.1+",
         ],
         "supports": Object {
           "screenSize": Object {
-            "h": 300,
-            "w": 300,
+            "h": 336,
+            "w": 336,
           },
         },
       },
@@ -206,8 +206,8 @@ Object {
   },
   "sourceMaps": Object {
     "device": Object {
-      "higgs": "sourceMaps/device/higgs/index.js.json",
-      "meson": "sourceMaps/device/meson/index.js.json",
+      "atlas": "sourceMaps/device/atlas/index.js.json",
+      "vulcan": "sourceMaps/device/vulcan/index.js.json",
     },
   },
 }
@@ -225,4 +225,4 @@ exports[`emits an error if both JS and native device components are present 1`] 
 
 exports[`emits an error if multiple companion bundles are present for the same device family 1`] = `"Duplicate companion component bundles: bundle1.zip / bundle0.zip"`;
 
-exports[`emits an error if multiple device bundles are present for the same device family 1`] = `"Duplicate device/mira component bundles: bundle1.zip / bundle0.zip"`;
+exports[`emits an error if multiple device bundles are present for the same device family 1`] = `"Duplicate device/atlas component bundles: bundle1.zip / bundle0.zip"`;

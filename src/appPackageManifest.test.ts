@@ -24,7 +24,7 @@ const makeProjectConfig = (): ClockProjectConfiguration => ({
     en: { name: 'My App' },
     fr: { name: 'Mon application' },
   },
-  buildTargets: ['higgs'],
+  buildTargets: ['atlas'],
   requestedPermissions: [],
   defaultLanguage: 'en-US',
 });
@@ -118,7 +118,7 @@ it('builds a package manifest with multiple device components', () =>
   expectValidPackageManifest({
     projectConfig: {
       ...makeProjectConfig(),
-      buildTargets: ['higgs', 'meson'],
+      buildTargets: ['atlas', 'vulcan'],
     },
   }).toMatchSnapshot());
 
@@ -126,7 +126,7 @@ it('builds a package manifest with supported capabilities', () =>
   expectValidPackageManifest({
     projectConfig: {
       ...makeProjectConfig(),
-      buildTargets: ['higgs', 'meson'],
+      buildTargets: ['atlas', 'vulcan'],
       enableProposedAPI: true,
     },
   }).toMatchSnapshot());
@@ -138,7 +138,7 @@ it('emits an error if both JS and native device components are present', () => {
     new Vinyl({
       componentBundle: {
         type: 'device',
-        family: 'mira',
+        family: 'atlas',
         platform: ['1.1.1+'],
       },
       path: 'bundle.zip',
@@ -149,7 +149,7 @@ it('emits an error if both JS and native device components are present', () => {
     new Vinyl({
       componentBundle: {
         type: 'device',
-        family: 'higgs',
+        family: 'vulcan',
         platform: ['1.1.1+'],
         isNative: true,
       },
@@ -175,7 +175,7 @@ it.each(['device', 'companion'])(
         new Vinyl({
           componentBundle: {
             type: component,
-            family: 'mira',
+            family: 'atlas',
             platform: ['1.1.1+'],
           },
           path: `bundle${i}.zip`,
@@ -205,7 +205,7 @@ it.each<[string, any]>([
   ['has an invalid type field', { type: '__invalid__' }],
   [
     'has a device type but missing platform',
-    { type: 'device', family: 'mira' },
+    { type: 'device', family: 'atlas' },
   ],
   [
     'has a device type but missing family',
@@ -213,7 +213,7 @@ it.each<[string, any]>([
   ],
   [
     'has a device type but invalid platform',
-    { type: 'device', family: 'mira', platform: '1.1.1+' },
+    { type: 'device', family: 'atlas', platform: '1.1.1+' },
   ],
 ])('emits an error if a component bundle tag %s', (_, componentBundle) => {
   const projectConfig = makeProjectConfig();

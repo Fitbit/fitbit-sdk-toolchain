@@ -18,7 +18,6 @@ import forbidAbsoluteImport from './plugins/forbidAbsoluteImport';
 import i18nPolyfill from './plugins/i18nPolyfill';
 import * as platformExternals from './plugins/platformExternals';
 import polyfill from './plugins/polyfill';
-import polyfillDevice from './plugins/polyfillDevice';
 import resourceImports from './plugins/resourceImports';
 import workaroundRequireScope from './plugins/workaroundRequireScope';
 import terser from './plugins/terser';
@@ -76,7 +75,6 @@ export default function compile({
     {
       input: entryPoint,
       plugins: [
-        ...pluginIf(component === ComponentType.DEVICE, polyfillDevice),
         ...pluginIf(component !== ComponentType.DEVICE, () =>
           polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
         ),
