@@ -18,6 +18,7 @@ const common = [
 
 const device = [
   'accelerometer',
+  'app-cluster-storage',
   'appbit',
   'barometer',
   'body-presence',
