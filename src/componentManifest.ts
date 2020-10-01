@@ -90,25 +90,11 @@ interface ComponentManifest {
   uuid: string;
 }
 
-interface DeviceManifest extends ComponentManifest {
+interface DeviceManifestBase extends ComponentManifest {
   /**
    * The version of the manifest.
    */
   appManifestVersion: 1;
-
-  /**
-   * JS App type.
-   *
-   * If none is specified, it will default to 'app' for backwards compatibility.
-   * On device, this field is capped at 10 bytes (not including the null char).
-   *
-   * Enum values are hardcoded instead of reusing AppType since this
-   * interface describes the manifest as the device expects it,
-   * independent of data structures elsewhere. We want the build to
-   * fail if the AppType enum changes such that it becomes incompatible
-   * with what the device expects.
-   */
-  appType: 'app' | 'clockface';
 
   /**
    * List of localized resources.
@@ -119,14 +105,6 @@ interface DeviceManifest extends ComponentManifest {
   i18n: Locales;
 
   /**
-   * Path to the app icon file.
-   *
-   * On device, this field is capped at 127 bytes (not including the null char).
-   * @example 'resources/icon.png'
-   */
-  iconFile?: string;
-
-  /**
    * Path to the main app script.
    *
    * On device, this field is capped at 256 bytes (not including the null char).
@@ -134,6 +112,13 @@ interface DeviceManifest extends ComponentManifest {
    */
   main: string;
 
+  /**
+   * Features supported by the application.
+   */
+  supports?: SupportedDeviceCapabilities;
+}
+
+interface WithSVG {
   /**
    * Path to the main SVG file.
    *
@@ -149,6 +134,16 @@ interface DeviceManifest extends ComponentManifest {
    * @example 'resources/widget.defs'
    */
   svgWidgets: string;
+}
+
+interface AppDeviceManifest extends DeviceManifestBase, WithSVG {
+  /**
+   * Marks that this device component is part of a JavaScript application.
+   *
+   * If none is specified, it will default to 'app' for backwards compatibility.
+   * On device, this field is capped at 10 bytes (not including the null char).
+   */
+  appType: 'app';
 
   /**
    * Wipe color to use for the app.
@@ -159,10 +154,38 @@ interface DeviceManifest extends ComponentManifest {
   wipeColor?: string;
 
   /**
-   * Features supported by the application.
+   * Path to the app icon file.
+   *
+   * On device, this field is capped at 127 bytes (not including the null char).
+   * @example 'resources/icon.png'
    */
-  supports?: SupportedDeviceCapabilities;
+  iconFile?: string;
 }
+
+interface ClockDeviceManifest extends DeviceManifestBase, WithSVG {
+  /**
+   * Marks that this device component is part of a JavaScript clock face.
+   *
+   * If none is specified, it will default to 'app' for backwards compatibility.
+   * On device, this field is capped at 10 bytes (not including the null char).
+   */
+  appType: 'clockface';
+}
+
+interface ServiceDeviceManifest extends DeviceManifestBase {
+  /**
+   * Marks that this device component is part of a JavaScript service.
+   *
+   * If none is specified, it will default to 'app' for backwards compatibility.
+   * On device, this field is capped at 10 bytes (not including the null char).
+   */
+  appType: 'service';
+}
+
+type DeviceManifest =
+  | AppDeviceManifest
+  | ClockDeviceManifest
+  | ServiceDeviceManifest;
 
 interface CompanionManifest extends ComponentManifest {
   manifestVersion: 2;
@@ -244,12 +267,6 @@ export function makeDeviceManifest({
     },
 
     flush(done) {
-      // Ensure the default language is the first listed in the manifest
-      const {
-        [projectConfig.defaultLanguage]: defaultLanguage,
-        ...otherLocales
-      } = locales;
-
       if (!entryPoint) {
         return done(
           new PluginError(
@@ -259,36 +276,66 @@ export function makeDeviceManifest({
         );
       }
 
-      const { deviceApi } = apiVersions(projectConfig);
+      // Ensure the default language is the first listed in the manifest
+      const {
+        [projectConfig.defaultLanguage]: defaultLanguage,
+        ...otherLocales
+      } = locales;
+
+      const { deviceApi: apiVersion } = apiVersions(projectConfig);
       const supports = SupportedDeviceCapabilities.create(targetDevice);
 
-      const manifest: DeviceManifest = {
+      // FW is case sensitive for locales, it insists on everything being lowercase
+      // Doing this too early means the casing won't match the developers defaultLanguage
+      // setting, so do it as late as possible
+      const i18n = lodash.mapKeys(
+        {
+          [projectConfig.defaultLanguage]: defaultLanguage,
+          ...otherLocales,
+        },
+        (_, locale) => locale.toLowerCase(),
+      );
+
+      const manifestBase: DeviceManifestBase = {
+        i18n,
         appManifestVersion: 1,
         main: entryPoint,
-        svgMain: resources.svgMain,
-        svgWidgets: resources.svgWidgets,
-        appType: projectConfig.appType,
         ...makeCommonManifest({
           projectConfig,
           buildId,
-          apiVersion: deviceApi,
+          apiVersion,
         }),
         ...(supports && { supports }),
-        // FW is case sensitive for locales, it insists on everything being lowercase
-        // Doing this too early means the casing won't match the developers defaultLanguage
-        // setting, so do it as late as possible
-        i18n: lodash.mapKeys(
-          {
-            [projectConfig.defaultLanguage]: defaultLanguage,
-            ...otherLocales,
-          },
-          (_, locale) => locale.toLowerCase(),
-        ),
-        ...(projectConfig.appType !== AppType.CLOCKFACE && {
-          iconFile: projectConfig.iconFile,
-          wipeColor: projectConfig.wipeColor,
-        }),
       };
+
+      let manifest: DeviceManifest;
+
+      switch (projectConfig.appType) {
+        case AppType.APP:
+          manifest = {
+            appType: AppType.APP,
+            ...manifestBase,
+            iconFile: projectConfig.iconFile,
+            wipeColor: projectConfig.wipeColor,
+            svgMain: resources.svgMain,
+            svgWidgets: resources.svgWidgets,
+          };
+          break;
+        case AppType.CLOCKFACE:
+          manifest = {
+            appType: AppType.CLOCKFACE,
+            ...manifestBase,
+            svgMain: resources.svgMain,
+            svgWidgets: resources.svgWidgets,
+          };
+          break;
+        case AppType.SERVICE:
+          manifest = {
+            appType: AppType.SERVICE,
+            ...manifestBase,
+          };
+          break;
+      }
 
       done(
         undefined,

@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`does report invalid wipe color if app type is app 1`] = `
+Array [
+  Object {
+    "category": 1,
+    "messageText": "Wipe color must be a valid hex color",
+  },
+]
+`;

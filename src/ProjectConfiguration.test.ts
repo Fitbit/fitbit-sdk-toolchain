@@ -60,7 +60,8 @@ it('validates the app type is not an invalid app type', () => {
   expect(config.validateAppType(configFile).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      messageText: "App type 'invalid' is invalid, expected app or clockface",
+      messageText:
+        "App type 'invalid' is invalid, expected app, clockface or service",
     }),
   );
 });
@@ -77,6 +78,15 @@ it('validates clockface is a valid app type', () => {
     appType: config.AppType.CLOCKFACE,
   };
   expect(config.validateAppType(configFile).diagnostics).toHaveLength(0);
+});
+
+it('does report invalid wipe color if app type is app', () => {
+  const configFile: any = {
+    appType: config.AppType.APP,
+    wipeColor: 'invalid',
+  };
+  const { diagnostics } = config.validateWipeColor(configFile);
+  expect(diagnostics).toMatchSnapshot();
 });
 
 it('does not validate wipe color is invalid if app type is clockface', () => {
@@ -288,7 +298,8 @@ it('validationErrors() validates all fields', () => {
     defaultLanguage: '_invalid_',
     companionDefaultWakeInterval: '_invalid_',
   };
-  expect(config.validate(configFile).diagnostics).toEqual([
+  const diagnostics = config.validate(configFile).diagnostics;
+  expect(diagnostics).toEqual([
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText:
@@ -300,11 +311,8 @@ it('validationErrors() validates all fields', () => {
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      messageText: "App type 'invalid' is invalid, expected app or clockface",
-    }),
-    expect.objectContaining({
-      category: DiagnosticCategory.Error,
-      messageText: 'Wipe color must be a valid hex color',
+      messageText:
+        "App type 'invalid' is invalid, expected app, clockface or service",
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Warning,
