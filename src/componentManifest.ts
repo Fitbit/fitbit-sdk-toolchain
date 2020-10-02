@@ -88,6 +88,24 @@ interface ComponentManifest {
    * On device, this field is capped at 36 bytes (not including the null char).
    */
   uuid: string;
+
+  /**
+   * List of App Cluster IDs requested by this app.
+   *
+   * Currently, only one cluster ID is permitted per app.
+   * Cluster IDs must be 1-64 characters long, consisting of alphanumeric characters
+   * separated by periods.
+   *
+   * On device, this field is capped at 64 bytes (not including the null char).
+   */
+  appClusters?: string[];
+
+  /**
+   * Developer Profile ID.
+   *
+   * On device, this field is capped at 36 bytes (not including the null char).
+   */
+  developerProfileId?: string;
 }
 
 interface DeviceManifestBase extends ComponentManifest {
@@ -195,8 +213,6 @@ interface CompanionManifest extends ComponentManifest {
   settings?: {
     main: string;
   };
-  appClusters?: string[];
-  developerProfileId?: string;
   defaultWakeInterval?: number;
 }
 
@@ -209,7 +225,7 @@ function makeCommonManifest({
   buildId: string;
   apiVersion: string;
 }): ComponentManifest {
-  return {
+  const manifest: ComponentManifest = {
     apiVersion,
     buildId,
     bundleDate: new Date().toISOString(),
@@ -217,6 +233,16 @@ function makeCommonManifest({
     name: projectConfig.appDisplayName,
     requestedPermissions: projectConfig.requestedPermissions,
   };
+
+  if (projectConfig.appClusterID) {
+    manifest.appClusters = [projectConfig.appClusterID];
+  }
+
+  if (projectConfig.developerID) {
+    manifest.developerProfileId = projectConfig.developerID;
+  }
+
+  return manifest;
 }
 
 export function makeDeviceManifest({
@@ -431,14 +457,6 @@ export function makeCompanionManifest({
           );
         }
         manifest.settings = { main: settingsEntryPoint };
-      }
-
-      if (projectConfig.appClusterID) {
-        manifest.appClusters = [projectConfig.appClusterID];
-      }
-
-      if (projectConfig.developerID) {
-        manifest.developerProfileId = projectConfig.developerID;
       }
 
       if (projectConfig.companionDefaultWakeInterval) {
