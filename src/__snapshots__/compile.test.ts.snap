@@ -36,13 +36,21 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
 LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */var t=function(o,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,o){t.__proto__=o}||function(t,o){for(var n in o)Object.prototype.hasOwnProperty.call(o,n)&&(t[n]=o[n])})(o,n)};(new(function(o){function n(){return null!==o&&o.apply(this,arguments)||this}return function(o,n){function r(){this.constructor=o}t(o,n),o.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}(n,o),n.prototype.doBar=function(){console.log(\\"foo\\")},n}(function(){function t(){}return t.prototype.doFoo=function(){},t}()))).doBar()
+***************************************************************************** */var t=function(o,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,o){t.__proto__=o}||function(t,o){for(var n in o)Object.prototype.hasOwnProperty.call(o,n)&&(t[n]=o[n])})(o,n)};(new(function(o){!function(o,n){t(o,n)
+function r(){this.constructor=o}o.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}(n,o)
+function n(){return null!==o&&o.apply(this,arguments)||this}n.prototype.doBar=function(){console.log(\\"foo\\")}
+return n}(function(){function t(){}t.prototype.doFoo=function(){}
+return t}()))).doBar()
 "
 `;
 
 exports[`build passes when compiles a JS file with tslib helpers inline 1`] = `
 "\\"use strict\\"
-var o,t=(o=function(t,n){return(o=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(o,t){o.__proto__=t}||function(o,t){for(var n in t)t.hasOwnProperty(n)&&(o[n]=t[n])})(t,n)},function(t,n){function r(){this.constructor=t}o(t,n),t.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)});(new(function(o){function n(){return null!==o&&o.apply(this,arguments)||this}return t(n,o),n.prototype.doBar=function(){console.log(\\"foo\\")},n}(function(){function o(){}return o.prototype.doFoo=function(){},o}()))).doBar()
+var o,t=(o=function(t,n){return(o=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(o,t){o.__proto__=t}||function(o,t){for(var n in t)t.hasOwnProperty(n)&&(o[n]=t[n])})(t,n)},function(t,n){o(t,n)
+function r(){this.constructor=t}t.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)});(new(function(o){t(n,o)
+function n(){return null!==o&&o.apply(this,arguments)||this}n.prototype.doBar=function(){console.log(\\"foo\\")}
+return n}(function(){function o(){}o.prototype.doFoo=function(){}
+return o}()))).doBar()
 "
 `;
 
@@ -54,7 +62,8 @@ require(\\"cbor\\").default()
 
 exports[`build passes when require calls are unmodified 1`] = `
 "\\"use strict\\"
-require(\\"cbor\\")(),require(\\"./foo.js\\")()
+require(\\"cbor\\")()
+require(\\"./foo.js\\")()
 "
 `;
 
@@ -176,7 +185,16 @@ exports[`when building a device component which uses a module without default ex
 "\\"use strict\\"
 var e=require(\\"crypto\\"),o=require(\\"document\\"),t=require(\\"fs\\"),f=require(\\"jpeg\\"),l=require(\\"power\\"),r=require(\\"scientific\\"),s=require(\\"scientific/signal\\"),u=require(\\"system\\"),i=require(\\"user-activity\\"),p=require(\\"user-settings\\")
 function y(e){return e&&e.__esModule?e:{default:e}}var c=y(e),n=y(o),a=y(t),g=y(f),d=y(l),q=y(r),m=y(s),v=y(u),j=y(i),w=y(p)
-console.log(\\"typeof crypto: \\"+typeof c.default),console.log(\\"typeof document: \\"+typeof n.default),console.log(\\"typeof fs: \\"+typeof a.default),console.log(\\"typeof jpeg: \\"+typeof g.default),console.log(\\"typeof power: \\"+typeof d.default),console.log(\\"typeof scientific: \\"+typeof q.default),console.log(\\"typeof signal: \\"+typeof m.default),console.log(\\"typeof system: \\"+typeof v.default),console.log(\\"typeof userActivity: \\"+typeof j.default),console.log(\\"typeof userSettings: \\"+typeof w.default)
+console.log(\\"typeof crypto: \\"+typeof c.default)
+console.log(\\"typeof document: \\"+typeof n.default)
+console.log(\\"typeof fs: \\"+typeof a.default)
+console.log(\\"typeof jpeg: \\"+typeof g.default)
+console.log(\\"typeof power: \\"+typeof d.default)
+console.log(\\"typeof scientific: \\"+typeof q.default)
+console.log(\\"typeof signal: \\"+typeof m.default)
+console.log(\\"typeof system: \\"+typeof v.default)
+console.log(\\"typeof userActivity: \\"+typeof j.default)
+console.log(\\"typeof userSettings: \\"+typeof w.default)
 "
 `;
 
@@ -189,6 +207,8 @@ console.log(e.gettext(\\"hello\\"))
 
 exports[`when compiling a module with statements above an import declaration builds 1`] = `
 "\\"use strict\\"
-require(\\"util\\"),foo(),console.log(\\"Hello!\\")
+require(\\"util\\")
+foo()
+console.log(\\"Hello!\\")
 "
 `;
