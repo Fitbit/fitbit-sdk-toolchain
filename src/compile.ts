@@ -132,6 +132,7 @@ export default function compile({
             arrows: component !== ComponentType.DEVICE,
             keep_infinity: component !== ComponentType.DEVICE,
             passes: 2,
+            sequences: false,
           },
         }),
       ],
