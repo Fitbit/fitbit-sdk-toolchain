@@ -63,7 +63,9 @@ export default async function newProject() {
     {
       name: 'appType',
       type: 'list',
-      choices: Object.values(AppType),
+      choices: Object.values(AppType).filter(
+        (appType) => appType !== AppType.SERVICE,
+      ),
       message: 'What type of application should be created?',
     },
     {
