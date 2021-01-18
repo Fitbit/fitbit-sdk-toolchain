@@ -36,7 +36,8 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
 LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */var t=function(o,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,o){t.__proto__=o}||function(t,o){for(var n in o)Object.prototype.hasOwnProperty.call(o,n)&&(t[n]=o[n])})(o,n)};(new(function(o){!function(o,n){t(o,n)
+***************************************************************************** */var t=function(o,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,o){t.__proto__=o}||function(t,o){for(var n in o)Object.prototype.hasOwnProperty.call(o,n)&&(t[n]=o[n])})(o,n)};(new(function(o){!function(o,n){if(\\"function\\"!=typeof n&&null!==n)throw new TypeError(\\"Class extends value \\"+String(n)+\\" is not a constructor or null\\")
+t(o,n)
 function r(){this.constructor=o}o.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}(n,o)
 function n(){return null!==o&&o.apply(this,arguments)||this}n.prototype.doBar=function(){console.log(\\"foo\\")}
 return n}(function(){function t(){}t.prototype.doFoo=function(){}
