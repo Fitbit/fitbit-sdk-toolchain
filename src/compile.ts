@@ -1,7 +1,7 @@
 import path from 'path';
 
 import * as rollup from 'rollup';
-import rollupPluginBabel from 'rollup-plugin-babel';
+import pluginBabel from '@rollup/plugin-babel';
 import pluginCommonjs from '@rollup/plugin-commonjs';
 import pluginNodeResolve from '@rollup/plugin-node-resolve';
 import ts from 'typescript';
@@ -92,7 +92,7 @@ export default function compile({
         pluginNodeResolve({ preferBuiltins: false }),
         pluginCommonjs({ include: ['node_modules/**'] }),
         ...pluginIf(ecma === 5, () =>
-          rollupPluginBabel({
+          pluginBabel({
             plugins: [
               // Plugins are specified in this way to avoid this:
               // https://github.com/webpack/webpack/issues/1866
@@ -107,6 +107,7 @@ export default function compile({
             extensions: ['.js', '.json'],
             // Types for babel are broken and don't accept anything but an object here
             inputSourceMap: false as any,
+            babelHelpers: 'bundled',
           }),
         ),
         // Must come before terser in order not to wrap strict directive
