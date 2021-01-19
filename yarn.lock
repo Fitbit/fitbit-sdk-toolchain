@@ -318,10 +318,10 @@
     reflect-metadata "^0.1.12"
     tslib "^1.8.1"
 
-"@fitbit-sdk/companion-gettext@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@fitbit-sdk/companion-gettext/-/companion-gettext-3.1.0.tgz#a952aedea082121132553705ffc2d8b04be3373e"
-  integrity sha512-Tw1iVP6ZQK8VpWjGqnqtcyUuR7IZf2MauQGhR3dfLC5u9U8oS4bxucTkKF0+oGPr7z13sEwKJnkZMTWq56JmgQ==
+"@fitbit-sdk/companion-gettext@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@fitbit-sdk/companion-gettext/-/companion-gettext-3.2.0.tgz#2c2a7f16e0c422cbbf5602084986192139d6f657"
+  integrity sha512-jrDRHLMCg0Wir/+qaGPfTRLGf9se24jloYMZuLOj0v9FqV058XJm6Uuvnm9UtpXd4VCh7rbnpUFxZvvW7Mdd1A==
 
 "@fitbit/bison-i18n@^1.0.0":
   version "1.0.1"
