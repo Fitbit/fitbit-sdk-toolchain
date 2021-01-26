@@ -23,20 +23,20 @@ jest.mock(
   { virtual: true },
 );
 
-jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('5.0.0')));
+jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('3.1.0')));
 
 function mockSDKVersion(version: string) {
   (sdkVersion as jest.Mock).mockReturnValue(semver.parse(version));
 }
 
 it('merges the build target descriptors', () => {
-  mockSDKVersion('5.0.0');
+  mockSDKVersion('3.1.0');
   expect(generateBuildTargets()).toMatchObject({
-    atlas: {
-      displayName: 'Fitbit Versa 3',
+    higgs: {
+      displayName: 'Fitbit Ionic',
       platform: expect.any(Array),
-      resourceFilterTag: '336x336',
-      specs: { screenSize: { width: 336, height: 336 } },
+      resourceFilterTag: '348x250',
+      specs: { screenSize: { width: 348, height: 250 } },
     },
     // Unfortunately, due to the way that module mocking works, the
     // extra build targets constant cannot be deduped easily.

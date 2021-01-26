@@ -17,7 +17,7 @@ expect.addSnapshotSerializer(cwdSerializer);
 
 let mockDiagnosticHandler: jest.Mock;
 
-jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('5.0.0')));
+jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('4.2.0')));
 
 function mockSDKVersion(version: string) {
   (sdkVersion as jest.Mock).mockReturnValue(semver.parse(version));
@@ -25,7 +25,7 @@ function mockSDKVersion(version: string) {
 
 beforeEach(() => {
   mockDiagnosticHandler = jest.fn();
-  mockSDKVersion('5.0.0');
+  mockSDKVersion('4.2.0');
 
   // We don't want to load the actual tsconfig.json for this project
   // during unit tests. Using a real tsconfig.json located within
@@ -194,6 +194,22 @@ describe('when allowUnknownExternals is enabled', () => {
     ).resolves.toMatchSnapshot();
     expect(mockDiagnosticHandler.mock.calls).toMatchSnapshot();
   });
+});
+
+describe('when building a device component which uses the gettext polyfill', () => {
+  let file: string;
+
+  beforeEach(async () => {
+    mockSDKVersion('4.1.0');
+    file = await compileFile('i18n.js', {
+      component: ComponentType.DEVICE,
+    }).then(getVinylContents);
+  });
+
+  it('polyfills gettext on device', () => expect(file).toMatchSnapshot());
+
+  it('builds without diagnostic messages', () =>
+    expect(mockDiagnosticHandler).not.toBeCalled());
 });
 
 describe('when building a device component which uses the i18n API without requiring a polyfill', () => {

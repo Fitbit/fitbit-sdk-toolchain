@@ -168,8 +168,8 @@ Object {
   "requestedPermissions": Array [],
   "supports": Object {
     "screenSize": Object {
-      "h": 336,
-      "w": 336,
+      "h": 300,
+      "w": 300,
     },
   },
   "svgMain": "resources/index.view",
@@ -198,8 +198,8 @@ Object {
   "requestedPermissions": Array [],
   "supports": Object {
     "screenSize": Object {
-      "h": 336,
-      "w": 336,
+      "h": 300,
+      "w": 300,
     },
   },
   "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
@@ -226,8 +226,8 @@ Object {
   "requestedPermissions": Array [],
   "supports": Object {
     "screenSize": Object {
-      "h": 336,
-      "w": 336,
+      "h": 300,
+      "w": 300,
     },
   },
   "svgMain": "resources/index.view",
@@ -257,8 +257,8 @@ Object {
   "requestedPermissions": Array [],
   "supports": Object {
     "screenSize": Object {
-      "h": 336,
-      "w": 336,
+      "h": 300,
+      "w": 300,
     },
   },
   "svgMain": "resources/index.view",
@@ -268,9 +268,9 @@ Object {
 }
 `;
 
-exports[`when there is a device entry point present when there are compiled language files ensures the default language en-US is the first key in the i18n object 1`] = `"{\\"appType\\":\\"clockface\\",\\"i18n\\":{\\"en-us\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr-fr\\":{\\"name\\":\\"Mon application\\"},\\"es-es\\":{\\"resources\\":\\"spanish/language\\"}},\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"apiVersion\\":\\"7.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"supports\\":{\\"screenSize\\":{\\"w\\":336,\\"h\\":336}},\\"svgMain\\":\\"resources/index.view\\",\\"svgWidgets\\":\\"resources/widget.defs\\"}"`;
+exports[`when there is a device entry point present when there are compiled language files ensures the default language en-US is the first key in the i18n object 1`] = `"{\\"appType\\":\\"clockface\\",\\"i18n\\":{\\"en-us\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr-fr\\":{\\"name\\":\\"Mon application\\"},\\"es-es\\":{\\"resources\\":\\"spanish/language\\"}},\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"apiVersion\\":\\"7.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"supports\\":{\\"screenSize\\":{\\"w\\":300,\\"h\\":300}},\\"svgMain\\":\\"resources/index.view\\",\\"svgWidgets\\":\\"resources/widget.defs\\"}"`;
 
-exports[`when there is a device entry point present when there are compiled language files ensures the default language es-ES is the first key in the i18n object 1`] = `"{\\"appType\\":\\"clockface\\",\\"i18n\\":{\\"es-es\\":{\\"resources\\":\\"spanish/language\\"},\\"en-us\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr-fr\\":{\\"name\\":\\"Mon application\\"}},\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"apiVersion\\":\\"7.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"supports\\":{\\"screenSize\\":{\\"w\\":336,\\"h\\":336}},\\"svgMain\\":\\"resources/index.view\\",\\"svgWidgets\\":\\"resources/widget.defs\\"}"`;
+exports[`when there is a device entry point present when there are compiled language files ensures the default language es-ES is the first key in the i18n object 1`] = `"{\\"appType\\":\\"clockface\\",\\"i18n\\":{\\"es-es\\":{\\"resources\\":\\"spanish/language\\"},\\"en-us\\":{\\"name\\":\\"My App\\",\\"resources\\":\\"lang/english\\"},\\"fr-fr\\":{\\"name\\":\\"Mon application\\"}},\\"appManifestVersion\\":1,\\"main\\":\\"device/index.js\\",\\"apiVersion\\":\\"7.0.0\\",\\"buildId\\":\\"0x0f75775f470c1585\\",\\"bundleDate\\":\\"2018-06-27T00:00:00.000Z\\",\\"uuid\\":\\"b4ae822e-eca9-4fcb-8747-217f2a1f53a1\\",\\"name\\":\\"My App\\",\\"requestedPermissions\\":[],\\"supports\\":{\\"screenSize\\":{\\"w\\":300,\\"h\\":300}},\\"svgMain\\":\\"resources/index.view\\",\\"svgWidgets\\":\\"resources/widget.defs\\"}"`;
 
 exports[`when there is a device entry point present when there are compiled language files sets the i18n[lang].resources key for language files that pass through 1`] = `
 Object {
@@ -296,8 +296,8 @@ Object {
   "requestedPermissions": Array [],
   "supports": Object {
     "screenSize": Object {
-      "h": 336,
-      "w": 336,
+      "h": 300,
+      "w": 300,
     },
   },
   "svgMain": "resources/index.view",
