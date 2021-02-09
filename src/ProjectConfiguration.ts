@@ -98,6 +98,7 @@ export enum Permission {
   ACCESS_SECURE_EXCHANGE = 'access_secure_exchange',
   ACCESS_SLEEP = 'access_sleep',
   ACCESS_USER_PROFILE = 'access_user_profile',
+  DIAGNOSTIC_INFO = 'diagnostic_info',
   FITBIT_TOKEN = 'fitbit_token',
   RUN_BACKGROUND = 'run_background',
   EXTERNAL_APP_COMMUNICATION = 'external_app_communication',
@@ -198,6 +199,11 @@ const restrictedPermissionTypes = [
     name: '[Restricted] Mobile Notifications',
     description: 'Application may display notifications on the mobile device',
     sdkVersion: '>=4.1.0',
+  },
+  {
+    key: Permission.DIAGNOSTIC_INFO,
+    name: '[Restricted] Diagnostic Info',
+    description: 'Collect usage info e.g. error logs for investigation',
   },
 ];
 
