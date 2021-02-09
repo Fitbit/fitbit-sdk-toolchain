@@ -98,6 +98,7 @@ export enum Permission {
   ACCESS_SECURE_EXCHANGE = 'access_secure_exchange',
   ACCESS_SLEEP = 'access_sleep',
   ACCESS_USER_PROFILE = 'access_user_profile',
+  DIAGNOSTIC_INFO = 'diagnostic_info',
   FITBIT_TOKEN = 'fitbit_token',
   RUN_BACKGROUND = 'run_background',
   EXTERNAL_APP_COMMUNICATION = 'external_app_communication',
@@ -134,6 +135,11 @@ const permissionTypes = [
     name: 'Internet',
     description:
       'Companion may communicate with the Internet using your phone data connection',
+  },
+  {
+      key: Permission.DIAGNOSTIC_INFO,
+      name: 'Diagnostic Info',
+      description: 'Collect usage info e.g. error logs for investigation',
   },
   {
     key: Permission.RUN_BACKGROUND,
