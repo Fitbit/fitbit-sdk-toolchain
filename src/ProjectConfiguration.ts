@@ -103,6 +103,7 @@ export enum Permission {
   RUN_BACKGROUND = 'run_background',
   EXTERNAL_APP_COMMUNICATION = 'external_app_communication',
   MOBILE_NOTIFICATIONS = 'mobile_notifications',
+  DEVICE_NOTIFICATIONS = 'device_notifications',
 }
 
 const permissionTypes = [
@@ -204,6 +205,12 @@ const restrictedPermissionTypes = [
     key: Permission.DIAGNOSTIC_INFO,
     name: '[Restricted] Diagnostic Info',
     description: 'Collect usage info e.g. error logs for investigation',
+  },
+  {
+    key: Permission.DEVICE_NOTIFICATIONS,
+    name: '[Restricted] Device Notifications',
+    description: 'Application may display notifications on the watch',
+    sdkVersion: '>=6.0.0',
   },
 ];
 
