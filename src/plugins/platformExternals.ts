@@ -57,6 +57,7 @@ const companion = [
   'settings',
   'user-water',
   'user-weight',
+  'weather',
 ].concat(common);
 
 const settings = ['user-settings'];
