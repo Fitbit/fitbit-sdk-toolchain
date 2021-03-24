@@ -23,6 +23,7 @@ import workaroundRequireScope from './plugins/workaroundRequireScope';
 import terser from './plugins/terser';
 import typescript from './plugins/typescript';
 import rollupWarningHandler from './rollupWarningHandler';
+import sdkVersion from './sdkVersion';
 
 // TODO: emit a warning when any of these settings are
 // defined in the app's tsconfig
@@ -167,9 +168,11 @@ export default function compile({
         }
 
         // Some of the built-in modules do not have a default export.
+        // Pretend one exists for compatibility reasons up to SDK 6.0
         if (
           component === ComponentType.DEVICE &&
-          deviceModulesWithoutDefaultExports.has(id)
+          deviceModulesWithoutDefaultExports.has(id) &&
+          sdkVersion().major < 6
         ) {
           return 'auto';
         }
