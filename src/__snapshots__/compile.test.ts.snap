@@ -182,7 +182,7 @@ Array [
 ]
 `;
 
-exports[`when building a device component which uses a module without default exports patches generated code to use the module namespace as the default export 1`] = `
+exports[`when building a device component which uses a module without default exports on SDK 5.0 patches generated code to use the module namespace as the default export 1`] = `
 "\\"use strict\\"
 var e=require(\\"crypto\\"),o=require(\\"document\\"),t=require(\\"fs\\"),f=require(\\"jpeg\\"),l=require(\\"power\\"),r=require(\\"scientific\\"),s=require(\\"scientific/signal\\"),u=require(\\"system\\"),i=require(\\"user-activity\\"),p=require(\\"user-settings\\")
 function y(e){return e&&e.__esModule?e:{default:e}}var c=y(e),n=y(o),a=y(t),g=y(f),d=y(l),q=y(r),m=y(s),v=y(u),j=y(i),w=y(p)

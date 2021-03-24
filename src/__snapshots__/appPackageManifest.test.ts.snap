@@ -23,7 +23,7 @@ Object {
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "deviceApi": "7.0.0",
+    "deviceApi": "8.1.0",
   },
   "sourceMaps": Object {
     "device": Object {
@@ -59,8 +59,8 @@ Object {
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "companionApi": "3.1.0",
-    "deviceApi": "7.0.0",
+    "companionApi": "3.3.0",
+    "deviceApi": "8.1.0",
   },
   "sourceMaps": Object {
     "companion": "sourceMaps/companion/companion.js.json",
@@ -112,7 +112,7 @@ Object {
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "companionApi": "3.1.0",
+    "companionApi": "3.3.0",
   },
   "sourceMaps": Object {
     "companion": "sourceMaps/companion/companion.js.json",
@@ -156,7 +156,7 @@ Object {
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "deviceApi": "7.0.0",
+    "deviceApi": "8.1.0",
   },
   "sourceMaps": Object {
     "device": Object {
