@@ -47,7 +47,8 @@ return t}()))).doBar()
 
 exports[`build passes when compiles a JS file with tslib helpers inline 1`] = `
 "\\"use strict\\"
-var t,o=(t=function(o,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,o){t.__proto__=o}||function(t,o){for(var n in o)Object.prototype.hasOwnProperty.call(o,n)&&(t[n]=o[n])})(o,n)},function(o,n){t(o,n)
+var t,o=(t=function(o,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,o){t.__proto__=o}||function(t,o){for(var n in o)Object.prototype.hasOwnProperty.call(o,n)&&(t[n]=o[n])})(o,n)},function(o,n){if(\\"function\\"!=typeof n&&null!==n)throw new TypeError(\\"Class extends value \\"+String(n)+\\" is not a constructor or null\\")
+t(o,n)
 function r(){this.constructor=o}o.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)});(new(function(t){o(n,t)
 function n(){return null!==t&&t.apply(this,arguments)||this}n.prototype.doBar=function(){console.log(\\"foo\\")}
 return n}(function(){function t(){}t.prototype.doFoo=function(){}
