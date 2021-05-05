@@ -185,6 +185,18 @@ export function buildDeviceResources(
   onDiagnostic = logDiagnosticToConsole,
 ) {
   return readablePipeline([
+    // Things can start glitching out if multiple vinylFS.src()
+    // streams with the same glob pattern are in use
+    // concurrently. (IPD-102519)
+    // We're serializing the execution of the pipelines, so
+    // there should not be any opportunity for glitches as only
+    // one vinylFS stream is active at a time. Wrapping the
+    // vinylFS stream in a playbackStream would be safer, but
+    // would buffer all the resources into memory at once with
+    // no backpressure. We like our users and don't want to eat
+    // all their RAM, so we just have to be careful not to
+    // introduce a regression when modifying this code.
+    vinylFS.src('./resources/**', { base: '.' }),
     filterResourceTag(resourceFilterTag),
     validateIcon({ projectConfig, onDiagnostic }),
     convertImageToTXI({
@@ -247,25 +259,11 @@ export function buildDeviceComponents({
               ]),
               projectConfig.appType === AppType.SERVICE
                 ? undefined
-                : readablePipeline([
-                    // Things can start glitching out if multiple vinylFS.src()
-                    // streams with the same glob pattern are in use
-                    // concurrently. (IPD-102519)
-                    // We're serializing the execution of the pipelines, so
-                    // there should not be any opportunity for glitches as only
-                    // one vinylFS stream is active at a time. Wrapping the
-                    // vinylFS stream in a playbackStream would be safer, but
-                    // would buffer all the resources into memory at once with
-                    // no backpressure. We like our users and don't want to eat
-                    // all their RAM, so we just have to be careful not to
-                    // introduce a regression when modifying this code.
-                    vinylFS.src('./resources/**', { base: '.' }),
-                    buildDeviceResources(
-                      projectConfig,
-                      buildTargets[family],
-                      onDiagnostic,
-                    ),
-                  ]),
+                : buildDeviceResources(
+                    projectConfig,
+                    buildTargets[family],
+                    onDiagnostic,
+                  ),
               readablePipeline([
                 vinylFS.src(componentTargets.device.translationsGlob, {
                   base: '.',
