@@ -9,7 +9,10 @@ export default function readablePipeline(
     | NodeJS.ReadWriteStream
     | Stream
   )[],
-  callback: (err: NodeJS.ErrnoException | null) => void = () => {},
 ): Readable {
-  return (pipeline as any)(streams, callback);
+  // stream.pipeline doesn't emit errors on the last stream in the pipeline
+  // like pumpify so it has to be done manually
+  return (pipeline as any)(streams, (e: Error) => {
+    if (e) streams[streams.length - 1].emit('error', e);
+  });
 }
