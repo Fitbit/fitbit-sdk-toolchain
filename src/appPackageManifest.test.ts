@@ -24,7 +24,7 @@ const makeProjectConfig = (): ClockProjectConfiguration => ({
     en: { name: 'My App' },
     fr: { name: 'Mon application' },
   },
-  buildTargets: ['atlas'],
+  buildTargets: ['higgs'],
   requestedPermissions: [],
   defaultLanguage: 'en-US',
 });
@@ -118,7 +118,7 @@ it('builds a package manifest with multiple device components', () =>
   expectValidPackageManifest({
     projectConfig: {
       ...makeProjectConfig(),
-      buildTargets: ['atlas', 'vulcan'],
+      buildTargets: ['higgs', 'mira'],
     },
   }).toMatchSnapshot());
 
@@ -126,7 +126,7 @@ it('builds a package manifest with supported capabilities', () =>
   expectValidPackageManifest({
     projectConfig: {
       ...makeProjectConfig(),
-      buildTargets: ['atlas', 'vulcan'],
+      buildTargets: ['higgs', 'mira'],
       enableProposedAPI: true,
     },
   }).toMatchSnapshot());
@@ -138,7 +138,7 @@ it('emits an error if both JS and native device components are present', () => {
     new Vinyl({
       componentBundle: {
         type: 'device',
-        family: 'atlas',
+        family: 'higgs',
         platform: ['1.1.1+'],
       },
       path: 'bundle.zip',
@@ -175,7 +175,7 @@ it.each(['device', 'companion'])(
         new Vinyl({
           componentBundle: {
             type: component,
-            family: 'atlas',
+            family: 'higgs',
             platform: ['1.1.1+'],
           },
           path: `bundle${i}.zip`,
@@ -205,7 +205,7 @@ it.each<[string, any]>([
   ['has an invalid type field', { type: '__invalid__' }],
   [
     'has a device type but missing platform',
-    { type: 'device', family: 'atlas' },
+    { type: 'device', family: 'higgs' },
   ],
   [
     'has a device type but missing family',
@@ -213,7 +213,7 @@ it.each<[string, any]>([
   ],
   [
     'has a device type but invalid platform',
-    { type: 'device', family: 'atlas', platform: '1.1.1+' },
+    { type: 'device', family: 'higgs', platform: '1.1.1+' },
   ],
 ])('emits an error if a component bundle tag %s', (_, componentBundle) => {
   const projectConfig = makeProjectConfig();

@@ -18,29 +18,32 @@ export interface BuildTargetDescriptor {
 }
 
 const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
-  atlas: {
-    displayName: 'Fitbit Versa 3',
-    minSDKVersion: '5.0.0',
-    platform: ['128.1.1+'],
-    resourceFilterTag: '336x336',
-    specs: {
-      screenSize: {
-        width: 336,
-        height: 336,
-      },
-    },
+  higgs: {
+    displayName: 'Fitbit Ionic',
+    platform: ['30.1.2+'],
+    resourceFilterTag: '348x250',
+    specs: { screenSize: { width: 348, height: 250 } },
   },
-  vulcan: {
-    displayName: 'Fitbit Sense',
-    minSDKVersion: '5.0.0',
-    platform: ['128.1.1+'],
-    resourceFilterTag: '336x336',
-    specs: {
-      screenSize: {
-        width: 336,
-        height: 336,
-      },
-    },
+  meson: {
+    displayName: 'Fitbit Versa',
+    platform: ['32.4.18+'],
+    resourceFilterTag: '300x300',
+    specs: { screenSize: { width: 300, height: 300 } },
+  },
+  gemini: {
+    displayName: 'Fitbit Versa Lite',
+    platform: ['33.1.30+'],
+    resourceFilterTag: '300x300',
+    specs: { screenSize: { width: 300, height: 300 } },
+    minSDKVersion: '3.1.0',
+    maxDeviceBundleSize: 3145728,
+  },
+  mira: {
+    displayName: 'Fitbit Versa 2',
+    platform: ['68.9.12+'],
+    resourceFilterTag: '300x300',
+    specs: { screenSize: { width: 300, height: 300 } },
+    minSDKVersion: '4.0.0',
   },
 };
 

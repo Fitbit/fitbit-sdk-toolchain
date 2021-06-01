@@ -81,7 +81,6 @@ export enum Locales {
   'ru-RU' = 'Russian',
   'pl-PL' = 'Polish',
   'cs-CZ' = 'Czech',
-  'nb-NO' = 'Norwegian (Bokmål)',
 }
 
 const languageTags = Object.keys(Locales);

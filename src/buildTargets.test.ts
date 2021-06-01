@@ -32,11 +32,11 @@ function mockSDKVersion(version: string) {
 it('merges the build target descriptors', () => {
   mockSDKVersion('6.0.0');
   expect(generateBuildTargets()).toMatchObject({
-    atlas: {
-      displayName: 'Fitbit Versa 3',
+    higgs: {
+      displayName: 'Fitbit Ionic',
       platform: expect.any(Array),
-      resourceFilterTag: '336x336',
-      specs: { screenSize: { width: 336, height: 336 } },
+      resourceFilterTag: '348x250',
+      specs: { screenSize: { width: 348, height: 250 } },
     },
     // Unfortunately, due to the way that module mocking works, the
     // extra build targets constant cannot be deduped easily.

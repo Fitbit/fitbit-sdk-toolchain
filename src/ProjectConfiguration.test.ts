@@ -333,7 +333,7 @@ it('validationErrors() validates all fields', () => {
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText:
-        'Default language is an invalid language tag: _invalid_. Must be en-US, de-DE, es-ES, fr-FR, it-IT, ja-JP, ko-KR, nl-NL, sv-SE, zh-CN, zh-TW, pt-BR, id-ID, ro-RO, ru-RU, pl-PL, cs-CZ or nb-NO.',
+        'Default language is an invalid language tag: _invalid_. Must be en-US, de-DE, es-ES, fr-FR, it-IT, ja-JP, ko-KR, nl-NL, sv-SE, zh-CN, zh-TW, pt-BR, id-ID, ro-RO, ru-RU, pl-PL or cs-CZ.',
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -466,7 +466,7 @@ it('validates the default language is a valid language tag', () => {
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText:
-        'Default language is an invalid language tag: _really_not_bcp_47_. Must be en-US, de-DE, es-ES, fr-FR, it-IT, ja-JP, ko-KR, nl-NL, sv-SE, zh-CN, zh-TW, pt-BR, id-ID, ro-RO, ru-RU, pl-PL, cs-CZ or nb-NO.',
+        'Default language is an invalid language tag: _really_not_bcp_47_. Must be en-US, de-DE, es-ES, fr-FR, it-IT, ja-JP, ko-KR, nl-NL, sv-SE, zh-CN, zh-TW, pt-BR, id-ID, ro-RO, ru-RU, pl-PL or cs-CZ.',
     }),
   );
 });

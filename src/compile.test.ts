@@ -17,7 +17,7 @@ expect.addSnapshotSerializer(cwdSerializer);
 
 let mockDiagnosticHandler: jest.Mock;
 
-jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('6.0.0')));
+jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('4.3.0')));
 
 function mockSDKVersion(version: string) {
   (sdkVersion as jest.Mock).mockReturnValue(semver.parse(version));
@@ -25,7 +25,7 @@ function mockSDKVersion(version: string) {
 
 beforeEach(() => {
   mockDiagnosticHandler = jest.fn();
-  mockSDKVersion('6.0.0');
+  mockSDKVersion('4.3.0');
 
   // We don't want to load the actual tsconfig.json for this project
   // during unit tests. Using a real tsconfig.json located within
@@ -234,11 +234,11 @@ it('emits multiple chunks when dynamic import are used', async () => {
   expect(chunkJS).toMatchSnapshot();
 });
 
-describe('when building a device component which uses a module without default exports on SDK 5.0', () => {
+describe('when building a device component which uses a module without default exports on SDK 4.3', () => {
   let file: string;
 
   beforeEach(async () => {
-    mockSDKVersion('5.0.0');
+    mockSDKVersion('4.3.0');
     file = await compileFile('noDefaultExport.js', {
       component: ComponentType.DEVICE,
     }).then(getVinylContents);
