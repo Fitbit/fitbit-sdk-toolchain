@@ -5,6 +5,7 @@ import dropStream from 'drop-stream';
 import lazystream from 'lazystream';
 import mergeStream from 'merge-stream';
 import multistream from 'multistream';
+import multipipe from 'multipipe';
 import playbackStream from 'playback-stream';
 import PluginError from 'plugin-error';
 import simpleRandom from 'simple-random';
@@ -38,13 +39,18 @@ import ProjectConfiguration, {
   normalizeProjectConfig,
   validate,
 } from './ProjectConfiguration';
-import readablePipeline from './readablePipeline';
 import * as resources from './resources';
 import validateIcon from './validateIcon';
 import validateFileSizes from './validateFileSizes';
 import zip from './zip';
 
 export { DiagnosticCategory };
+
+const diagnosticTargets = {
+  [ComponentType.COMPANION]: DiagnosticTarget.Companion,
+  [ComponentType.SETTINGS]: DiagnosticTarget.Settings,
+  [ComponentType.DEVICE]: DiagnosticTarget.App,
+};
 
 export function generateBuildId() {
   return `0x0${simpleRandom({
@@ -163,7 +169,7 @@ export function buildComponent({
   if (!entryPoint) return;
 
   return lazyObjectReadable(() =>
-    readablePipeline([
+    multipipe([
       compile({
         component,
         onDiagnostic,
@@ -184,7 +190,7 @@ export function buildDeviceResources(
   { resourceFilterTag }: BuildTargetDescriptor,
   onDiagnostic = logDiagnosticToConsole,
 ) {
-  return readablePipeline([
+  return multipipe([
     // Things can start glitching out if multiple vinylFS.src()
     // streams with the same glob pattern are in use
     // concurrently. (IPD-102519)
@@ -230,7 +236,7 @@ export function buildDeviceComponents({
   return multistream.obj([
     // Sequence the build process: wait until compilation finishes
     // before building the resources for each component.
-    readablePipeline([
+    multipipe([
       ...deviceJSPipeline,
       // We don't want to send the JS file downstream directly. It will
       // be played back into the individual device component pipelines.
@@ -250,10 +256,10 @@ export function buildDeviceComponents({
 
         const sourceMap = collectComponentSourceMaps();
         // Split so that JS doesn't pass through resource filtering
-        return readablePipeline([
+        return multipipe([
           mergeStream(
             ...([
-              readablePipeline([
+              multipipe([
                 processedJS.newReadableSide({ objectMode: true }),
                 sourceMap.collector(ComponentType.DEVICE, family),
               ]),
@@ -264,7 +270,7 @@ export function buildDeviceComponents({
                     buildTargets[family],
                     onDiagnostic,
                   ),
-              readablePipeline([
+              multipipe([
                 vinylFS.src(componentTargets.device.translationsGlob, {
                   base: '.',
                 }),
@@ -306,12 +312,6 @@ export function buildCompanion({
 }) {
   const sourceMaps = collectComponentSourceMaps();
 
-  const diagnosticTargets = {
-    [ComponentType.COMPANION]: DiagnosticTarget.Companion,
-    [ComponentType.SETTINGS]: DiagnosticTarget.Settings,
-    [ComponentType.DEVICE]: DiagnosticTarget.App,
-  };
-
   const [companion, settings] = [
     ComponentType.COMPANION,
     ComponentType.SETTINGS,
@@ -331,7 +331,7 @@ export function buildCompanion({
           category: DiagnosticCategory.Message,
           messageText: `Building ${diagnosticTargets[componentType]}`,
         });
-        return readablePipeline([
+        return multipipe([
           addErrorTarget(diagnosticTargets[componentType], () => component),
           sourceMaps.collector(componentType),
         ]);
@@ -352,7 +352,7 @@ export function buildCompanion({
   if (components.length === 0) return;
 
   return lazyObjectReadable(() =>
-    readablePipeline([
+    multipipe([
       multistream.obj(components),
       makeCompanionManifest({
         projectConfig,
@@ -408,7 +408,7 @@ export function buildAppPackage({
 
   if (companion) components.push(companion);
 
-  return readablePipeline([
+  return multipipe([
     multistream.obj(components),
     appPackageManifest({
       projectConfig,
@@ -472,21 +472,27 @@ export function build({
   onDiagnostic?: DiagnosticHandler;
 } = {}) {
   return new Promise<void>((resolve, reject) => {
-    readablePipeline([
-      buildProject({ nativeDeviceComponentPaths, onDiagnostic }),
-      dest,
-    ])
-      .on('error', reject)
-      .on('finish', resolve);
-  }).catch((e) => {
-    if (pluginError.isPluginError(e) && pluginError.isProjectBuildError(e)) {
-      onDiagnostic(pluginError.convertToDiagnostic(e));
-      return Promise.reject();
-    }
-    if (BuildError.is(e)) {
-      onDiagnostic(e.toDiagnostic());
-      return Promise.reject();
-    }
-    return Promise.reject(e);
+    multipipe(
+      [buildProject({ nativeDeviceComponentPaths, onDiagnostic }), dest],
+      (e?) => {
+        if (e === undefined) {
+          resolve();
+          return;
+        }
+
+        if (
+          pluginError.isPluginError(e) &&
+          pluginError.isProjectBuildError(e)
+        ) {
+          onDiagnostic(pluginError.convertToDiagnostic(e));
+          return reject();
+        }
+        if (BuildError.is(e)) {
+          onDiagnostic(e.toDiagnostic());
+          return reject();
+        }
+        return reject(e);
+      },
+    );
   });
 }
