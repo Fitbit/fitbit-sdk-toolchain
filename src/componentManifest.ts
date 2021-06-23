@@ -235,7 +235,7 @@ function makeCommonManifest({
   };
 
   if (projectConfig.appClusterID) {
-    manifest.appClusters = [projectConfig.appClusterID];
+    manifest.appClusters = projectConfig.appClusterID;
   }
 
   if (projectConfig.developerID) {
