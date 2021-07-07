@@ -3,7 +3,6 @@ import { Readable, Stream } from 'stream';
 
 import dropStream from 'drop-stream';
 import lazystream from 'lazystream';
-import mergeStream from 'merge-stream';
 import multistream from 'multistream';
 import multipipe from 'multipipe';
 import playbackStream from 'playback-stream';
@@ -32,6 +31,7 @@ import {
 } from './diagnostics';
 import filterResourceTag from './filterResourceTag';
 import findEntryPoint from './findEntryPoint';
+import mergeStream from './mergeStream';
 import nativeComponents from './nativeComponents';
 import pluginError from './util/pluginError';
 import ProjectConfiguration, {
@@ -472,27 +472,30 @@ export function build({
   onDiagnostic?: DiagnosticHandler;
 } = {}) {
   return new Promise<void>((resolve, reject) => {
-    multipipe(
-      [buildProject({ nativeDeviceComponentPaths, onDiagnostic }), dest],
-      (e?) => {
-        if (e === undefined) {
-          resolve();
-          return;
-        }
+    function wrapBuildErrors(e?: Error) {
+      if (e === undefined) {
+        resolve();
+        return;
+      }
 
-        if (
-          pluginError.isPluginError(e) &&
-          pluginError.isProjectBuildError(e)
-        ) {
-          onDiagnostic(pluginError.convertToDiagnostic(e));
-          return reject();
-        }
-        if (BuildError.is(e)) {
-          onDiagnostic(e.toDiagnostic());
-          return reject();
-        }
-        return reject(e);
-      },
-    );
+      if (pluginError.isPluginError(e) && pluginError.isProjectBuildError(e)) {
+        onDiagnostic(pluginError.convertToDiagnostic(e));
+        return reject();
+      }
+      if (BuildError.is(e)) {
+        onDiagnostic(e.toDiagnostic());
+        return reject();
+      }
+      return reject(e);
+    }
+
+    try {
+      multipipe(
+        [buildProject({ nativeDeviceComponentPaths, onDiagnostic }), dest],
+        wrapBuildErrors,
+      );
+    } catch (e) {
+      wrapBuildErrors(e);
+    }
   });
 }
