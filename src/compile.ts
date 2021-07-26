@@ -5,6 +5,7 @@ import pluginBabel from '@rollup/plugin-babel';
 import pluginCommonjs from '@rollup/plugin-commonjs';
 import pluginNodeResolve from '@rollup/plugin-node-resolve';
 import ts from 'typescript';
+import semver from 'semver';
 
 import componentTargets, { ComponentType } from './componentTargets';
 import {
@@ -24,6 +25,7 @@ import terser from './plugins/terser';
 import typescript from './plugins/typescript';
 import rollupWarningHandler from './rollupWarningHandler';
 import sdkVersion from './sdkVersion';
+import weatherPolyfill from './plugins/weatherPolyfill';
 
 // TODO: emit a warning when any of these settings are
 // defined in the app's tsconfig
@@ -78,6 +80,11 @@ export default function compile({
       plugins: [
         ...pluginIf(component !== ComponentType.DEVICE, () =>
           polyfill(i18nPolyfill(translationsGlob, defaultLanguage)),
+        ),
+        ...pluginIf(
+          component === ComponentType.COMPANION &&
+            semver.satisfies(sdkVersion(), '~6.0.0'),
+          () => polyfill(weatherPolyfill),
         ),
         platformExternals.plugin(component),
         typescript({
