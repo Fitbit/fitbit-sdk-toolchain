@@ -35,7 +35,7 @@ export interface BaseProjectConfiguration {
   // We don't want to accidentally serialize `enableProposedAPI: false`
   // out to users' package.json files.
   enableProposedAPI?: true;
-  appClusterID?: string;
+  appClusterID?: string[];
   developerID?: string;
   companionDefaultWakeInterval?: number;
 }
@@ -372,6 +372,17 @@ export function normalizeProjectConfig(
 
   mergedConfig.i18n = normalizeLocales(mergedConfig.i18n);
 
+  if (typeof mergedConfig.appClusterID === 'string') {
+    mergedConfig.appClusterID = [mergedConfig.appClusterID];
+  } else if (
+    !Array.isArray(mergedConfig.appClusterID) &&
+    config.appClusterID !== undefined
+  ) {
+    throw new TypeError(
+      `App Cluster ID field has unknown type ${typeof config.appClusterID}`,
+    );
+  }
+
   return mergedConfig;
 }
 
@@ -524,12 +535,23 @@ export function validateDefaultLanguage(config: ProjectConfiguration) {
   return diagnostics;
 }
 
+function validateClusterID(clusterID: string): string | undefined {
+  if (clusterID.length < 1 || clusterID.length > MAX_LENGTH_APP_CLUSTER_ID) {
+    return 'must be between 1-64 characters';
+  }
+
+  if (!/^([a-z0-9]+)(\.[a-z0-9]+)*$/.test(clusterID)) {
+    return 'may only contain alphanumeric characters separated by periods, eg: my.app.123';
+  }
+}
+
+// tslint:disable-next-line:cognitive-complexity
 export function validateStorageGroup(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
 
-  const hasRequestedPermission = getAllPermissionTypes({
-    enableProposedAPI: !!config.enableProposedAPI,
-  })
+  const enableProposedAPI = !!config.enableProposedAPI;
+
+  const hasRequestedPermission = getAllPermissionTypes({ enableProposedAPI })
     .map((permission) => permission.key)
     .filter((permission) =>
       (config.requestedPermissions || []).includes(permission),
@@ -541,17 +563,20 @@ export function validateStorageGroup(config: ProjectConfiguration) {
       diagnostics.pushFatalError(
         'App Cluster ID must be set when the App Cluster Storage permission is requested',
       );
-    } else if (
-      config.appClusterID.length < 1 ||
-      config.appClusterID.length > MAX_LENGTH_APP_CLUSTER_ID
-    ) {
+      // TODO: Tie this to future SDK version once known
+    } else if (config.appClusterID.length > 1 && !enableProposedAPI) {
       diagnostics.pushFatalError(
-        'App Cluster ID must be between 1-64 characters',
+        `Only a single App Cluster ID may be declared`,
       );
-    } else if (!/^([a-z0-9]+)(\.[a-z0-9]+)*$/.test(config.appClusterID)) {
-      diagnostics.pushFatalError(
-        'App Cluster ID may only contain alphanumeric characters separated by periods, eg: my.app.123',
-      );
+    } else {
+      for (const clusterID of config.appClusterID) {
+        const validationError = validateClusterID(clusterID);
+        if (validationError) {
+          diagnostics.pushFatalError(
+            `App Cluster ID '${clusterID}' ${validationError}`,
+          );
+        }
+      }
     }
 
     if (config.developerID === undefined) {

@@ -293,7 +293,7 @@ describe('when there is a companion entry point present', () => {
       makeCompanionManifestStream(false, {
         ...makeClockfaceProjectConfig(),
         developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
-        appClusterID: 'a.storage.group',
+        appClusterID: ['a.storage.group'],
       }),
     ).resolves.toMatchSnapshot());
 

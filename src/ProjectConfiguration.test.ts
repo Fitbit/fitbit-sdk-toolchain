@@ -1,7 +1,7 @@
 import semver from 'semver';
 
 import { DiagnosticCategory } from './diagnostics';
-import * as config from './ProjectConfiguration';
+import ProjectConfiguration, * as config from './ProjectConfiguration';
 import sdkVersion from './sdkVersion';
 
 jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('0.0.0')));
@@ -471,6 +471,38 @@ it('validates the default language is a valid language tag', () => {
   );
 });
 
+it('allows multiple cluster IDs if enableProposedAPI is set', () => {
+  const projectConfig: ProjectConfiguration = config.normalizeProjectConfig({
+    fitbit: {
+      requestedPermissions: ['access_app_cluster_storage'],
+      developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
+      appClusterID: ['foo', 'bar'],
+      enableProposedAPI: true,
+    },
+  });
+  mockSDKVersion('999.0.0');
+  expect(config.validateStorageGroup(projectConfig).diagnostics).toHaveLength(
+    0,
+  );
+});
+
+it('does not allow multiple cluster IDs if enableProposedAPI is not set', () => {
+  const projectConfig: ProjectConfiguration = config.normalizeProjectConfig({
+    fitbit: {
+      requestedPermissions: ['access_app_cluster_storage'],
+      developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
+      appClusterID: ['foo', 'bar'],
+    },
+  });
+  mockSDKVersion('999.0.0');
+  expect(config.validateStorageGroup(projectConfig).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText: 'Only a single App Cluster ID may be declared',
+    }),
+  );
+});
+
 it('validates app cluster ID is defined if app cluster storage permission is requested', () => {
   const configFile: any = {
     requestedPermissions: ['access_app_cluster_storage'],
@@ -494,46 +526,51 @@ it.each([
     '00000000000000000000000000000000000000000000000000000000000000000',
   ],
 ])('validates app cluster ID is not %s', (_, appClusterID) => {
-  const configFile: any = {
-    appClusterID,
-    requestedPermissions: ['access_app_cluster_storage'],
-    developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
-  };
+  const projectConfig: ProjectConfiguration = config.normalizeProjectConfig({
+    fitbit: {
+      appClusterID,
+      requestedPermissions: ['access_app_cluster_storage'],
+      developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
+    },
+  });
   // TODO: fixme with real version
   mockSDKVersion('999.0.0');
-  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+  expect(config.validateStorageGroup(projectConfig).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      messageText: 'App Cluster ID must be between 1-64 characters',
+      messageText: `App Cluster ID '${appClusterID}' must be between 1-64 characters`,
     }),
   );
 });
 
 it('validates app cluster ID is of correct format', () => {
-  const configFile: any = {
-    requestedPermissions: ['access_app_cluster_storage'],
-    developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
-    appClusterID: 'foo_bar',
-  };
+  const projectConfig: ProjectConfiguration = config.normalizeProjectConfig({
+    fitbit: {
+      requestedPermissions: ['access_app_cluster_storage'],
+      developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
+      appClusterID: 'foo_bar',
+    },
+  });
   // TODO: fixme with real version
   mockSDKVersion('999.0.0');
-  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+  expect(config.validateStorageGroup(projectConfig).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      messageText:
-        'App Cluster ID may only contain alphanumeric characters separated by periods, eg: my.app.123',
+      messageText: `App Cluster ID 'foo_bar' may only contain alphanumeric characters separated by periods, eg: my.app.123`,
     }),
   );
 });
 
 it('validates developer ID is defined if app cluster storage permission is requested', () => {
-  const configFile: any = {
-    requestedPermissions: ['access_app_cluster_storage'],
-    appClusterID: 'abc.123',
-  };
+  const projectConfig: ProjectConfiguration = config.normalizeProjectConfig({
+    fitbit: {
+      requestedPermissions: ['access_app_cluster_storage'],
+      appClusterID: 'abc.123',
+    },
+  });
   // TODO: fixme with real version
   mockSDKVersion('999.0.0');
-  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+  expect(config.validateStorageGroup(projectConfig).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText:
@@ -543,14 +580,16 @@ it('validates developer ID is defined if app cluster storage permission is reque
 });
 
 it('validates developer ID is a valid UUID if app cluster storage permission is requested', () => {
-  const configFile: any = {
-    requestedPermissions: ['access_app_cluster_storage'],
-    appClusterID: '123',
-    developerID: 'definitely_not_a_uuid',
-  };
+  const projectConfig: ProjectConfiguration = config.normalizeProjectConfig({
+    fitbit: {
+      requestedPermissions: ['access_app_cluster_storage'],
+      appClusterID: '123',
+      developerID: 'definitely_not_a_uuid',
+    },
+  });
   // TODO: fixme with real version
   mockSDKVersion('999.0.0');
-  expect(config.validateStorageGroup(configFile).diagnostics[0]).toEqual(
+  expect(config.validateStorageGroup(projectConfig).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText: 'Developer ID must be a valid UUID',
