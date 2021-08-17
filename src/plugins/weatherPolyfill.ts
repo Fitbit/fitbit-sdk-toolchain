@@ -48,10 +48,9 @@ const WeatherCondition = {
 };
 
 const weather = require('weather').default;
-const _getWeatherData = weather.getWeatherData;
+const _getWeatherData = weather.getWeatherData.bind(weather);
 
 function mapCondition(weatherConditionStr) {
-  if (typeof weatherConditionStr === 'number') return weatherConditionStr;
   for (const weatherCondition of Object.keys(WeatherCondition)) {
     if (weatherCondition === weatherConditionStr) return WeatherCondition[weatherCondition];
   }
@@ -60,7 +59,8 @@ function mapCondition(weatherConditionStr) {
 weather.getWeatherData = (...args) => {
   return _getWeatherData(...args).then((weatherData) => {
     for (const location of weatherData.locations) {
-      location.currentWeather.weatherCondition = mapCondition(location.currentWeather.weatherCondition);
+      const { weatherCondition } = location.currentWeather;
+      if (typeof weatherCondition === 'string') location.currentWeather.weatherCondition = mapCondition(weatherCondition);
     }
     return weatherData;
   });
