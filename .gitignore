@@ -11,3 +11,12 @@ Thumbs.db
 # Ignore built ts files
 /lib/
 yarn-error.log
+
+# Yarn 2
+.yarn/*
+# !.yarn/cache Uncomment for ZeroInstall feature: https://yarnpkg.com/features/zero-installs
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
