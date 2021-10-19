@@ -99,6 +99,7 @@ export enum Permission {
   ACCESS_SLEEP = 'access_sleep',
   ACCESS_USER_PROFILE = 'access_user_profile',
   DIAGNOSTIC_INFO = 'diagnostic_info',
+  FITBIT_INTERNAL = 'fitbit_internal',
   FITBIT_TOKEN = 'fitbit_token',
   RUN_BACKGROUND = 'run_background',
   EXTERNAL_APP_COMMUNICATION = 'external_app_communication',
@@ -211,6 +212,11 @@ const restrictedPermissionTypes = [
     name: '[Restricted] Device Notifications',
     description: 'Application may display notifications on the watch',
     sdkVersion: '>=6.0.0',
+  },
+  {
+    key: Permission.FITBIT_INTERNAL,
+    name: '[Restricted] Fitbit Internal',
+    description: 'Access Fitbit Internal APIs',
   },
 ];
 
