@@ -72,7 +72,6 @@ export default function compile({
   allowUnknownExternals?: boolean;
   onDiagnostic?: DiagnosticHandler;
 }) {
-  const ecma = component !== ComponentType.DEVICE ? 6 : 5;
   const { translationsGlob } = componentTargets[component];
   return rollupToVinyl(
     {
@@ -91,7 +90,7 @@ export default function compile({
           onDiagnostic,
           tsconfigOverride: {
             ...tsconfigOverrides,
-            target: ecma === 6 ? ts.ScriptTarget.ES2015 : ts.ScriptTarget.ES5,
+            target: ts.ScriptTarget.ES2020,
           },
           tsconfigSearchPath: path.dirname(entryPoint),
         }),
@@ -99,29 +98,29 @@ export default function compile({
         forbidAbsoluteImport(),
         pluginNodeResolve({ preferBuiltins: false }),
         pluginCommonjs({ include: ['node_modules/**'] }),
-        ...pluginIf(ecma === 5, () =>
-          pluginBabel({
-            plugins: [
-              // Plugins are specified in this way to avoid this:
-              // https://github.com/webpack/webpack/issues/1866
-              // Also makes this work correctly in a browser environment
-              require('@babel/plugin-transform-block-scoped-functions'),
-              require('@babel/plugin-transform-block-scoping'),
-              require('@babel/plugin-syntax-dynamic-import'),
-            ],
-            compact: false,
-            babelrc: false,
-            // We include JSON here to get a more sane error that includes the path
-            extensions: ['.js', '.json'],
-            // Types for babel are broken and don't accept anything but an object here
-            inputSourceMap: false as any,
-            babelHelpers: 'bundled',
-          }),
-        ),
+        // ...pluginIf(ecma === 5, () =>
+        //   pluginBabel({
+        //     plugins: [
+        //       // Plugins are specified in this way to avoid this:
+        //       // https://github.com/webpack/webpack/issues/1866
+        //       // Also makes this work correctly in a browser environment
+        //       require('@babel/plugin-transform-block-scoped-functions'),
+        //       require('@babel/plugin-transform-block-scoping'),
+        //       require('@babel/plugin-syntax-dynamic-import'),
+        //     ],
+        //     compact: false,
+        //     babelrc: false,
+        //     // We include JSON here to get a more sane error that includes the path
+        //     extensions: ['.js', '.json'],
+        //     // Types for babel are broken and don't accept anything but an object here
+        //     inputSourceMap: false as any,
+        //     babelHelpers: 'bundled',
+        //   }),
+        // ),
         // Must come before terser in order not to wrap strict directive
         workaroundRequireScope(),
         terser({
-          ecma,
+          ecma: 6,
           // We still support iOS 10, which ships Safari 10
           safari10: component !== ComponentType.DEVICE,
           mangle: {
