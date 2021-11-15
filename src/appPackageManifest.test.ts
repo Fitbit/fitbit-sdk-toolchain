@@ -6,8 +6,10 @@ import appPackageManifest from './appPackageManifest';
 import buildTargets from './buildTargets';
 import { ComponentType } from './componentTargets';
 import ProjectConfiguration, {
+  AppProjectConfiguration,
   AppType,
   ClockProjectConfiguration,
+  Tile,
 } from './ProjectConfiguration';
 
 import getJSONFileFromStream from './testUtils/getJSONFileFromStream';
@@ -230,4 +232,50 @@ it.each<[string, any]>([
     stream,
     projectConfig,
   ).rejects.toThrowErrorMatchingSnapshot();
+});
+
+it('builds a package with tiles component', () => {
+  const tiles: Tile[] = [
+    {
+      name: 'Tile1',
+      uuid: 'b4ae822e-eca9-4fcb-8747-217f2a1f53a2',
+      // Default to all buildTargets
+    },
+    {
+      name: 'Tile2',
+      uuid: 'b4ae822e-eca9-4fcb-8747-217f2a1f53a3',
+      buildTargets: ['atlas'], // Explictly specify buildTargets
+    },
+  ];
+
+  const projectConfig = {
+    ...makeProjectConfig(),
+    tiles,
+    appType: AppType.APP,
+    buildTargets: ['atlas', 'vulcan'],
+  } as AppProjectConfiguration;
+
+  return expectValidPackageManifest({ projectConfig }).toMatchSnapshot();
+});
+
+it("doesn't include tile data if app type is not APP", () => {
+  const tiles: Tile[] = [
+    {
+      name: 'Tile1',
+      uuid: 'b4ae822e-eca9-4fcb-8747-217f2a1f53a2',
+    },
+    {
+      name: 'Tile2',
+      uuid: 'b4ae822e-eca9-4fcb-8747-217f2a1f53a3',
+      buildTargets: ['atlas'],
+    },
+  ];
+
+  const projectConfig = {
+    ...makeProjectConfig(),
+    tiles,
+    appType: AppType.CLOCKFACE,
+  } as ClockProjectConfiguration;
+
+  return expectValidPackageManifest({ projectConfig }).toMatchSnapshot();
 });

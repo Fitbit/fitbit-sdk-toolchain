@@ -213,6 +213,102 @@ Object {
 }
 `;
 
+exports[`builds a package with tiles component 1`] = `
+Object {
+  "appId": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+  "buildId": "0x0f75775f470c1585",
+  "components": Object {
+    "tiles": Array [
+      Object {
+        "id": "b4ae822e-eca9-4fcb-8747-217f2a1f53a2",
+        "name": "Tile1",
+        "platforms": Array [
+          "atlas",
+          "vulcan",
+        ],
+      },
+      Object {
+        "id": "b4ae822e-eca9-4fcb-8747-217f2a1f53a3",
+        "name": "Tile2",
+        "platforms": Array [
+          "atlas",
+        ],
+      },
+    ],
+    "watch": Object {
+      "atlas": Object {
+        "filename": "device-atlas.zip",
+        "platform": Array [
+          "128.1.1+",
+        ],
+        "supports": Object {
+          "screenSize": Object {
+            "h": 336,
+            "w": 336,
+          },
+        },
+      },
+      "vulcan": Object {
+        "filename": "device-vulcan.zip",
+        "platform": Array [
+          "128.1.1+",
+        ],
+        "supports": Object {
+          "screenSize": Object {
+            "h": 336,
+            "w": 336,
+          },
+        },
+      },
+    },
+  },
+  "manifestVersion": 6,
+  "requestedPermissions": Array [],
+  "sdkVersion": Object {
+    "deviceApi": "8.1.0",
+  },
+  "sourceMaps": Object {
+    "device": Object {
+      "atlas": "sourceMaps/device/atlas/index.js.json",
+      "vulcan": "sourceMaps/device/vulcan/index.js.json",
+    },
+  },
+}
+`;
+
+exports[`doesn't include tile data if app type is not APP 1`] = `
+Object {
+  "appId": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+  "buildId": "0x0f75775f470c1585",
+  "components": Object {
+    "watch": Object {
+      "atlas": Object {
+        "filename": "device-atlas.zip",
+        "platform": Array [
+          "128.1.1+",
+        ],
+        "supports": Object {
+          "screenSize": Object {
+            "h": 336,
+            "w": 336,
+          },
+        },
+      },
+    },
+  },
+  "manifestVersion": 6,
+  "requestedPermissions": Array [],
+  "sdkVersion": Object {
+    "deviceApi": "8.1.0",
+  },
+  "sourceMaps": Object {
+    "device": Object {
+      "atlas": "sourceMaps/device/atlas/index.js.json",
+    },
+  },
+}
+`;
+
 exports[`emits an error if a component bundle tag has a device type but invalid platform 1`] = `"Unknown bundle component tag: Invalid value \\"1.1.1+\\" supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
 
 exports[`emits an error if a component bundle tag has a device type but missing family 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/family: string"`;

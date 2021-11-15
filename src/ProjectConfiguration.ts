@@ -16,6 +16,17 @@ export enum AppType {
   SERVICE = 'service',
 }
 
+/**
+ * Tile specification
+ * If the buildTargets field is missing tile will
+ * be available to all app buildTargets
+ */
+export interface Tile {
+  name: string;
+  uuid: string;
+  buildTargets?: string[];
+}
+
 export const VALID_APP_TYPES = Object.values(AppType);
 
 export const MAX_LENGTH_APP_CLUSTER_ID = 64;
@@ -44,6 +55,7 @@ export interface AppProjectConfiguration extends BaseProjectConfiguration {
   appType: AppType.APP;
   wipeColor: string;
   iconFile: string;
+  tiles?: Tile[];
 }
 
 export interface ClockProjectConfiguration extends BaseProjectConfiguration {
@@ -54,7 +66,7 @@ export interface ServiceProjectConfiguration extends BaseProjectConfiguration {
   appType: AppType.SERVICE;
 }
 
-type ProjectConfiguration =
+export type ProjectConfiguration =
   | AppProjectConfiguration
   | ClockProjectConfiguration
   | ServiceProjectConfiguration;
@@ -623,6 +635,63 @@ export function validateCompanionDefaultWakeInterval(
   return diagnostics;
 }
 
+export function validateTileComponentAppType(config: ProjectConfiguration) {
+  const diagnostics = new DiagnosticList();
+
+  // Tiles are available just for appType = APP
+  // @ts-ignore
+  if (config.appType !== AppType.APP && config.tiles !== undefined) {
+    diagnostics.pushWarning(
+      'Tiles available only for APPS. Skipping tile configuration!',
+    );
+  }
+
+  return diagnostics;
+}
+
+export function validateTileBuildTarget(
+  tile: Tile,
+  { buildTargets }: AppProjectConfiguration,
+) {
+  if (tile.buildTargets !== undefined) {
+    return constrainedSetDiagnostics({
+      actualValues: tile.buildTargets,
+      knownValues: buildTargets,
+      valueTypeNoun: 'tile build targets',
+      notFoundIsFatal: true,
+    });
+  }
+
+  // Return empty list. Nothing to check
+  return new DiagnosticList();
+}
+
+export function validateTileUUID(tile: Tile, config: AppProjectConfiguration) {
+  const diagnostic = new DiagnosticList();
+  if (tile.uuid === undefined) {
+    diagnostic.pushFatalError("Tile UUID can't be undefined");
+  }
+
+  if (!validator.isUUID(String(tile.uuid))) {
+    diagnostic.pushFatalError('Tile UUID must be a valid UUID');
+  }
+
+  const knownUUID = config.tiles?.map((tile) => tile.uuid);
+  if (knownUUID?.indexOf(tile.uuid) !== knownUUID?.lastIndexOf(tile.uuid)) {
+    diagnostic.pushFatalError("Can't have duplicate UUIDs between tiles");
+  }
+
+  return diagnostic;
+}
+
+export function validateTileName(tile: Tile, config: AppProjectConfiguration) {
+  const diagnostic = new DiagnosticList();
+  if (tile.name === undefined) {
+    diagnostic.pushFatalError('Tile name must be specified');
+  }
+  return diagnostic;
+}
+
 interface ValidationOptions {
   hasNativeComponents?: boolean;
 }
@@ -648,7 +717,20 @@ export function validate(
     validateDefaultLanguage,
     validateStorageGroup,
     validateCompanionDefaultWakeInterval,
+    validateTileComponentAppType,
   ].forEach((validator) => diagnostics.extend(validator(config)));
   diagnostics.extend(validateBuildTarget(config, { hasNativeComponents }));
+
+  if (config.appType === AppType.APP) {
+    const appConfig = config;
+    [validateTileBuildTarget, validateTileUUID, validateTileName].forEach(
+      (validator) => {
+        appConfig.tiles?.forEach((tile) =>
+          diagnostics.extend(validator(tile, appConfig)),
+        );
+      },
+    );
+  }
+
   return diagnostics;
 }
