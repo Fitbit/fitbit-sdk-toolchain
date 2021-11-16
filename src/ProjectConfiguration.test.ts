@@ -297,6 +297,7 @@ it('validationErrors() validates all fields', () => {
     },
     defaultLanguage: '_invalid_',
     companionDefaultWakeInterval: '_invalid_',
+    tiles: [],
   };
   const diagnostics = config.validate(configFile).diagnostics;
   expect(diagnostics).toEqual([
@@ -341,10 +342,72 @@ it('validationErrors() validates all fields', () => {
         'Default companion wake interval must be an integer value greater than or equal to 300000',
     }),
     expect.objectContaining({
+      category: DiagnosticCategory.Warning,
+      messageText:
+        'Tiles available only for APPS. Skipping tile configuration!',
+    }),
+    expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText: 'At least one build target must be enabled',
     }),
   ]);
+
+  // Check tile verification separate as tile verification runs only in case of appTile == APP
+  const configFileTiles: any = {
+    appType: 'app',
+    appUUID: '00001849-0000-4000-8000-000000f17b17',
+    appDisplayName: 'test',
+    iconFile: 'resources/icon.png',
+    wipeColor: '#ffffff',
+    requestedPermissions: [],
+    buildTargets: ['vulcan'],
+    i18n: {},
+    defaultLanguage: 'en-US',
+    tiles: [
+      {
+        buildTargets: ['invalid'],
+      },
+    ],
+  };
+  const diagnosticsTiles = config.validate(configFileTiles).diagnostics;
+  expect(diagnosticsTiles).toEqual([
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText: 'One or more build targets was invalid: vulcan',
+    }),
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText: 'One or more tile build targets was invalid: invalid',
+    }),
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText: "Tile UUID can't be undefined",
+    }),
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText: 'Tile UUID must be a valid UUID',
+    }),
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText: 'Tile name must be specified',
+    }),
+  ]);
+});
+
+it('validates that only apps have tiles configuration', () => {
+  const configFile: any = {
+    tiles: [],
+    appType: config.AppType.CLOCKFACE,
+  };
+  expect(
+    config.validateTileComponentAppType(configFile).diagnostics[0],
+  ).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Warning,
+      messageText:
+        'Tiles available only for APPS. Skipping tile configuration!',
+    }),
+  );
 });
 
 describe('validateBuildTarget()', () => {
@@ -379,6 +442,107 @@ describe('validateBuildTarget()', () => {
     expect(
       config.validateBuildTarget(configFile, { hasNativeComponents: true })
         .diagnostics,
+    ).toHaveLength(0);
+  });
+});
+
+describe('validateTileBuildTarget()', () => {
+  it('allows empty list for tiles', () => {
+    const configFile: any = {
+      buildTargets: ['known_device'],
+    };
+    expect(
+      config.validateTileBuildTarget(
+        {
+          name: '__random__',
+          uuid: '__random__',
+        },
+        configFile,
+      ).diagnostics,
+    ).toHaveLength(0);
+  });
+
+  it('validates values for tiles', () => {
+    const configFile: any = {
+      buildTargets: ['known_device'],
+    };
+    expect(
+      config.validateTileBuildTarget(
+        {
+          name: '__random__',
+          uuid: '__random__',
+          buildTargets: ['_invalid_device_'],
+        },
+        configFile,
+      ).diagnostics[0],
+    ).toEqual(
+      expect.objectContaining({
+        category: DiagnosticCategory.Error,
+        messageText:
+          'One or more tile build targets was invalid: _invalid_device_',
+      }),
+    );
+  });
+});
+
+describe('validateTileUUID()', () => {
+  it('allow only valid UUID for tiles', () => {
+    const configFile: any = {
+      appUUID: '__invalid__',
+      tiles: [],
+    };
+    expect(
+      config.validateTileUUID(
+        {
+          name: '__random__',
+          uuid: '',
+        },
+        configFile,
+      ).diagnostics[0],
+    ).toEqual(
+      expect.objectContaining({
+        category: DiagnosticCategory.Error,
+        messageText: 'Tile UUID must be a valid UUID',
+      }),
+    );
+  });
+
+  it("doesn't allow duplicate uuids", () => {
+    const configFile: any = {
+      appUUID: '00001849-0000-4000-8000-000000f17b17',
+      tiles: [
+        {
+          name: '__random__',
+          uuid: '00001849-0000-4000-8000-000000f17b17',
+        },
+        {
+          name: '__random__',
+          uuid: '00001849-0000-4000-8000-000000f17b17',
+        },
+      ],
+    };
+    expect(
+      config.validateTileUUID(configFile.tiles[0], configFile).diagnostics[0],
+    ).toEqual(
+      expect.objectContaining({
+        category: DiagnosticCategory.Error,
+        messageText: "Can't have duplicate UUIDs between tiles",
+      }),
+    );
+  });
+
+  it('allows duplicate between tile and app uuid', () => {
+    const configFile: any = {
+      appUUID: '00001849-0000-4000-8000-000000f17b17',
+      tiles: [
+        {
+          name: '__random__',
+          uuid: '00001849-0000-4000-8000-000000f17b17',
+        },
+      ],
+    };
+    expect(
+      config.validateTileUUID(configFile.tiles[0], configFile).diagnostics,
     ).toHaveLength(0);
   });
 });

@@ -11,11 +11,17 @@ import Vinyl from 'vinyl';
 
 import { SupportedDeviceCapabilities } from './capabilities';
 import { normalizeToPOSIX } from './pathUtils';
-import ProjectConfiguration from './ProjectConfiguration';
+import { ProjectConfiguration, AppType } from './ProjectConfiguration';
 import { apiVersions } from './sdkVersion';
 
 const manifestPath = 'manifest.json';
 const PLUGIN_NAME = 'appPackageManifest';
+
+interface Tile {
+  id: string;
+  name: string;
+  platforms: string[];
+}
 
 interface Components {
   watch?: {
@@ -28,6 +34,7 @@ interface Components {
   companion?: {
     filename: string;
   };
+  tiles?: Tile[];
 }
 
 // tslint:disable-next-line:variable-name
@@ -75,6 +82,23 @@ class AppPackageManifestTransform extends Transform {
     public buildID: string,
   ) {
     super({ objectMode: true });
+  }
+
+  private populateTileData(): void {
+    if (this.projectConfig.appType === AppType.APP) {
+      const appConfig = this.projectConfig;
+
+      if (appConfig.tiles !== undefined) {
+        this.components.tiles = appConfig.tiles.map((tile) => ({
+          name: tile.name,
+          id: tile.uuid,
+          platforms:
+            tile.buildTargets !== undefined
+              ? tile.buildTargets
+              : appConfig.buildTargets,
+        }));
+      }
+    }
   }
 
   private transformComponentBundle(file: Vinyl) {
@@ -152,6 +176,7 @@ class AppPackageManifestTransform extends Transform {
     const setSDKVersion =
       (this.components.watch && this.hasJS) || this.components.companion;
     const { deviceApi, companionApi } = apiVersions(this.projectConfig);
+    this.populateTileData();
     const manifestJSON = JSON.stringify(
       {
         buildId: this.buildID,
