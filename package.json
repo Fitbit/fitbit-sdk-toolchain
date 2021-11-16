@@ -16,7 +16,8 @@
     "lint": "tsc --noEmit --noUnusedLocals && tslint --project . --format codeFrame",
     "depcheck": "depcheck --ignores='@types/*,tslint-config-airbnb' --ignore-dirs='toolchain,__test__'",
     "checkstyle": "prettier --list-different \"**/*.{js,jsx,ts,tsx,json}\"",
-    "prepublishOnly": "npm run test && npm run build"
+    "prepublishOnly": "npm run test && npm run build",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@types/babel-core": "^6.25.5",
