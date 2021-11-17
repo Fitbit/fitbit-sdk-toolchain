@@ -651,12 +651,12 @@ export function validateTileComponentAppType(config: ProjectConfiguration) {
 
 export function validateTileBuildTarget(
   tile: Tile,
-  { buildTargets }: AppProjectConfiguration,
+  config: AppProjectConfiguration,
 ) {
   if (tile.buildTargets !== undefined) {
     return constrainedSetDiagnostics({
       actualValues: tile.buildTargets,
-      knownValues: buildTargets,
+      knownValues: knownBuildTargets,
       valueTypeNoun: 'tile build targets',
       notFoundIsFatal: true,
     });
@@ -681,6 +681,16 @@ export function validateTileUUID(tile: Tile, config: AppProjectConfiguration) {
     diagnostic.pushFatalError("Can't have duplicate UUIDs between tiles");
   }
 
+  return diagnostic;
+}
+
+export function validateTileNativeComponent(hasNativeComponents: boolean) {
+  const diagnostic = new DiagnosticList();
+  if (!hasNativeComponents) {
+    diagnostic.pushWarning(
+      'Tiles available only for native components. Skipping tile configuration!',
+    );
+  }
   return diagnostic;
 }
 
@@ -730,6 +740,7 @@ export function validate(
         );
       },
     );
+    diagnostics.extend(validateTileNativeComponent(hasNativeComponents));
   }
 
   return diagnostics;

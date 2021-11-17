@@ -369,7 +369,9 @@ it('validationErrors() validates all fields', () => {
       },
     ],
   };
-  const diagnosticsTiles = config.validate(configFileTiles).diagnostics;
+  const diagnosticsTiles = config.validate(configFileTiles, {
+    hasNativeComponents: false,
+  }).diagnostics;
   expect(diagnosticsTiles).toEqual([
     expect.objectContaining({
       category: DiagnosticCategory.Error,
@@ -390,6 +392,11 @@ it('validationErrors() validates all fields', () => {
     expect.objectContaining({
       category: DiagnosticCategory.Error,
       messageText: 'Tile name must be specified',
+    }),
+    expect.objectContaining({
+      category: DiagnosticCategory.Warning,
+      messageText:
+        'Tiles available only for native components. Skipping tile configuration!',
     }),
   ]);
 });
@@ -448,24 +455,18 @@ describe('validateBuildTarget()', () => {
 
 describe('validateTileBuildTarget()', () => {
   it('allows empty list for tiles', () => {
-    const configFile: any = {
-      buildTargets: ['known_device'],
-    };
     expect(
       config.validateTileBuildTarget(
         {
           name: '__random__',
           uuid: '__random__',
         },
-        configFile,
+        {} as config.AppProjectConfiguration,
       ).diagnostics,
     ).toHaveLength(0);
   });
 
   it('validates values for tiles', () => {
-    const configFile: any = {
-      buildTargets: ['known_device'],
-    };
     expect(
       config.validateTileBuildTarget(
         {
@@ -473,7 +474,7 @@ describe('validateTileBuildTarget()', () => {
           uuid: '__random__',
           buildTargets: ['_invalid_device_'],
         },
-        configFile,
+        {} as config.AppProjectConfiguration,
       ).diagnostics[0],
     ).toEqual(
       expect.objectContaining({
