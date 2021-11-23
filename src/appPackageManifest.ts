@@ -88,15 +88,27 @@ class AppPackageManifestTransform extends Transform {
     if (this.projectConfig.appType === AppType.APP) {
       const appConfig = this.projectConfig;
 
-      if (appConfig.tiles !== undefined) {
+      if (appConfig.tiles !== undefined && this.hasNative) {
+        const watchComponents = Object.keys(this.components.watch ?? []);
+
         this.components.tiles = appConfig.tiles.map((tile) => ({
           name: tile.name,
           id: tile.uuid,
           platforms:
             tile.buildTargets !== undefined
-              ? tile.buildTargets
-              : appConfig.buildTargets,
+              ? tile.buildTargets.filter((target) =>
+                  watchComponents.includes(target),
+                )
+              : watchComponents,
         }));
+
+        // Remove tiles with 0 platforms
+        this.components.tiles = this.components.tiles.filter(
+          (tile) => tile.platforms.length > 0,
+        );
+        if (this.components.tiles.length === 0) {
+          this.components.tiles = undefined;
+        }
       }
     }
   }

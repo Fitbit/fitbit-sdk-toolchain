@@ -241,42 +241,56 @@ Object {
         "platform": Array [
           "128.1.1+",
         ],
-        "supports": Object {
-          "screenSize": Object {
-            "h": 336,
-            "w": 336,
-          },
-        },
       },
       "vulcan": Object {
         "filename": "device-vulcan.zip",
         "platform": Array [
           "128.1.1+",
         ],
-        "supports": Object {
-          "screenSize": Object {
-            "h": 336,
-            "w": 336,
-          },
-        },
       },
     },
   },
   "manifestVersion": 6,
   "requestedPermissions": Array [],
-  "sdkVersion": Object {
-    "deviceApi": "8.1.0",
-  },
-  "sourceMaps": Object {
-    "device": Object {
-      "atlas": "sourceMaps/device/atlas/index.js.json",
-      "vulcan": "sourceMaps/device/vulcan/index.js.json",
-    },
-  },
+  "sourceMaps": Object {},
 }
 `;
 
 exports[`doesn't include tile data if app type is not APP 1`] = `
+Object {
+  "appId": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+  "buildId": "0x0f75775f470c1585",
+  "components": Object {
+    "watch": Object {
+      "atlas": Object {
+        "filename": "device-atlas.zip",
+        "platform": Array [
+          "128.1.1+",
+        ],
+      },
+    },
+  },
+  "manifestVersion": 6,
+  "requestedPermissions": Array [],
+  "sourceMaps": Object {},
+}
+`;
+
+exports[`emits an error if a component bundle tag has a device type but invalid platform 1`] = `"Unknown bundle component tag: Invalid value \\"1.1.1+\\" supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
+
+exports[`emits an error if a component bundle tag has a device type but missing family 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/family: string"`;
+
+exports[`emits an error if a component bundle tag has a device type but missing platform 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
+
+exports[`emits an error if a component bundle tag has an invalid type field 1`] = `"Unknown bundle component tag: Invalid value {\\"type\\":\\"__invalid__\\"} supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })"`;
+
+exports[`emits an error if both JS and native device components are present 1`] = `"Cannot bundle mixed native/JS device components"`;
+
+exports[`emits an error if multiple companion bundles are present for the same device family 1`] = `"Duplicate companion component bundles: bundle1.zip / bundle0.zip"`;
+
+exports[`emits an error if multiple device bundles are present for the same device family 1`] = `"Duplicate device/atlas component bundles: bundle1.zip / bundle0.zip"`;
+
+exports[`includes tiles just for native apps 1`] = `
 Object {
   "appId": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
   "buildId": "0x0f75775f470c1585",
@@ -308,17 +322,3 @@ Object {
   },
 }
 `;
-
-exports[`emits an error if a component bundle tag has a device type but invalid platform 1`] = `"Unknown bundle component tag: Invalid value \\"1.1.1+\\" supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
-
-exports[`emits an error if a component bundle tag has a device type but missing family 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/family: string"`;
-
-exports[`emits an error if a component bundle tag has a device type but missing platform 1`] = `"Unknown bundle component tag: Invalid value undefined supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })/0: ({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>)/0: { type: \\"device\\", family: string, platform: Array<string> }/platform: Array<string>"`;
-
-exports[`emits an error if a component bundle tag has an invalid type field 1`] = `"Unknown bundle component tag: Invalid value {\\"type\\":\\"__invalid__\\"} supplied to : (({ type: \\"device\\", family: string, platform: Array<string> } & Partial<{ isNative: true }>) | { type: \\"companion\\" })"`;
-
-exports[`emits an error if both JS and native device components are present 1`] = `"Cannot bundle mixed native/JS device components"`;
-
-exports[`emits an error if multiple companion bundles are present for the same device family 1`] = `"Duplicate companion component bundles: bundle1.zip / bundle0.zip"`;
-
-exports[`emits an error if multiple device bundles are present for the same device family 1`] = `"Duplicate device/atlas component bundles: bundle1.zip / bundle0.zip"`;
