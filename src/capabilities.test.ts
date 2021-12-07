@@ -15,5 +15,9 @@ describe('SupportedDeviceCapabilities', () => {
         }),
       );
     });
+
+    it('returns undefined for an unknown device', () => {
+      expect(SupportedDeviceCapabilities.create('unknown')).toBeUndefined();
+    });
   });
 });
