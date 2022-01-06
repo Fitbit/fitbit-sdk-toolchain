@@ -777,6 +777,46 @@ it('validates app cluster storage permission is requested if app cluster ID is s
   );
 });
 
+it('validates heap size is less than maximum allowed without internal permission', () => {
+  const projectConfig: ProjectConfiguration = config.normalizeProjectConfig({
+    fitbit: {
+      heapSize: 129,
+    },
+  });
+  expect(config.validateHeapSize(projectConfig).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText:
+        'Heap size must be an integer value less than or equal to 128',
+    }),
+  );
+});
+
+it('validates heap size is more than minimum allowed without internal permission', () => {
+  const projectConfig: ProjectConfiguration = config.normalizeProjectConfig({
+    fitbit: {
+      heapSize: 63,
+    },
+  });
+  expect(config.validateHeapSize(projectConfig).diagnostics[0]).toEqual(
+    expect.objectContaining({
+      category: DiagnosticCategory.Error,
+      messageText:
+        'Heap size must be an integer value greater than or equal to 64',
+    }),
+  );
+});
+
+it('does not validate heap size is less than maximum allowed with internal permission', () => {
+  const projectConfig: ProjectConfiguration = config.normalizeProjectConfig({
+    fitbit: {
+      heapSize: 129,
+      requestedPermissions: [config.Permission.FITBIT_INTERNAL],
+    },
+  });
+  expect(config.validateHeapSize(projectConfig).diagnostics).toHaveLength(0);
+});
+
 describe('normalizeLocales()', () => {
   it('maps en to en-US', () => {
     expect(
