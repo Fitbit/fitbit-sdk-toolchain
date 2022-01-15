@@ -31,13 +31,15 @@ export namespace SupportedDeviceCapabilities {
   export function create(
     targetDevice: string,
   ): SupportedDeviceCapabilities | undefined {
-    const { screenSize } = buildTargets[targetDevice].specs;
+    const specs = buildTargets[targetDevice]?.specs;
 
-    return {
-      [DeviceCapability.SCREEN_SIZE]: {
-        w: screenSize.width,
-        h: screenSize.height,
-      },
-    };
+    return specs
+      ? {
+          [DeviceCapability.SCREEN_SIZE]: {
+            w: specs.screenSize.width,
+            h: specs.screenSize.height,
+          },
+        }
+      : undefined;
   }
 }
