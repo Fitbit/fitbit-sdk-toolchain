@@ -126,5 +126,6 @@
       "indent-string",
       "@types/indent-string"
     ]
-  }
+  },
+  "packageManager": "yarn@3.1.1"
 }
