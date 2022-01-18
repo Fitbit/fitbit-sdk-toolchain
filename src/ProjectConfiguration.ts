@@ -232,6 +232,7 @@ const restrictedPermissionTypes = [
     key: Permission.FITBIT_INTERNAL,
     name: '[Restricted] Fitbit Internal',
     description: 'Access Fitbit Internal APIs',
+    sdkVersion: '>=7.0.0',
   },
 ];
 
