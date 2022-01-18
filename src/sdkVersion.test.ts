@@ -9,17 +9,17 @@ it('throws if package version is invalid', () => {
   expect(() => apiVersions({}, '..')).toThrowErrorMatchingSnapshot();
 });
 
-it('provides a mapping for SDKv6.0', () => {
-  expect(apiVersions({}, '6.0.0')).toEqual({
-    deviceApi: '8.1.0',
+it('provides a mapping for SDKv7.0', () => {
+  expect(apiVersions({}, '7.0.0')).toEqual({
+    deviceApi: '10.0.0',
     companionApi: '3.3.0',
   });
 });
 
 it('provides a mapping for a known SDK version with a non-zero patch version', () => {
-  expect(apiVersions({}, '5.0.100')).toEqual({
-    deviceApi: '7.0.0',
-    companionApi: '3.1.0',
+  expect(apiVersions({}, '7.0.100')).toEqual({
+    deviceApi: '10.0.0',
+    companionApi: '3.3.0',
   });
 });
 
