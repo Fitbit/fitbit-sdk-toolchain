@@ -148,7 +148,7 @@ describe('when there is a device entry point present', () => {
       ...makeClockfaceProjectConfig(),
       enableProposedAPI: true,
     } as ProjectConfiguration;
-    expectManifestJSON(
+    return expectManifestJSON(
       makeDeviceManifestStream(projectConfig),
     ).resolves.toMatchSnapshot();
   });
@@ -211,6 +211,16 @@ describe('when there is a device entry point present', () => {
           done();
         });
     });
+  });
+
+  it('includes heap size if configured', () => {
+    const projectConfig = {
+      ...makeClockfaceProjectConfig(),
+      heapSize: 72,
+    } as ProjectConfiguration;
+    return expectManifestJSON(
+      makeDeviceManifestStream(projectConfig),
+    ).resolves.toMatchSnapshot();
   });
 });
 

@@ -32,6 +32,8 @@ export const VALID_APP_TYPES = Object.values(AppType);
 export const MAX_LENGTH_APP_CLUSTER_ID = 64;
 
 const MIN_COMPANION_DEFAULT_WAKE_INTERVAL_MS = 300000;
+const MIN_HEAP_SIZE = 64;
+const MAX_HEAP_SIZE = 128;
 
 export type LocalesConfig = { [locale: string]: { name: string } };
 
@@ -49,6 +51,7 @@ export interface BaseProjectConfiguration {
   appClusterID?: string[];
   developerID?: string;
   companionDefaultWakeInterval?: number;
+  heapSize?: number;
 }
 
 export interface AppProjectConfiguration extends BaseProjectConfiguration {
@@ -635,6 +638,35 @@ export function validateCompanionDefaultWakeInterval(
   return diagnostics;
 }
 
+export function validateHeapSize(config: ProjectConfiguration) {
+  const diagnostics = new DiagnosticList();
+
+  const isFitbitInternal = (config.requestedPermissions || []).includes(
+    Permission.FITBIT_INTERNAL,
+  );
+
+  if (
+    typeof config.heapSize !== 'undefined' &&
+    (!Number.isInteger(config.heapSize) || config.heapSize < MIN_HEAP_SIZE)
+  ) {
+    diagnostics.pushFatalError(
+      `Heap size must be an integer value greater than or equal to ${MIN_HEAP_SIZE}`,
+    );
+  }
+
+  if (
+    !isFitbitInternal &&
+    typeof config.heapSize !== 'undefined' &&
+    (!Number.isInteger(config.heapSize) || config.heapSize > MAX_HEAP_SIZE)
+  ) {
+    diagnostics.pushFatalError(
+      `Heap size must be an integer value less than or equal to ${MAX_HEAP_SIZE}`,
+    );
+  }
+
+  return diagnostics;
+}
+
 export function validateTileComponentAppType(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
 
@@ -728,6 +760,7 @@ export function validate(
     validateStorageGroup,
     validateCompanionDefaultWakeInterval,
     validateTileComponentAppType,
+    validateHeapSize,
   ].forEach((validator) => diagnostics.extend(validator(config)));
   diagnostics.extend(validateBuildTarget(config, { hasNativeComponents }));
 

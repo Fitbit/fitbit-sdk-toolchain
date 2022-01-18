@@ -134,6 +134,11 @@ interface DeviceManifestBase extends ComponentManifest {
    * Features supported by the application.
    */
   supports?: SupportedDeviceCapabilities;
+
+  /**
+   * JS heap size requested by the application, in kilobytes
+   */
+  heapSize?: number;
 }
 
 interface WithSVG {
@@ -361,6 +366,10 @@ export function makeDeviceManifest({
             ...manifestBase,
           };
           break;
+      }
+
+      if (projectConfig.heapSize) {
+        manifest.heapSize = projectConfig.heapSize;
       }
 
       done(

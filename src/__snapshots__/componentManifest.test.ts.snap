@@ -208,36 +208,6 @@ Object {
 
 exports[`when there is a device entry point present builds a device manifest for an app 1`] = `
 Object {
-  "apiVersion": "*",
-  "appManifestVersion": 1,
-  "appType": "clockface",
-  "buildId": "0x0f75775f470c1585",
-  "bundleDate": "2018-06-27T00:00:00.000Z",
-  "i18n": Object {
-    "en-us": Object {
-      "name": "My App",
-    },
-    "fr-fr": Object {
-      "name": "Mon application",
-    },
-  },
-  "main": "device/index.js",
-  "name": "My App",
-  "requestedPermissions": Array [],
-  "supports": Object {
-    "screenSize": Object {
-      "h": 336,
-      "w": 336,
-    },
-  },
-  "svgMain": "resources/index.view",
-  "svgWidgets": "resources/widget.defs",
-  "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
-}
-`;
-
-exports[`when there is a device entry point present builds a device manifest for an app 2`] = `
-Object {
   "apiVersion": "8.1.0",
   "appManifestVersion": 1,
   "appType": "app",
@@ -265,6 +235,67 @@ Object {
   "svgWidgets": "resources/widget.defs",
   "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
   "wipeColor": "#ffaabb",
+}
+`;
+
+exports[`when there is a device entry point present includes heap size if configured 1`] = `
+Object {
+  "apiVersion": "8.1.0",
+  "appManifestVersion": 1,
+  "appType": "clockface",
+  "buildId": "0x0f75775f470c1585",
+  "bundleDate": "2018-06-27T00:00:00.000Z",
+  "heapSize": 72,
+  "i18n": Object {
+    "en-us": Object {
+      "name": "My App",
+    },
+    "fr-fr": Object {
+      "name": "Mon application",
+    },
+  },
+  "main": "device/index.js",
+  "name": "My App",
+  "requestedPermissions": Array [],
+  "supports": Object {
+    "screenSize": Object {
+      "h": 336,
+      "w": 336,
+    },
+  },
+  "svgMain": "resources/index.view",
+  "svgWidgets": "resources/widget.defs",
+  "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
+}
+`;
+
+exports[`when there is a device entry point present includes supported screen sizes for a clock 1`] = `
+Object {
+  "apiVersion": "*",
+  "appManifestVersion": 1,
+  "appType": "clockface",
+  "buildId": "0x0f75775f470c1585",
+  "bundleDate": "2018-06-27T00:00:00.000Z",
+  "i18n": Object {
+    "en-us": Object {
+      "name": "My App",
+    },
+    "fr-fr": Object {
+      "name": "Mon application",
+    },
+  },
+  "main": "device/index.js",
+  "name": "My App",
+  "requestedPermissions": Array [],
+  "supports": Object {
+    "screenSize": Object {
+      "h": 336,
+      "w": 336,
+    },
+  },
+  "svgMain": "resources/index.view",
+  "svgWidgets": "resources/widget.defs",
+  "uuid": "b4ae822e-eca9-4fcb-8747-217f2a1f53a1",
 }
 `;
 
