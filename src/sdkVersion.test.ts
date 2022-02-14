@@ -12,14 +12,14 @@ it('throws if package version is invalid', () => {
 it('provides a mapping for SDKv7.0', () => {
   expect(apiVersions({}, '7.0.0')).toEqual({
     deviceApi: '10.0.0',
-    companionApi: '3.3.0',
+    companionApi: '3.4.0',
   });
 });
 
 it('provides a mapping for a known SDK version with a non-zero patch version', () => {
   expect(apiVersions({}, '7.0.100')).toEqual({
     deviceApi: '10.0.0',
-    companionApi: '3.3.0',
+    companionApi: '3.4.0',
   });
 });
 
