@@ -3,7 +3,7 @@ import { Transform, TransformCallback } from 'stream';
 
 import * as t from 'io-ts';
 import { failure } from 'io-ts/lib/PathReporter';
-import { pipe } from 'fp-ts/lib/pipeable';
+import { pipe } from 'fp-ts/lib/function';
 import { fold } from 'fp-ts/lib/Either';
 import lodash from 'lodash';
 import PluginError from 'plugin-error';
@@ -176,7 +176,7 @@ class AppPackageManifestTransform extends Transform {
       try {
         this.transformComponentBundle(file);
       } catch (ex) {
-        return next(ex);
+        return next(ex as Error);
       }
     }
 
