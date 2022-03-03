@@ -54,7 +54,9 @@ export default function compileTranslations(defaultLanguage: string) {
           return next();
         } catch (error) {
           next(
-            new PluginError(PLUGIN_NAME, error, { fileName: file.relative }),
+            new PluginError(PLUGIN_NAME, error as Error, {
+              fileName: file.relative,
+            }),
           );
         }
       } else {
@@ -95,7 +97,9 @@ export default function compileTranslations(defaultLanguage: string) {
           file.translationLanguage = language;
         } catch (error) {
           done(
-            new PluginError(PLUGIN_NAME, error, { fileName: file.relative }),
+            new PluginError(PLUGIN_NAME, error as Error, {
+              fileName: file.relative,
+            }),
           );
           return;
         }

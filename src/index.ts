@@ -146,7 +146,7 @@ export function loadProjectConfig({
 
     return config;
   } catch (err) {
-    throw new PluginError('projectConfig', err, { fileName });
+    throw new PluginError('projectConfig', err as Error, { fileName });
   }
 }
 
@@ -495,7 +495,7 @@ export function build({
         wrapBuildErrors,
       );
     } catch (e) {
-      wrapBuildErrors(e);
+      wrapBuildErrors(e as Error);
     }
   });
 }

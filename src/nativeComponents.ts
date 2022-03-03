@@ -73,7 +73,9 @@ function readMetadata(elfPath: string) {
   } catch (ex) {
     throw new PluginError(
       PLUGIN_NAME,
-      `Could not parse platform specification in .appplatform section: ${ex.message}`,
+      `Could not parse platform specification in .appplatform section: ${
+        (ex as Error).message
+      }`,
       { fileName: elfPath },
     );
   }
