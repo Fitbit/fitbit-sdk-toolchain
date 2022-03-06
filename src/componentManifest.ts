@@ -4,7 +4,8 @@ import lodash from 'lodash';
 import PluginError from 'plugin-error';
 import Vinyl from 'vinyl';
 
-import { SupportedDeviceCapabilities } from './capabilities';
+import { create as createSupportedDeviceCapabilities } from './capabilities';
+import type { SupportedDeviceCapabilities } from './capabilities';
 import { ComponentType } from './componentTargets';
 import { normalizeToPOSIX } from './pathUtils';
 import ProjectConfiguration, { AppType } from './ProjectConfiguration';
@@ -314,7 +315,7 @@ export function makeDeviceManifest({
       } = locales;
 
       const { deviceApi: apiVersion } = apiVersions(projectConfig);
-      const supports = SupportedDeviceCapabilities.create(targetDevice);
+      const supports = createSupportedDeviceCapabilities(targetDevice);
 
       // FW is case sensitive for locales, it insists on everything being lowercase
       // Doing this too early means the casing won't match the developers defaultLanguage

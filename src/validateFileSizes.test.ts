@@ -37,7 +37,9 @@ describe('in streaming mode', () => {
     const validator = validateFileSizes(validateFileSizesParams);
 
     validator
-      .on('data', (file: Vinyl) => {})
+      .on('data', () => {
+        return;
+      })
       .on('error', (error) => expect(error).toMatchSnapshot())
       .end(
         new Vinyl({

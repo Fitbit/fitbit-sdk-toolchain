@@ -126,14 +126,12 @@ const permissionTypes = [
   {
     key: Permission.ACCESS_ACTIVITY,
     name: 'Activity',
-    // tslint:disable-next-line:max-line-length
     description:
       'Read user activities for today (distance, calories, steps, elevation and active minutes), and daily goals',
   },
   {
     key: Permission.ACCESS_USER_PROFILE,
     name: 'User Profile',
-    // tslint:disable-next-line:max-line-length
     description:
       'Read non-identifiable personal information (gender, age, height, weight, resting HR, basal metabolic rate, stride, HR zones)',
   },
@@ -381,12 +379,11 @@ export function normalizeProjectConfig(
     ...defaults,
 
     // The config object proper
-    ...(config.fitbit as {}),
+    ...(config.fitbit as Record<string, unknown>),
   };
 
   const { requestedPermissions } = mergedConfig;
   if (!Array.isArray(requestedPermissions)) {
-    // tslint:disable-next-line:max-line-length
     throw new TypeError(
       `fitbit.requestedPermissions must be an array, not ${typeof requestedPermissions}`,
     );
@@ -495,13 +492,11 @@ export function validateLocaleDisplayName(
   if (!locale) return diagnostics;
 
   if (!locale.name || locale.name.length === 0) {
-    // tslint:disable-next-line:max-line-length
     diagnostics.pushFatalError(
       `Localized display name for ${Locales[localeKey]} must not be blank`,
     );
   }
   if (locale.name.length > MAX_DISPLAY_NAME_LENGTH) {
-    // tslint:disable-next-line:max-line-length
     diagnostics.pushFatalError(
       `Localized display name for ${Locales[localeKey]} must not exceed ${MAX_DISPLAY_NAME_LENGTH} characters`,
     );
@@ -567,7 +562,6 @@ function validateClusterID(clusterID: string): string | undefined {
   }
 }
 
-// tslint:disable-next-line:cognitive-complexity
 export function validateStorageGroup(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
 
@@ -672,8 +666,7 @@ export function validateTileComponentAppType(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
 
   // Tiles are available just for appType = APP
-  // @ts-ignore
-  if (config.appType !== AppType.APP && config.tiles !== undefined) {
+  if (config.appType !== AppType.APP && 'tiles' in config) {
     diagnostics.pushWarning(
       'Tiles available only for APPS. Skipping tile configuration!',
     );
@@ -682,10 +675,7 @@ export function validateTileComponentAppType(config: ProjectConfiguration) {
   return diagnostics;
 }
 
-export function validateTileBuildTarget(
-  tile: Tile,
-  config: AppProjectConfiguration,
-) {
+export function validateTileBuildTarget(tile: Tile) {
   if (tile.buildTargets !== undefined) {
     return constrainedSetDiagnostics({
       actualValues: tile.buildTargets,
@@ -727,7 +717,7 @@ export function validateTileNativeComponent(hasNativeComponents: boolean) {
   return diagnostic;
 }
 
-export function validateTileName(tile: Tile, config: AppProjectConfiguration) {
+export function validateTileName(tile: Tile) {
   const diagnostic = new DiagnosticList();
   if (tile.name === undefined) {
     diagnostic.pushFatalError('Tile name must be specified');

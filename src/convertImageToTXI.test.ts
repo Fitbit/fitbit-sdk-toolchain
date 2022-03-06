@@ -77,7 +77,9 @@ describe('in streaming mode', () => {
             done.fail('Got a non-stream file');
             return;
           }
-          file.contents.on('data', () => {});
+          file.contents.on('data', () => {
+            return;
+          });
         }),
       )
       .end(
@@ -108,7 +110,9 @@ describe('in streaming mode', () => {
         // Start the lazy transform.
         file.contents
           .on('error', (error) => expect(error).toMatchSnapshot())
-          .on('data', () => {});
+          .on('data', () => {
+            return;
+          });
       })
       .on('error', (error) => expect(error).toMatchSnapshot())
       .on('end', done);
@@ -143,7 +147,9 @@ describe('in streaming mode', () => {
             expect(error).toMatchSnapshot();
             tally();
           })
-          .on('data', () => {});
+          .on('data', () => {
+            return;
+          });
       });
   });
 
@@ -175,7 +181,9 @@ describe('in streaming mode', () => {
             expect(error).toMatchSnapshot();
             tally();
           })
-          .on('data', () => {});
+          .on('data', () => {
+            return;
+          });
       })
       .end(
         new Vinyl({

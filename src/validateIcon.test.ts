@@ -87,7 +87,9 @@ describe('in streaming mode', () => {
     const validator = validateIcon(validateIconParams);
 
     validator
-      .on('data', (file: Vinyl) => {})
+      .on('data', () => {
+        return;
+      })
       .on('error', (error) => expect(error).toMatchSnapshot())
       .end(
         new Vinyl({

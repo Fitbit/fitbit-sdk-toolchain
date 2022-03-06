@@ -133,12 +133,12 @@ Array [
       "path": "<PROJECT_ROOT>/src/__test__/compile/typeError.ts",
       "position": Object {
         "end": Object {
-          "character": 5,
-          "line": 1,
+          "character": 7,
+          "line": 2,
         },
         "start": Object {
-          "character": 4,
-          "line": 1,
+          "character": 6,
+          "line": 2,
         },
       },
     },

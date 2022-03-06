@@ -2,7 +2,7 @@ import { Transform } from 'stream';
 
 import Vinyl from 'vinyl';
 
-export default function gulpSetProperty(properties: {}) {
+export default function gulpSetProperty(properties: Record<string, unknown>) {
   return new Transform({
     objectMode: true,
     transform(file: Vinyl, _, next) {

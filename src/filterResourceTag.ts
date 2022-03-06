@@ -10,7 +10,6 @@ class FilterResourceTag extends Transform {
     super({ objectMode: true });
   }
 
-  // tslint:disable-next-line:function-name
   _transform(file: Vinyl, _: any, callback: TransformCallback) {
     if (file.isDirectory()) {
       callback(undefined, file);
@@ -29,7 +28,6 @@ class FilterResourceTag extends Transform {
     callback();
   }
 
-  // tslint:disable-next-line:function-name
   _flush(callback: TransformCallback) {
     for (const file of this.files.values()) {
       this.push(file);

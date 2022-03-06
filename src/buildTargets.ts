@@ -48,7 +48,9 @@ const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
 
 let extraBuildTargets: typeof baseBuildTargets | undefined;
 try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   extraBuildTargets = require('@fitbit/sdk-build-targets').default;
+  // eslint-disable-next-line no-empty
 } catch {}
 
 export function generateBuildTargets() {

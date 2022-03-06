@@ -5,7 +5,7 @@ expect.addSnapshotSerializer({
   test(val: any) {
     return val instanceof Error && 'plugin' in val;
   },
-  print(val, serialize, indent, opts) {
+  print(val, serialize) {
     const err = val as PluginError;
 
     // List of props that PluginError allows one to override, excluding
@@ -18,7 +18,9 @@ expect.addSnapshotSerializer({
     // so that we don't have to write a fully-custom serializer.
     const newObj: { [key: string]: any } = {};
     Object.defineProperty(newObj, 'constructor', {
-      value: function PluginError() {},
+      value: function PluginError() {
+        return;
+      },
     });
 
     props.forEach((prop) => {

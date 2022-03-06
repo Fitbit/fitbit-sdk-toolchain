@@ -1,15 +1,15 @@
-import { SupportedDeviceCapabilities } from './capabilities';
+import { create } from './capabilities';
 
 describe('SupportedDeviceCapabilities', () => {
   describe('create()', () => {
     it('returns supported capabilities for * as JS API version', () => {
-      expect(SupportedDeviceCapabilities.create('atlas')).toEqual(
+      expect(create('atlas')).toEqual(
         expect.objectContaining({
           screenSize: { w: 336, h: 336 },
         }),
       );
 
-      expect(SupportedDeviceCapabilities.create('vulcan')).toEqual(
+      expect(create('vulcan')).toEqual(
         expect.objectContaining({
           screenSize: { w: 336, h: 336 },
         }),
@@ -17,7 +17,7 @@ describe('SupportedDeviceCapabilities', () => {
     });
 
     it('returns undefined for an unknown device', () => {
-      expect(SupportedDeviceCapabilities.create('unknown')).toBeUndefined();
+      expect(create('unknown')).toBeUndefined();
     });
   });
 });

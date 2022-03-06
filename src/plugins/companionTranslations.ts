@@ -62,7 +62,7 @@ export default function companionTranslations(
       translations[languageTag] = await loadTranslations(filePath);
     }
 
-    if (!translations.hasOwnProperty(defaultLanguage)) {
+    if (!(defaultLanguage in translations)) {
       throw new BuildError(
         `No translation file found for default language "${defaultLanguage}"`,
       );

@@ -32,8 +32,13 @@ export default class LanguageServiceHost implements ts.LanguageServiceHost {
     }
 
     if (ts.sys.fileExists(normalizedFileName)) {
+      const normalizedFileContent = ts.sys.readFile(normalizedFileName);
+      if (typeof normalizedFileContent !== 'string') {
+        throw new TypeError();
+      }
+
       this.snapshots[normalizedFileName] = ts.ScriptSnapshot.fromString(
-        ts.sys.readFile(normalizedFileName)!,
+        normalizedFileContent,
       );
       this.versions[normalizedFileName] =
         (this.versions[normalizedFileName] || 0) + 1;

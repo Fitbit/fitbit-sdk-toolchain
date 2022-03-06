@@ -138,7 +138,6 @@ export function loadProjectConfig({
     if (config.enableProposedAPI) {
       onDiagnostic({
         category: DiagnosticCategory.Warning,
-        // tslint:disable-next-line:max-line-length
         messageText:
           'Targeting proposed API may cause your app to behave unexpectedly. Use only when needed for development or QA.',
       });
@@ -223,16 +222,18 @@ export function buildDeviceComponents({
   buildId: string;
   onDiagnostic?: DiagnosticHandler;
 }) {
-  const deviceJSPipeline: Stream[] = [
-    // TODO: remove is-defined assertion ('!')
-    buildComponent({
-      projectConfig,
-      onDiagnostic,
-      component: ComponentType.DEVICE,
-    })!,
-  ];
+  const component = buildComponent({
+    projectConfig,
+    onDiagnostic,
+    component: ComponentType.DEVICE,
+  });
+  if (!component) {
+    throw new TypeError();
+  }
 
   const processedJS = new playbackStream({ objectMode: true });
+
+  const deviceJSPipeline = [component];
   deviceJSPipeline.push(processedJS);
 
   return multistream.obj([

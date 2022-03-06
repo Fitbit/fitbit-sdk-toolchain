@@ -21,7 +21,9 @@ export default function rollupToVinyl(
   outputOptions: rollup.OutputOptions,
 ) {
   const stream = new Readable({ objectMode: true });
-  stream._read = () => {};
+  stream._read = () => {
+    return;
+  };
 
   function generatePath(fileName: string) {
     return outputOptions.dir

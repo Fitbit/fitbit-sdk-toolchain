@@ -1,2 +1,3 @@
 /* istanbul ignore file */
-let a: string = 1;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const a: string = 1;

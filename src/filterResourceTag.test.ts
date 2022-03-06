@@ -84,8 +84,10 @@ it.each([
 ])(
   'prefers the tagged file %s over the untagged %s',
   (tagged: string, untagged: string) => {
-    expect(fs.get(path.normalize('/resources/' + untagged))!.contents).toEqual(
-      projectDir.get(path.normalize('/resources/' + tagged))!.contents,
+    const contents = fs.get(path.normalize('/resources/' + untagged))?.contents;
+    expect(contents).toBeTruthy();
+    expect(contents).toEqual(
+      projectDir.get(path.normalize('/resources/' + tagged))?.contents,
     );
   },
 );

@@ -33,7 +33,6 @@ export default function compileTranslations(defaultLanguage: string) {
         next(
           new PluginError(
             PLUGIN_NAME,
-            // tslint:disable-next-line:max-line-length
             `Translation file ${
               file.basename
             } has a bad name. Translation files must be named ${humanizeList(
@@ -90,7 +89,10 @@ export default function compileTranslations(defaultLanguage: string) {
       }
 
       for (const language of languageTable.languages) {
-        const file = translationFiles.get(language)!;
+        const file = translationFiles.get(language);
+        if (!file) {
+          continue;
+        }
 
         try {
           file.contents = Buffer.from(languageTable.getLanguage(language));

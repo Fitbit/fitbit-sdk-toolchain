@@ -9,7 +9,8 @@ import lodash from 'lodash';
 import PluginError from 'plugin-error';
 import Vinyl from 'vinyl';
 
-import { SupportedDeviceCapabilities } from './capabilities';
+import { create as createSupportedDeviceCapabilities } from './capabilities';
+import type { SupportedDeviceCapabilities } from './capabilities';
 import { normalizeToPOSIX } from './pathUtils';
 import { ProjectConfiguration, AppType } from './ProjectConfiguration';
 import { apiVersions } from './sdkVersion';
@@ -37,7 +38,6 @@ interface Components {
   tiles?: Tile[];
 }
 
-// tslint:disable-next-line:variable-name
 const ComponentBundleTag = t.taggedUnion('type', [
   t.intersection([
     t.interface({
@@ -147,7 +147,7 @@ class AppPackageManifestTransform extends Transform {
         );
       }
 
-      const supports = SupportedDeviceCapabilities.create(bundleInfo.family);
+      const supports = createSupportedDeviceCapabilities(bundleInfo.family);
 
       this.components.watch[bundleInfo.family] = {
         platform: bundleInfo.platform,
@@ -156,14 +156,18 @@ class AppPackageManifestTransform extends Transform {
       };
     } else {
       if (this.components[bundleInfo.type] !== undefined) {
-        throwDuplicateComponent(this.components[bundleInfo.type]!.filename);
+        const filename = this.components[bundleInfo.type]?.filename;
+        if (typeof filename !== 'string') {
+          throw new TypeError();
+        }
+
+        throwDuplicateComponent(filename);
       }
 
       this.components[bundleInfo.type] = { filename: file.relative };
     }
   }
 
-  // tslint:disable-next-line:function-name
   _transform(file: Vinyl, _: unknown, next: TransformCallback) {
     if (file.componentMapKey) {
       lodash.merge(
@@ -183,7 +187,6 @@ class AppPackageManifestTransform extends Transform {
     return next(undefined, file);
   }
 
-  // tslint:disable-next-line:function-name
   _flush(callback: TransformCallback) {
     const setSDKVersion =
       (this.components.watch && this.hasJS) || this.components.companion;

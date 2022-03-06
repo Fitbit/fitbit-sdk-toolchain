@@ -20,8 +20,8 @@ interface ImageDimensions {
 function getPNGDimensions(buffer: Buffer) {
   return new Promise<ImageDimensions>((resolve, reject) => {
     const png = new PNG();
-    png.on('metadata', (metadata) => {
-      png.on('parsed', (parsed) =>
+    png.on('metadata', () => {
+      png.on('parsed', () =>
         resolve({
           width: png.width,
           height: png.height,
@@ -67,7 +67,6 @@ export default function validateIcon({
               iconWidth !== EXPECTED_ICON_WIDTH ||
               iconHeight !== EXPECTED_ICON_HEIGHT
             ) {
-              // tslint:disable-next-line:max-line-length
               const errorMessage = `Icon was of invalid size, expected ${EXPECTED_ICON_WIDTH}x${EXPECTED_ICON_HEIGHT}, got ${iconWidth}x${iconHeight}`;
               return cb(
                 new PluginError(PLUGIN_NAME, errorMessage, {
@@ -94,7 +93,6 @@ export default function validateIcon({
       if (!iconExists) {
         onDiagnostic({
           category: DiagnosticCategory.Warning,
-          // tslint:disable-next-line:max-line-length
           messageText: `There is no app icon present in this project. To set an app icon, add a ${EXPECTED_ICON_WIDTH}x${EXPECTED_ICON_HEIGHT} PNG file named ${projectConfig.iconFile} to your project.`,
         });
       }

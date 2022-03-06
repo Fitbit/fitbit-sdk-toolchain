@@ -163,7 +163,6 @@ it('validates the requested permissions are not duplicated', () => {
   ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Warning,
-      // tslint:disable-next-line:max-line-length
       messageText: `One or more requested permissions was specified multiple times: ${validPermission}`,
     }),
   );
@@ -231,7 +230,6 @@ it('validates the length of the localized display name', () => {
   ).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      // tslint:disable-next-line:max-line-length
       messageText: `Localized display name for French must not exceed ${config.MAX_DISPLAY_NAME_LENGTH} characters`,
     }),
   );
@@ -456,26 +454,20 @@ describe('validateBuildTarget()', () => {
 describe('validateTileBuildTarget()', () => {
   it('allows empty list for tiles', () => {
     expect(
-      config.validateTileBuildTarget(
-        {
-          name: '__random__',
-          uuid: '__random__',
-        },
-        {} as config.AppProjectConfiguration,
-      ).diagnostics,
+      config.validateTileBuildTarget({
+        name: '__random__',
+        uuid: '__random__',
+      }).diagnostics,
     ).toHaveLength(0);
   });
 
   it('validates values for tiles', () => {
     expect(
-      config.validateTileBuildTarget(
-        {
-          name: '__random__',
-          uuid: '__random__',
-          buildTargets: ['_invalid_device_'],
-        },
-        {} as config.AppProjectConfiguration,
-      ).diagnostics[0],
+      config.validateTileBuildTarget({
+        name: '__random__',
+        uuid: '__random__',
+        buildTargets: ['_invalid_device_'],
+      }).diagnostics[0],
     ).toEqual(
       expect.objectContaining({
         category: DiagnosticCategory.Error,

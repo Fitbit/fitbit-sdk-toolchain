@@ -10,7 +10,7 @@ const mimeTypes: { [ext: string]: string } = {
   '.gif': 'image/gif',
 };
 
-export default function resourceImports(options = {}): Plugin {
+export default function resourceImports(): Plugin {
   return {
     name: 'resourceImports',
     load(id) {

@@ -1,6 +1,6 @@
 import fs from 'fs';
+import gettextFactoryPackage from '@fitbit-sdk/companion-gettext/package.json';
 
-const gettextFactoryPackage = require('@fitbit-sdk/companion-gettext/package.json');
 const modulePath = require.resolve(
   `@fitbit-sdk/companion-gettext/${gettextFactoryPackage.module}`,
 );

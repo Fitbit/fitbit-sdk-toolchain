@@ -27,7 +27,6 @@ export default function vinylAssertFiles() {
           'error',
           new PluginError(
             PLUGIN_NAME,
-            // tslint:disable-next-line:max-line-length
             `One or more files in the build output were duplicates: ${humanizeList(
               [...duplicatePaths],
             )}`,

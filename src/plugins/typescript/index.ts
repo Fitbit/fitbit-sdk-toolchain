@@ -58,7 +58,9 @@ export default function typescript(options?: Partial<IOptions>): Plugin {
     exclude: [/\.d\.ts$/, /\/node_modules\//],
     tsconfig: undefined,
     tsconfigOverride: undefined,
-    onDiagnostic: () => {},
+    onDiagnostic: () => {
+      return;
+    },
     ...options,
   };
 

@@ -34,6 +34,7 @@ function hasEnumerableProp<T, K extends string | number | symbol>(
   obj: { [P in K]?: T },
   prop: K,
 ): obj is { [P in K]: T } {
+  // eslint-disable-next-line no-prototype-builtins
   return obj.propertyIsEnumerable(prop) && obj[prop] !== undefined;
 }
 

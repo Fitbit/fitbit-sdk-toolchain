@@ -5,7 +5,9 @@ import gulpAssertFiles from './gulpAssertFiles';
 
 function makeTestStream(paths: string[]) {
   const stream = new Readable({ objectMode: true });
-  stream._read = () => {};
+  stream._read = () => {
+    return;
+  };
 
   for (const path of paths) {
     stream.push(new Vinyl({ path, contents: Buffer.alloc(0) }));
