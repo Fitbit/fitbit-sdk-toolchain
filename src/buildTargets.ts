@@ -2,6 +2,7 @@ import lodash from 'lodash';
 import semver from 'semver';
 
 import sdkVersion from './sdkVersion';
+import { RGBAOutputFormat } from '@fitbit/image-codec-txi';
 
 export interface BuildTargetDescriptor {
   displayName: string;
@@ -15,6 +16,7 @@ export interface BuildTargetDescriptor {
   };
   maxDeviceBundleSize?: number; // in bytes
   minSDKVersion?: string;
+  defaultTXIOutputFormat?: RGBAOutputFormat;
 }
 
 const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
