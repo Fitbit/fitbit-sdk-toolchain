@@ -1,6 +1,10 @@
 import { Transform, Readable } from 'stream';
 
-import { encode, TXIOutputFormat } from '@fitbit/image-codec-txi';
+import {
+  encode,
+  TXIOutputFormat,
+  RGBAOutputFormat,
+} from '@fitbit/image-codec-txi';
 import PluginError from 'plugin-error';
 import { Metadata as PNGMetadata, PNG } from '@fitbit/pngjs';
 import Vinyl from 'vinyl';
@@ -8,8 +12,6 @@ import Vinyl from 'vinyl';
 export { TXIOutputFormat };
 
 const PLUGIN_NAME = 'convertImageToTXI';
-
-type RGBAOutputFormat = TXIOutputFormat.RGBA8888 | TXIOutputFormat.RGBA6666;
 
 export interface ConvertImageToTXIOptions {
   /**

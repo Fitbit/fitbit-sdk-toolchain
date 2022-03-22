@@ -482,10 +482,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fitbit/image-codec-txi@npm:^1.1.5":
-  version: 1.1.5
-  resolution: "@fitbit/image-codec-txi@npm:1.1.5"
-  checksum: 2c9e406044e3dab90aeafe4eda5391065d8436f27e656c42d4f32d2893d23e3b7335180debfa228364250110fa5982159d30cb0459a73b8238719d11e4e8dce1
+"@fitbit/image-codec-txi@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "@fitbit/image-codec-txi@npm:1.1.6"
+  checksum: c67ad33cd07ef7caf131698cccd9d7393cbfd88d29d9333eceaa077f5c1ab20b0b9cc3d1b1e4a2e4e9347630c1e1fadbf456a648df77f11b44255342df62e10a
   languageName: node
   linkType: hard
 
@@ -506,7 +506,7 @@ __metadata:
     "@babel/plugin-transform-block-scoping": ^7.13.16
     "@fitbit-sdk/companion-gettext": ^3.2.0
     "@fitbit/bison-i18n": ^1.1.0
-    "@fitbit/image-codec-txi": ^1.1.5
+    "@fitbit/image-codec-txi": ^1.1.6
     "@fitbit/pngjs": ^3.3.3-fitbit.4
     "@rollup/plugin-babel": ^5.3.0
     "@rollup/plugin-commonjs": ^18.0.0

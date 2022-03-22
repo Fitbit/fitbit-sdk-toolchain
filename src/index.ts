@@ -187,7 +187,7 @@ export function buildComponent({
 
 export function buildDeviceResources(
   projectConfig: ProjectConfiguration,
-  { resourceFilterTag }: BuildTargetDescriptor,
+  { resourceFilterTag, defaultTXIOutputFormat }: BuildTargetDescriptor,
   onDiagnostic = logDiagnosticToConsole,
 ) {
   return multipipe([
@@ -206,7 +206,9 @@ export function buildDeviceResources(
     filterResourceTag(resourceFilterTag),
     validateIcon({ projectConfig, onDiagnostic }),
     convertImageToTXI({
-      rgbaOutputFormat: TXIOutputFormat.RGBA6666,
+      rgbaOutputFormat: defaultTXIOutputFormat
+        ? defaultTXIOutputFormat
+        : TXIOutputFormat.RGBA6666,
     }),
     gulpAssertFiles([resources.svgMain, resources.svgWidgets]),
   ]);
