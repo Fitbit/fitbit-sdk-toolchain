@@ -42,42 +42,41 @@ function defaultFormatter(w: RollupWarning) {
     : w.message;
 }
 
-const rollupWarningToDiagnostic = (codeCategories: CodeCategoryMap) => (
-  warning: RollupWarning | string,
-) => {
-  if (typeof warning === 'string') {
-    return {
-      category: DiagnosticCategory.Warning,
-      messageText: warning,
-    };
-  }
-
-  const { code } = warning;
-
-  let category = DiagnosticCategory.Warning;
-  if (code) {
-    const codeCategory = codeCategories[code];
-    if (codeCategory === false) {
-      // Suppress the diagnostic message
-      return;
+const rollupWarningToDiagnostic =
+  (codeCategories: CodeCategoryMap) => (warning: RollupWarning | string) => {
+    if (typeof warning === 'string') {
+      return {
+        category: DiagnosticCategory.Warning,
+        messageText: warning,
+      };
     }
-    if (codeCategory !== undefined) category = codeCategory;
-  }
 
-  let formatter = defaultFormatter;
-  if (code && messageFormatter[code]) formatter = messageFormatter[code];
+    const { code } = warning;
 
-  let messageText: string | DiagnosticMessage[] = formatter(warning);
-  if (warning.frame) {
-    const context = {
-      messageText: warning.frame,
-      category: DiagnosticCategory.Message,
-    };
-    messageText = [{ messageText, category }, context];
-  }
+    let category = DiagnosticCategory.Warning;
+    if (code) {
+      const codeCategory = codeCategories[code];
+      if (codeCategory === false) {
+        // Suppress the diagnostic message
+        return;
+      }
+      if (codeCategory !== undefined) category = codeCategory;
+    }
 
-  return { messageText, category };
-};
+    let formatter = defaultFormatter;
+    if (code && messageFormatter[code]) formatter = messageFormatter[code];
+
+    let messageText: string | DiagnosticMessage[] = formatter(warning);
+    if (warning.frame) {
+      const context = {
+        messageText: warning.frame,
+        category: DiagnosticCategory.Message,
+      };
+      messageText = [{ messageText, category }, context];
+    }
+
+    return { messageText, category };
+  };
 
 export default function rollupWarningHandler({
   codeCategories = {} as CodeCategoryMap,
