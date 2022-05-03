@@ -574,6 +574,31 @@ describe('normalizeProjectConfig', () => {
     },
   );
 
+  it('generates a string Array if appClusterID is a string', () => {
+    const appClusterIDStr = 'foo';
+    const configFile = config.normalizeProjectConfig({
+      fitbit: {
+        appClusterID: appClusterIDStr,
+      },
+    });
+    expect(configFile.appClusterID).toEqual([appClusterIDStr]);
+  });
+
+  it.each<[string, any]>([
+    ['a number', 3.14],
+    ['an object', { foo: 'bar' }],
+    ['null', null],
+    ['a boolean', true],
+  ])('throws a TypeError if appClusterID is %s', (_, clusterID) => {
+    expect(() =>
+      config.normalizeProjectConfig({
+        fitbit: {
+          appClusterID: clusterID,
+        },
+      }),
+    ).toThrow(TypeError);
+  });
+
   it('generates a new UUID if there is not one in the file', () => {
     const configFile = config.normalizeProjectConfig({}, { appUUID: mockUUID });
     expect(configFile.appUUID).toEqual(mockUUID);
@@ -636,13 +661,12 @@ it('validates the default language is a valid language tag', () => {
   );
 });
 
-it('allows multiple cluster IDs if enableProposedAPI is set', () => {
+it('allows up to 4 cluster IDs', () => {
   const projectConfig: ProjectConfiguration = config.normalizeProjectConfig({
     fitbit: {
       requestedPermissions: ['access_app_cluster_storage'],
       developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
-      appClusterID: ['foo', 'bar'],
-      enableProposedAPI: true,
+      appClusterID: ['foo', 'bar', 'baz', 'qux'],
     },
   });
   mockSDKVersion('999.0.0');
@@ -651,19 +675,19 @@ it('allows multiple cluster IDs if enableProposedAPI is set', () => {
   );
 });
 
-it('does not allow multiple cluster IDs if enableProposedAPI is not set', () => {
+it('does not allow more than 4 cluster IDs', () => {
   const projectConfig: ProjectConfiguration = config.normalizeProjectConfig({
     fitbit: {
       requestedPermissions: ['access_app_cluster_storage'],
       developerID: 'f00df00d-f00d-f00d-f00d-f00df00df00d',
-      appClusterID: ['foo', 'bar'],
+      appClusterID: ['foo', 'bar', 'baz', 'qux', 'quux'],
     },
   });
   mockSDKVersion('999.0.0');
   expect(config.validateStorageGroup(projectConfig).diagnostics[0]).toEqual(
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      messageText: 'Only a single App Cluster ID may be declared',
+      messageText: 'Only a maximum of 4 App Cluster IDs may be declared',
     }),
   );
 });
