@@ -35,6 +35,8 @@ const MIN_COMPANION_DEFAULT_WAKE_INTERVAL_MS = 300000;
 const MIN_HEAP_SIZE = 64;
 const MAX_HEAP_SIZE = 128;
 
+const MAX_NUM_CLUSTERS = 4;
+
 export type LocalesConfig = { [locale: string]: { name: string } };
 
 export interface BaseProjectConfiguration {
@@ -398,7 +400,7 @@ export function normalizeProjectConfig(
     mergedConfig.appClusterID = [mergedConfig.appClusterID];
   } else if (
     !Array.isArray(mergedConfig.appClusterID) &&
-    config.appClusterID !== undefined
+    mergedConfig.appClusterID !== undefined
   ) {
     throw new TypeError(
       `App Cluster ID field has unknown type ${typeof config.appClusterID}`,
@@ -571,24 +573,18 @@ function validateClusterID(clusterID: string): string | undefined {
 export function validateStorageGroup(config: ProjectConfiguration) {
   const diagnostics = new DiagnosticList();
 
-  const enableProposedAPI = !!config.enableProposedAPI;
+  const hasAccessAppClusterStoragePermission = (
+    config.requestedPermissions || []
+  ).includes(Permission.ACCESS_APP_CLUSTER_STORAGE);
 
-  const hasRequestedPermission = getAllPermissionTypes({ enableProposedAPI })
-    .map((permission) => permission.key)
-    .filter((permission) =>
-      (config.requestedPermissions || []).includes(permission),
-    )
-    .includes(Permission.ACCESS_APP_CLUSTER_STORAGE);
-
-  if (hasRequestedPermission) {
+  if (hasAccessAppClusterStoragePermission) {
     if (config.appClusterID === undefined) {
       diagnostics.pushFatalError(
         'App Cluster ID must be set when the App Cluster Storage permission is requested',
       );
-      // TODO: Tie this to future SDK version once known
-    } else if (config.appClusterID.length > 1 && !enableProposedAPI) {
+    } else if (config.appClusterID.length > MAX_NUM_CLUSTERS) {
       diagnostics.pushFatalError(
-        `Only a single App Cluster ID may be declared`,
+        `Only a maximum of ${MAX_NUM_CLUSTERS} App Cluster IDs may be declared`,
       );
     } else {
       for (const clusterID of config.appClusterID) {
