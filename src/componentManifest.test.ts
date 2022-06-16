@@ -199,7 +199,7 @@ describe('when there is a device entry point present', () => {
       const files: string[] = [];
 
       makeDeviceManifestStream()
-        .on('error', done.fail)
+        .on('error', done)
         .on('data', (file: Vinyl) => files.push(file.relative))
         .on('end', () => {
           expect(files).toEqual([

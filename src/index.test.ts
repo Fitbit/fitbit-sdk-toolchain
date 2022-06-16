@@ -82,7 +82,7 @@ for (const buildTarget of [
           if (perr.plugin === 'assert-files') {
             return;
           }
-          done.fail();
+          done(perr);
         })
         .on('data', handleData)
         .on('end', () => {

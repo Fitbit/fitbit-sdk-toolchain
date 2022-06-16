@@ -246,9 +246,8 @@ export function buildDeviceComponents({
     ]),
     ...projectConfig.buildTargets.map((family) =>
       lazyObjectReadable(() => {
-        const { platform, displayName, maxDeviceBundleSize } = buildTargets[
-          family
-        ];
+        const { platform, displayName, maxDeviceBundleSize } =
+          buildTargets[family];
         onDiagnostic({
           messageText: `Building app for ${displayName}`,
           category: DiagnosticCategory.Message,
@@ -411,7 +410,7 @@ export function buildAppPackage({
   if (companion) components.push(companion);
 
   return multipipe([
-    multistream.obj(components),
+    multistream.obj(components as Readable[]),
     appPackageManifest({
       projectConfig,
       buildId,

@@ -68,7 +68,7 @@ describe('in buffered mode', () => {
     const validator = validateFileSizes(validateFileSizesParams);
 
     validator
-      .on('error', done.fail)
+      .on('error', done)
       .on('data', handleData)
       .on('end', () => {
         expect(handleData).toHaveBeenCalledTimes(files.length);
@@ -93,7 +93,7 @@ describe('in buffered mode', () => {
     const validator = validateFileSizes(validateFileSizesParams);
 
     validator
-      .on('error', done.fail)
+      .on('error', done)
       .on('data', jest.fn())
       .on('end', () => {
         expect(mockDiagnosticHandler.mock.calls[0]).toMatchSnapshot();
