@@ -761,7 +761,7 @@ export function validate(
   ].forEach((validator) => diagnostics.extend(validator(config)));
   diagnostics.extend(validateBuildTarget(config, { hasNativeComponents }));
 
-  if (config.appType === AppType.APP) {
+  if (config.appType === AppType.APP && config.tiles !== undefined) {
     const appConfig = config;
     [validateTileBuildTarget, validateTileUUID, validateTileName].forEach(
       (validator) => {
