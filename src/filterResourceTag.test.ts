@@ -44,7 +44,7 @@ beforeAll((done) => {
   const filter = filterResourceTag('higgs');
   filter.pipe(
     writeArray((err: any, files: Vinyl[]) => {
-      if (err) return done.fail(err);
+      if (err) return done(err);
       files.forEach((file) => {
         fs.set(file.path, file);
         paths.push(file.path);
@@ -106,7 +106,7 @@ it('passes directories through untouched', (done) => {
 
   expect.assertions(1);
   const filter = filterResourceTag('foo');
-  filter.on('error', done.fail);
+  filter.on('error', done);
   filter.on('data', (value) => expect(value).toBe(dir));
   filter.on('end', done);
 

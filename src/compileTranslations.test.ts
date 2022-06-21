@@ -17,7 +17,7 @@ function expectTranslationsForLanguages(
     objectMode: true,
     write(file: Vinyl, _, next) {
       if (actual.has(file.translationLanguage)) {
-        done.fail(`Seen translations for ${file.translationLanguage} twice`);
+        done(`Seen translations for ${file.translationLanguage} twice`);
       }
       actual.add(file.translationLanguage);
       next();
@@ -50,11 +50,7 @@ function translationFileSource(...paths: string[]) {
 
 describe('when no files are piped', () => {
   it('succeeds with empty output', (done) => {
-    compileTranslations('en')
-      .on('error', done.fail)
-      .resume()
-      .on('end', done)
-      .end();
+    compileTranslations('en').on('error', done).resume().on('end', done).end();
   });
 });
 
@@ -68,12 +64,10 @@ describe('when no .po files are piped in', () => {
     const files = new Map<string, Vinyl>();
 
     compileTranslations('en')
-      .on('error', done.fail)
+      .on('error', done)
       .on('data', (file: Vinyl) => files.set(file.relative, file))
       .on('end', () => {
-        expect(files).toEqual(
-          new Map<string, Vinyl>([['en.po.txt', file]]),
-        );
+        expect(files).toEqual(new Map<string, Vinyl>([['en.po.txt', file]]));
         done();
       })
       .end(file);
@@ -83,13 +77,13 @@ describe('when no .po files are piped in', () => {
 it('grabs .po files from any directory', (done) => {
   translationFileSource('en-US.po', 'foo/es-ES.po', 'foo/bar/fr-FR.po')
     .pipe(compileTranslations('en-US'))
-    .on('error', done.fail)
+    .on('error', done)
     .pipe(expectTranslationsForLanguages(done, 'en-US', 'es-ES', 'fr-FR'));
 });
 
 function compileExpectError(defaultLanguage: string, done: jest.DoneCallback) {
   return compileTranslations(defaultLanguage)
-    .on('data', () => done.fail('got unexpected data'))
+    .on('data', () => done('got unexpected data'))
     .on('error', (error) => {
       expect(error).toMatchSnapshot();
       done();
@@ -147,5 +141,5 @@ it('renames the transformed file, replacing the whole relative path', (done) => 
       expect(file.relative).toBe(path.normalize('l/en-US'));
       done();
     })
-    .on('error', done.fail);
+    .on('error', done);
 });

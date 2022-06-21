@@ -42,7 +42,7 @@ it('passes through non-PNG files untouched', (done) => {
 
   const converter = convertImageToTXI();
   converter
-    .on('error', done.fail)
+    .on('error', done)
     .on('data', handleData)
     .on('end', () => {
       expect(handleData).toHaveBeenCalledTimes(files.length);
@@ -64,7 +64,7 @@ describe('in streaming mode', () => {
         if (shouldRead) {
           done();
         } else {
-          done.fail('Started reading too soon');
+          done('Started reading too soon');
         }
       },
     });
@@ -74,7 +74,7 @@ describe('in streaming mode', () => {
         process.nextTick(() => {
           shouldRead = true;
           if (!file.isStream()) {
-            done.fail('Got a non-stream file');
+            done('Got a non-stream file');
             return;
           }
           file.contents.on('data', () => {});
@@ -101,7 +101,7 @@ describe('in streaming mode', () => {
     converter
       .on('data', (file: Vinyl) => {
         if (!file.isStream()) {
-          done.fail('Got a non-stream file');
+          done('Got a non-stream file');
           return;
         }
 
@@ -134,7 +134,7 @@ describe('in streaming mode', () => {
       })
       .on('data', (file: Vinyl) => {
         if (!file.isStream()) {
-          done.fail('Got a non-stream file');
+          done('Got a non-stream file');
           return;
         }
 
@@ -166,7 +166,7 @@ describe('in streaming mode', () => {
       })
       .on('data', (file: Vinyl) => {
         if (!file.isStream()) {
-          done.fail('Got a non-stream file');
+          done('Got a non-stream file');
           return;
         }
 
@@ -200,7 +200,7 @@ describe('in streaming mode', () => {
       vinylFS
         .src(png, { buffer: false })
         .pipe(convertImageToTXI())
-        .on('error', done.fail)
+        .on('error', done)
         .on('data', (txi: Vinyl) => {
           expect(txi.basename).toBe(`${filename}.txi`);
           expect(txi.isStream()).toBe(true);
@@ -228,7 +228,7 @@ describe('in buffered mode', () => {
         expect(error).toMatchSnapshot();
         done();
       })
-      .on('data', () => done.fail('Got an unexpected file'));
+      .on('data', () => done('Got an unexpected file'));
   });
 
   // FIXME: Jest typings are broken and can't deal with the done callback parameter properly
@@ -244,7 +244,7 @@ describe('in buffered mode', () => {
         expect(error).toMatchSnapshot();
         done();
       })
-      .on('data', () => done.fail('Got an unexpected file'))
+      .on('data', () => done('Got an unexpected file'))
       .end(
         new Vinyl({
           contents,
@@ -268,7 +268,7 @@ describe('in buffered mode', () => {
       vinylFS
         .src(png)
         .pipe(convertImageToTXI())
-        .on('error', done.fail)
+        .on('error', done)
         .on('data', (txi: Vinyl) => {
           expect(txi.basename).toBe(`${filename}.txi`);
           expect(txi.isBuffer()).toBe(true);
@@ -288,7 +288,7 @@ describe('RGBA output format for alpha channel images', () => {
     vinylFS
       .src(png)
       .pipe(convertImageToTXI({ rgbaOutputFormat: TXIOutputFormat.RGBA6666 }))
-      .on('error', done.fail)
+      .on('error', done)
       .on('data', (txi: Vinyl) => {
         if (txi.isBuffer()) {
           expect(
@@ -305,7 +305,7 @@ describe('RGBA output format for alpha channel images', () => {
     vinylFS
       .src(png)
       .pipe(convertImageToTXI())
-      .on('error', done.fail)
+      .on('error', done)
       .on('data', (txi: Vinyl) => {
         if (txi.isBuffer()) {
           expect(txi.contents.compare(readFileSync(`${png}.txi`))).toBe(0);

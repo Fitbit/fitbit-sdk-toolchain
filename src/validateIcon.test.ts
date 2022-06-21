@@ -63,7 +63,7 @@ it('it returns a pass through if appType is CLOCKFACE', (done) => {
   });
 
   validator
-    .on('error', done.fail)
+    .on('error', done)
     .on('data', handleData)
     .on('end', () => {
       expect(handleData).toHaveBeenCalledWith(file);
@@ -127,7 +127,7 @@ describe('in buffered mode', () => {
     const validator = validateIcon(validateIconParams);
 
     validator
-      .on('error', done.fail)
+      .on('error', done)
       .on('data', handleData)
       .on('end', () => {
         expect(handleData).toHaveBeenCalledTimes(files.length);
@@ -161,7 +161,7 @@ describe('in buffered mode', () => {
         expect(error).toMatchSnapshot();
         done();
       })
-      .on('data', () => done.fail('Got an unexpected file'));
+      .on('data', () => done('Got an unexpected file'));
 
     validator.write(
       new Vinyl({
@@ -178,7 +178,7 @@ describe('in buffered mode', () => {
     const validator = validateIcon(validateIconParams);
 
     validator
-      .on('error', done.fail)
+      .on('error', done)
       .on('data', jest.fn())
       .on('end', () => {
         expect(mockDiagnosticHandler.mock.calls[0]).toMatchSnapshot();
