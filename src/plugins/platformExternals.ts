@@ -53,6 +53,7 @@ const companion = [
   'local-storage',
   'mobile-notifications',
   'peer',
+  'pub-sub',
   'secure-exchange',
   'settings',
   'user-water',
