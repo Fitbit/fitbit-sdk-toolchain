@@ -16,6 +16,13 @@ it('provides a mapping for SDKv7.0', () => {
   });
 });
 
+it('provides a mapping for SDKv7.1', () => {
+  expect(apiVersions({}, '7.1.0')).toEqual({
+    deviceApi: '10.1.0',
+    companionApi: '3.5.0',
+  });
+});
+
 it('provides a mapping for a known SDK version with a non-zero patch version', () => {
   expect(apiVersions({}, '7.0.100')).toEqual({
     deviceApi: '10.0.1',
