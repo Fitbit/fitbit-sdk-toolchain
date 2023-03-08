@@ -360,7 +360,7 @@ it('validationErrors() validates all fields', () => {
     iconFile: 'resources/icon.png',
     wipeColor: '#ffffff',
     requestedPermissions: [],
-    buildTargets: ['vulcan'],
+    buildTargets: ['rhea'],
     i18n: {},
     defaultLanguage: 'en-US',
     tiles: [
@@ -375,7 +375,7 @@ it('validationErrors() validates all fields', () => {
   expect(diagnosticsTiles).toEqual([
     expect.objectContaining({
       category: DiagnosticCategory.Error,
-      messageText: 'One or more build targets was invalid: vulcan',
+      messageText: 'One or more build targets was invalid: rhea',
     }),
     expect.objectContaining({
       category: DiagnosticCategory.Error,

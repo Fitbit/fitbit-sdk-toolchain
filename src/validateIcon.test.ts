@@ -26,7 +26,7 @@ const projectConfig: ProjectConfiguration = {
     en: { name: 'My App' },
     fr: { name: 'Mon application' },
   },
-  buildTargets: ['atlas'],
+  buildTargets: ['hera'],
   requestedPermissions: ['permission'],
   defaultLanguage: 'en-US',
 };

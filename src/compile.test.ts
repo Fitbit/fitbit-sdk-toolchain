@@ -17,7 +17,7 @@ expect.addSnapshotSerializer(cwdSerializer);
 
 let mockDiagnosticHandler: jest.Mock;
 
-jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('6.0.0')));
+jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('7.1.0')));
 
 function mockSDKVersion(version: string) {
   (sdkVersion as jest.Mock).mockReturnValue(semver.parse(version));
@@ -25,7 +25,7 @@ function mockSDKVersion(version: string) {
 
 beforeEach(() => {
   mockDiagnosticHandler = jest.fn();
-  mockSDKVersion('6.0.0');
+  mockSDKVersion('7.1.0');
 
   // We don't want to load the actual tsconfig.json for this project
   // during unit tests. Using a real tsconfig.json located within

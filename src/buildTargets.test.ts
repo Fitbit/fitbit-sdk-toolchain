@@ -23,17 +23,17 @@ jest.mock(
   { virtual: true },
 );
 
-jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('6.0.0')));
+jest.mock('./sdkVersion', () => jest.fn(() => semver.parse('7.1.0')));
 
 function mockSDKVersion(version: string) {
   (sdkVersion as jest.Mock).mockReturnValue(semver.parse(version));
 }
 
 it('merges the build target descriptors', () => {
-  mockSDKVersion('6.0.0');
+  mockSDKVersion('7.1.0');
   expect(generateBuildTargets()).toMatchObject({
-    atlas: {
-      displayName: 'Fitbit Versa 3',
+    hera: {
+      displayName: 'Fitbit Versa 4',
       platform: expect.any(Array),
       resourceFilterTag: '336x336',
       specs: { screenSize: { width: 336, height: 336 } },

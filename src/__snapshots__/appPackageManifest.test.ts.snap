@@ -6,8 +6,8 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "components": Object {
     "watch": Object {
-      "atlas": Object {
-        "filename": "device-atlas.zip",
+      "hera": Object {
+        "filename": "device-hera.zip",
         "platform": Array [
           "128.1.1+",
         ],
@@ -23,11 +23,11 @@ Object {
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "deviceApi": "8.1.0",
+    "deviceApi": "10.1.0",
   },
   "sourceMaps": Object {
     "device": Object {
-      "atlas": "sourceMaps/device/atlas/index.js.json",
+      "hera": "sourceMaps/device/hera/index.js.json",
     },
   },
 }
@@ -42,8 +42,8 @@ Object {
       "filename": "companion.zip",
     },
     "watch": Object {
-      "atlas": Object {
-        "filename": "device-atlas.zip",
+      "hera": Object {
+        "filename": "device-hera.zip",
         "platform": Array [
           "128.1.1+",
         ],
@@ -59,13 +59,13 @@ Object {
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "companionApi": "3.3.0",
-    "deviceApi": "8.1.0",
+    "companionApi": "3.5.0",
+    "deviceApi": "10.1.0",
   },
   "sourceMaps": Object {
     "companion": "sourceMaps/companion/companion.js.json",
     "device": Object {
-      "atlas": "sourceMaps/device/atlas/index.js.json",
+      "hera": "sourceMaps/device/hera/index.js.json",
     },
     "settings": "sourceMaps/settings/settings.js.json",
   },
@@ -78,8 +78,8 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "components": Object {
     "watch": Object {
-      "atlas": Object {
-        "filename": "device-atlas.zip",
+      "hera": Object {
+        "filename": "device-hera.zip",
         "platform": Array [
           "128.1.1+",
         ],
@@ -101,8 +101,8 @@ Object {
       "filename": "companion.zip",
     },
     "watch": Object {
-      "atlas": Object {
-        "filename": "device-atlas.zip",
+      "hera": Object {
+        "filename": "device-hera.zip",
         "platform": Array [
           "128.1.1+",
         ],
@@ -112,7 +112,7 @@ Object {
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "companionApi": "3.3.0",
+    "companionApi": "3.5.0",
   },
   "sourceMaps": Object {
     "companion": "sourceMaps/companion/companion.js.json",
@@ -127,8 +127,8 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "components": Object {
     "watch": Object {
-      "atlas": Object {
-        "filename": "device-atlas.zip",
+      "hera": Object {
+        "filename": "device-hera.zip",
         "platform": Array [
           "128.1.1+",
         ],
@@ -139,8 +139,8 @@ Object {
           },
         },
       },
-      "vulcan": Object {
-        "filename": "device-vulcan.zip",
+      "rhea": Object {
+        "filename": "device-rhea.zip",
         "platform": Array [
           "128.1.1+",
         ],
@@ -156,12 +156,12 @@ Object {
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "deviceApi": "8.1.0",
+    "deviceApi": "10.1.0",
   },
   "sourceMaps": Object {
     "device": Object {
-      "atlas": "sourceMaps/device/atlas/index.js.json",
-      "vulcan": "sourceMaps/device/vulcan/index.js.json",
+      "hera": "sourceMaps/device/hera/index.js.json",
+      "rhea": "sourceMaps/device/rhea/index.js.json",
     },
   },
 }
@@ -173,8 +173,8 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "components": Object {
     "watch": Object {
-      "atlas": Object {
-        "filename": "device-atlas.zip",
+      "hera": Object {
+        "filename": "device-hera.zip",
         "platform": Array [
           "128.1.1+",
         ],
@@ -185,8 +185,8 @@ Object {
           },
         },
       },
-      "vulcan": Object {
-        "filename": "device-vulcan.zip",
+      "rhea": Object {
+        "filename": "device-rhea.zip",
         "platform": Array [
           "128.1.1+",
         ],
@@ -206,8 +206,8 @@ Object {
   },
   "sourceMaps": Object {
     "device": Object {
-      "atlas": "sourceMaps/device/atlas/index.js.json",
-      "vulcan": "sourceMaps/device/vulcan/index.js.json",
+      "hera": "sourceMaps/device/hera/index.js.json",
+      "rhea": "sourceMaps/device/rhea/index.js.json",
     },
   },
 }
@@ -223,27 +223,27 @@ Object {
         "id": "b4ae822e-eca9-4fcb-8747-217f2a1f53a2",
         "name": "Tile1",
         "platforms": Array [
-          "atlas",
-          "vulcan",
+          "hera",
+          "rhea",
         ],
       },
       Object {
         "id": "b4ae822e-eca9-4fcb-8747-217f2a1f53a3",
         "name": "Tile2",
         "platforms": Array [
-          "atlas",
+          "hera",
         ],
       },
     ],
     "watch": Object {
-      "atlas": Object {
-        "filename": "device-atlas.zip",
+      "hera": Object {
+        "filename": "device-hera.zip",
         "platform": Array [
           "128.1.1+",
         ],
       },
-      "vulcan": Object {
-        "filename": "device-vulcan.zip",
+      "rhea": Object {
+        "filename": "device-rhea.zip",
         "platform": Array [
           "128.1.1+",
         ],
@@ -262,8 +262,8 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "components": Object {
     "watch": Object {
-      "atlas": Object {
-        "filename": "device-atlas.zip",
+      "hera": Object {
+        "filename": "device-hera.zip",
         "platform": Array [
           "128.1.1+",
         ],
@@ -288,7 +288,7 @@ exports[`emits an error if both JS and native device components are present 1`] 
 
 exports[`emits an error if multiple companion bundles are present for the same device family 1`] = `"Duplicate companion component bundles: bundle1.zip / bundle0.zip"`;
 
-exports[`emits an error if multiple device bundles are present for the same device family 1`] = `"Duplicate device/atlas component bundles: bundle1.zip / bundle0.zip"`;
+exports[`emits an error if multiple device bundles are present for the same device family 1`] = `"Duplicate device/hera component bundles: bundle1.zip / bundle0.zip"`;
 
 exports[`includes tiles just for native apps 1`] = `
 Object {
@@ -296,8 +296,8 @@ Object {
   "buildId": "0x0f75775f470c1585",
   "components": Object {
     "watch": Object {
-      "atlas": Object {
-        "filename": "device-atlas.zip",
+      "hera": Object {
+        "filename": "device-hera.zip",
         "platform": Array [
           "128.1.1+",
         ],
@@ -313,11 +313,11 @@ Object {
   "manifestVersion": 6,
   "requestedPermissions": Array [],
   "sdkVersion": Object {
-    "deviceApi": "8.1.0",
+    "deviceApi": "10.1.0",
   },
   "sourceMaps": Object {
     "device": Object {
-      "atlas": "sourceMaps/device/atlas/index.js.json",
+      "hera": "sourceMaps/device/hera/index.js.json",
     },
   },
 }

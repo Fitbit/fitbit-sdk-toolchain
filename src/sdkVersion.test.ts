@@ -31,9 +31,9 @@ it('provides a mapping for a known SDK version with a non-zero patch version', (
 });
 
 it('provides a mapping for a known SDK version with a pre-release suffix', () => {
-  expect(apiVersions({}, '6.0.0-alpha.1')).toEqual({
-    deviceApi: '8.1.0',
-    companionApi: '3.3.0',
+  expect(apiVersions({}, '7.1.0-alpha.1')).toEqual({
+    deviceApi: '10.1.0',
+    companionApi: '3.5.0',
   });
 });
 
