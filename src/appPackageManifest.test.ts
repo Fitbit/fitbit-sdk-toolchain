@@ -26,7 +26,7 @@ const makeProjectConfig = (): ClockProjectConfiguration => ({
     en: { name: 'My App' },
     fr: { name: 'Mon application' },
   },
-  buildTargets: ['atlas'],
+  buildTargets: ['hera'],
   requestedPermissions: [],
   defaultLanguage: 'en-US',
 });
@@ -120,7 +120,7 @@ it('builds a package manifest with multiple device components', () =>
   expectValidPackageManifest({
     projectConfig: {
       ...makeProjectConfig(),
-      buildTargets: ['atlas', 'vulcan'],
+      buildTargets: ['hera', 'rhea'],
     },
   }).toMatchSnapshot());
 
@@ -128,7 +128,7 @@ it('builds a package manifest with supported capabilities', () =>
   expectValidPackageManifest({
     projectConfig: {
       ...makeProjectConfig(),
-      buildTargets: ['atlas', 'vulcan'],
+      buildTargets: ['hera', 'rhea'],
       enableProposedAPI: true,
     },
   }).toMatchSnapshot());
@@ -140,7 +140,7 @@ it('emits an error if both JS and native device components are present', () => {
     new Vinyl({
       componentBundle: {
         type: 'device',
-        family: 'atlas',
+        family: 'hera',
         platform: ['1.1.1+'],
       },
       path: 'bundle.zip',
@@ -151,7 +151,7 @@ it('emits an error if both JS and native device components are present', () => {
     new Vinyl({
       componentBundle: {
         type: 'device',
-        family: 'vulcan',
+        family: 'rhea',
         platform: ['1.1.1+'],
         isNative: true,
       },
@@ -177,7 +177,7 @@ it.each(['device', 'companion'])(
         new Vinyl({
           componentBundle: {
             type: component,
-            family: 'atlas',
+            family: 'hera',
             platform: ['1.1.1+'],
           },
           path: `bundle${i}.zip`,
@@ -207,7 +207,7 @@ it.each<[string, any]>([
   ['has an invalid type field', { type: '__invalid__' }],
   [
     'has a device type but missing platform',
-    { type: 'device', family: 'atlas' },
+    { type: 'device', family: 'hera' },
   ],
   [
     'has a device type but missing family',
@@ -215,7 +215,7 @@ it.each<[string, any]>([
   ],
   [
     'has a device type but invalid platform',
-    { type: 'device', family: 'atlas', platform: '1.1.1+' },
+    { type: 'device', family: 'hera', platform: '1.1.1+' },
   ],
 ])('emits an error if a component bundle tag %s', (_, componentBundle) => {
   const projectConfig = makeProjectConfig();
@@ -244,7 +244,7 @@ it('builds a package with tiles component', () => {
     {
       name: 'Tile2',
       uuid: 'b4ae822e-eca9-4fcb-8747-217f2a1f53a3',
-      buildTargets: ['atlas', '_unknown_device_'], // Explictly specify buildTargets
+      buildTargets: ['hera', '_unknown_device_'], // Explictly specify buildTargets
     },
     {
       name: 'Unused Tile',
@@ -257,7 +257,7 @@ it('builds a package with tiles component', () => {
     ...makeProjectConfig(),
     tiles,
     appType: AppType.APP,
-    buildTargets: ['atlas', 'vulcan'],
+    buildTargets: ['hera', 'rhea'],
   } as AppProjectConfiguration;
 
   return expectValidPackageManifest({
@@ -275,7 +275,7 @@ it("doesn't include tile data if app type is not APP", () => {
     {
       name: 'Tile2',
       uuid: 'b4ae822e-eca9-4fcb-8747-217f2a1f53a3',
-      buildTargets: ['atlas'],
+      buildTargets: ['hera'],
     },
   ];
 

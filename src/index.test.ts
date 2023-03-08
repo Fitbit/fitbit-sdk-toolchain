@@ -26,7 +26,7 @@ const makeProjectConfig = (): ClockProjectConfiguration => ({
     en: { name: 'My App' },
     fr: { name: 'Mon application' },
   },
-  buildTargets: ['atlas'],
+  buildTargets: ['hera'],
   requestedPermissions: [],
   defaultLanguage: 'en-US',
 });

@@ -2,7 +2,7 @@ import lodash from 'lodash';
 import semver from 'semver';
 
 import sdkVersion from './sdkVersion';
-import { RGBAOutputFormat } from '@fitbit/image-codec-txi';
+import { RGBAOutputFormat, TXIOutputFormat } from '@fitbit/image-codec-txi';
 
 export interface BuildTargetDescriptor {
   displayName: string;
@@ -20,11 +20,12 @@ export interface BuildTargetDescriptor {
 }
 
 const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
-  atlas: {
-    displayName: 'Fitbit Versa 3',
-    minSDKVersion: '5.0.0',
+  rhea: {
+    displayName: 'Fitbit Sense 2',
+    minSDKVersion: '7.0.0',
     platform: ['128.1.1+'],
     resourceFilterTag: '336x336',
+    defaultTXIOutputFormat: TXIOutputFormat.RGBA4444,
     specs: {
       screenSize: {
         width: 336,
@@ -32,11 +33,12 @@ const baseBuildTargets: { [platform: string]: BuildTargetDescriptor } = {
       },
     },
   },
-  vulcan: {
-    displayName: 'Fitbit Sense',
-    minSDKVersion: '5.0.0',
+  hera: {
+    displayName: 'Fitbit Versa 4',
+    minSDKVersion: '7.0.0',
     platform: ['128.1.1+'],
     resourceFilterTag: '336x336',
+    defaultTXIOutputFormat: TXIOutputFormat.RGBA4444,
     specs: {
       screenSize: {
         width: 336,
