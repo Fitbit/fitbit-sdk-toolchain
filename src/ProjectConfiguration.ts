@@ -99,6 +99,8 @@ export enum Locales {
   'pl-PL' = 'Polish',
   'cs-CZ' = 'Czech',
   'nb-NO' = 'Norwegian (Bokmål)',
+  'da-DK' = 'Danish (Denmark)',
+  'hi-IN' = 'Hindi (India)',
 }
 
 const languageTags = Object.keys(Locales);

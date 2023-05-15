@@ -589,10 +589,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fitbit-sdk/companion-gettext@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@fitbit-sdk/companion-gettext@npm:3.2.0"
-  checksum: 201f45c3593f9f5a34bb93ad499379cbc1e923ab42cfe1a4e6cb6ba7c6a74b1d36e6fc2b94da7ac7c421e55d2d9715b271d0d5ca5ae649a00ec74e1aac6116d7
+"@fitbit-sdk/companion-gettext@npm:~3.3.0":
+  version: 3.3.0
+  resolution: "@fitbit-sdk/companion-gettext@npm:3.3.0"
+  checksum: b959924625d3cd855a7b14b7634117db7de7b162440b30fc07f1255c72eba604ec7941b8b36093f8c26809dad3f5c48900548469e2f61d19f2d92fb413d1507e
   languageName: node
   linkType: hard
 
@@ -629,7 +629,7 @@ __metadata:
     "@babel/plugin-syntax-dynamic-import": ^7.8.3
     "@babel/plugin-transform-block-scoped-functions": ^7.16.7
     "@babel/plugin-transform-block-scoping": ^7.18.4
-    "@fitbit-sdk/companion-gettext": ^3.2.0
+    "@fitbit-sdk/companion-gettext": ~3.3.0
     "@fitbit/bison-i18n": ^1.1.0
     "@fitbit/image-codec-txi": ^1.1.6
     "@fitbit/pngjs": ^3.3.3-fitbit.4
