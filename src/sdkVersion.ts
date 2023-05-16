@@ -19,6 +19,7 @@ const apiBySdk: Record<string, ApiVersions> = {
   '6.2': { deviceApi: '8.2.0', companionApi: '3.3.0' },
   '7.0': { deviceApi: '10.0.1', companionApi: '3.5.0' },
   '7.1': { deviceApi: '10.1.0', companionApi: '3.5.0' },
+  '7.2': { deviceApi: '10.1.0', companionApi: '3.5.0' },
 };
 
 export default function sdkVersion(
