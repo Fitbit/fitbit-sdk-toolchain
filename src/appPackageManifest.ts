@@ -28,6 +28,7 @@ interface Components {
     [platform: string]: {
       filename: string;
       platform: string[];
+      platformCApiVersion?: string;
       supports?: SupportedDeviceCapabilities;
     };
   };
@@ -40,14 +41,21 @@ interface Components {
 // tslint:disable-next-line:variable-name
 const ComponentBundleTag = t.taggedUnion('type', [
   t.intersection([
-    t.interface({
+    t.type({
       type: t.literal('device'),
       family: t.string,
       platform: t.array(t.string),
     }),
-    t.partial({
-      isNative: t.literal(true),
-    }),
+    t.union([
+      t.type({
+        isNative: t.literal(true),
+        platformCApiVersion: t.string,
+      }),
+      t.partial({
+        isNative: t.union([t.literal(true), t.undefined]),
+        platformCApiVersion: t.undefined,
+      }),
+    ]),
   ]),
   t.type({
     type: t.literal('companion'),
@@ -113,6 +121,24 @@ class AppPackageManifestTransform extends Transform {
     }
   }
 
+  private populateComponentWatchWithDeviceBundleInfo(
+    bundleInfo: ComponentBundleTag,
+    filename: string,
+  ) {
+    if (this.components.watch && bundleInfo.type === 'device') {
+      const supports = SupportedDeviceCapabilities.create(bundleInfo.family);
+      this.components.watch[bundleInfo.family] = {
+        filename,
+        platform: bundleInfo.platform,
+        ...(this.hasNative &&
+          bundleInfo.platformCApiVersion && {
+            platformCApiVersion: bundleInfo.platformCApiVersion,
+          }),
+        ...(this.hasJS && supports && { supports }),
+      };
+    }
+  }
+
   private transformComponentBundle(file: Vinyl) {
     const bundleInfo = getBundleInfo(file);
 
@@ -147,13 +173,10 @@ class AppPackageManifestTransform extends Transform {
         );
       }
 
-      const supports = SupportedDeviceCapabilities.create(bundleInfo.family);
-
-      this.components.watch[bundleInfo.family] = {
-        platform: bundleInfo.platform,
-        filename: file.relative,
-        ...(this.hasJS && supports && { supports }),
-      };
+      this.populateComponentWatchWithDeviceBundleInfo(
+        bundleInfo,
+        file.relative,
+      );
     } else {
       if (this.components[bundleInfo.type] !== undefined) {
         throwDuplicateComponent(this.components[bundleInfo.type]!.filename);
