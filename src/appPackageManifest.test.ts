@@ -52,11 +52,13 @@ function expectValidPackageManifest(options?: {
   hasCompanion?: boolean;
   projectConfig?: ProjectConfiguration;
   nativeApp?: boolean;
+  platformCApiVersion?: string;
 }) {
-  const { hasCompanion, projectConfig, nativeApp } = {
+  const { hasCompanion, projectConfig, nativeApp, platformCApiVersion } = {
     projectConfig: makeProjectConfig(),
     hasCompanion: false,
     nativeApp: false,
+    platformCApiVersion: undefined,
     ...options,
   };
   const stream = makeReadStream();
@@ -79,6 +81,7 @@ function expectValidPackageManifest(options?: {
           family: platform,
           platform: buildTargets[platform].platform,
           ...(nativeApp && { isNative: true }),
+          ...(platformCApiVersion && { platformCApiVersion }),
         },
       }),
     );
@@ -309,4 +312,39 @@ it('includes tiles just for native apps', () => {
     projectConfig,
     nativeApp: false,
   }).toMatchSnapshot();
+});
+
+it('builds a package manifest for native app with platform C API version', () =>
+  expectValidPackageManifest({
+    nativeApp: true,
+    platformCApiVersion: '1.2.3',
+  }).toMatchSnapshot());
+
+it('builds a package manifest for native app with platform C API version and companinon', () =>
+  expectValidPackageManifest({
+    nativeApp: true,
+    platformCApiVersion: '1.2.3',
+    hasCompanion: true,
+  }).toMatchSnapshot());
+
+it("doesn't include platform C api version for non native apps", () => {
+  const projectConfig = makeProjectConfig();
+  const stream = makeReadStream();
+  stream.push(
+    new Vinyl({
+      componentBundle: {
+        type: 'device',
+        family: 'hera',
+        nativeApp: false,
+        platformApiVersion: '1.2.3',
+      },
+      path: 'bundle.zip',
+      contents: Buffer.alloc(0),
+    }),
+  );
+
+  return expectPackageManifest(
+    stream,
+    projectConfig,
+  ).rejects.toThrowErrorMatchingSnapshot();
 });

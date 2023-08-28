@@ -88,8 +88,16 @@ function readMetadata(elfPath: string) {
     );
   }
 
+  let platformCApiVersion;
+  try {
+    platformCApiVersion = findSection('app_apiversion').toString();
+  } catch (ex) {
+    platformCApiVersion = undefined;
+  }
+
   return {
     platform,
+    platformCApiVersion,
     path: elfPath,
     data: elfData,
     appID: formatUUID(appIDData),
@@ -141,12 +149,18 @@ export default function nativeComponents(
   }
 
   const componentStream = new stream.PassThrough({ objectMode: true });
-  components.forEach(({ family, platform, data }) =>
+  components.forEach(({ family, platform, platformCApiVersion, data }) =>
     componentStream.push(
       new Vinyl({
         contents: data,
         path: `${family}.bundle`,
-        componentBundle: { family, platform, type: 'device', isNative: true },
+        componentBundle: {
+          family,
+          platform,
+          platformCApiVersion,
+          type: 'device',
+          isNative: true,
+        },
       }),
     ),
   );
