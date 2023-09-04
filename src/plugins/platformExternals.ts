@@ -1,6 +1,19 @@
 import { Plugin } from 'rollup';
 
 import { ComponentType } from '../componentTargets';
+import sdkVersion from '../sdkVersion';
+
+let extraDevice: string[] = [];
+let extraCompanion: string[] = [];
+
+try {
+  const {
+    getDeviceModules,
+    getCompanionModules,
+  } = require('@fitbit/sdk-build-targets');
+  extraDevice = getDeviceModules(sdkVersion());
+  extraCompanion = getCompanionModules(sdkVersion());
+} catch {}
 
 const common = [
   'cbor',
@@ -41,7 +54,9 @@ const device = [
   'system',
   'user-activity',
   'user-profile',
-].concat(common);
+  ...common,
+  ...extraDevice,
+];
 
 const companion = [
   'app-cluster-storage',
@@ -59,7 +74,9 @@ const companion = [
   'user-water',
   'user-weight',
   'weather',
-].concat(common);
+  ...common,
+  ...extraCompanion,
+];
 
 const settings = ['user-settings'];
 
