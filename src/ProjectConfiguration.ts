@@ -101,6 +101,12 @@ export enum Locales {
   'nb-NO' = 'Norwegian (Bokmål)',
   'da-DK' = 'Danish (Denmark)',
   'hi-IN' = 'Hindi (India)',
+  'ar-SA' = 'Arabic (Saudi Arabia)',
+  'th-TH' = 'Thai (Thailand)',
+  'fi-FI' = 'Finnish (Finland)',
+  'en-GB' = 'English (UK)',
+  'es-419' = 'Spanish (Latin America)',
+  'fr-CA' = 'French (Canada)',
 }
 
 const languageTags = Object.keys(Locales);
@@ -314,7 +320,7 @@ function constrainedSetDiagnostics({
 }
 
 function normalizeLanguageTag(languageTag: string) {
-  const match = /^([a-z]{2})(-[a-z]{2})?$/i.exec(languageTag);
+  const match = /^([a-z]{2,3})(-[a-z0-9]{2,4})?$/i.exec(languageTag);
   if (match === null) return languageTag;
   const [, language, region] = match;
   return language.toLowerCase() + (region || '').toUpperCase();
@@ -327,10 +333,13 @@ export function normalizeLocales(locales: LocalesConfig) {
    * for all languages they'll quickly exceed this. This code merges the language
    * tag into a locale tag unless one is present.
    */
-  const localeMapping: Record<string, string | undefined> = lodash.mapKeys(
-    Object.keys(Locales),
-    (tag) => tag.split('-')[0],
-  );
+  const localeMapping: Record<string, string> = {};
+  for (const tag of Object.keys(Locales)) {
+    const lang = tag.split('-')[0];
+    if (!localeMapping[lang]) {
+      localeMapping[lang] = tag;
+    }
+  }
   const normalizedLocales: LocalesConfig = {};
 
   for (const [locale, localeConfig] of Object.entries(locales)) {
