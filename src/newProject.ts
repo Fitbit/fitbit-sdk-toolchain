@@ -72,7 +72,7 @@ export default async function newProject() {
       name: 'appDisplayName',
       message: 'What should the name of this application be?',
       // Inquirer will not allow a default that fails validation
-      // to be submited.
+      // to be submitted.
       default: defaultDisplayName,
       validate: validateDisplayName,
     },
